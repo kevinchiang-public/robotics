@@ -1,0 +1,11 @@
+<!-- Hey, Emacs! This is an -*- xml -*- file!-->
+
+<launch>
+
+<node name="RxTx" pkg="rxtx" type="RxTx" output="screen">
+  <param name="SerialPort" value="/dev/ttyUSB0" />
+</node>
+
+<node name="HoverboardLL" pkg="hoverboard" type="HoverboardLL"  output="screen" />
+
+</launch>

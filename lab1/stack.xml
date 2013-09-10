@@ -1,0 +1,10 @@
+<stack>
+  <description brief="lab1">lab1</description>
+  <author>Maintained by Carrick Detweiler</author>
+  <license>BSD</license>  
+  <review status="unreviewed" notes=""/>
+  <url>http://ros.org/wiki/lab1</url>
+  <depend stack="ros" /> <!-- roslib -->
+  <depend stack="ros_comm" /> <!-- std_msgs, roscpp -->
+
+</stack>
