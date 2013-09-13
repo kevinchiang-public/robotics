@@ -1,1 +1,0 @@
-/usr/bin/c++  -fPIC -O2 -g   -shared -Wl,-soname,libgtest.so -o /home/viki/RosWorkspace/Project/hovercraft/lib/libgtest.so CMakeFiles/gtest.dir/src/gtest-all.cc.o -L/home/viki/RosWorkspace/Project/hovercraft/build/gtest/src -lpthread -Wl,-rpath,/home/viki/RosWorkspace/Project/hovercraft/build/gtest/src 

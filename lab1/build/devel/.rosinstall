@@ -1,0 +1,2 @@
+- setup-file:
+    local-name: /home/viki/catkin_ws/src/robotics-hoverboard-project/lab1/build/devel/setup.sh

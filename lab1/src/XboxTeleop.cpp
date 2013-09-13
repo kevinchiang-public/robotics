@@ -28,7 +28,7 @@ private:
 
 XboxTeleop::XboxTeleop()
 {
-  thruster_pub = nh_.advertise<hovercraft::Thruster>("hovercraft/thruster", 1);
+  thruster_pub = nh_.advertise<hovercraft::Thruster>("hovercraft/Thruster", 1);
   joy_sub = nh_.subscribe<sensor_msgs::Joy>("joy", 10, &XboxTeleop::joyCallback, this);
   thrusterOn = false;
   startButtonDepressed = false;
@@ -37,17 +37,21 @@ XboxTeleop::XboxTeleop()
 void XboxTeleop::joyCallback(const sensor_msgs::Joy::ConstPtr& joy)
 {
   hovercraft::Thruster thrust;
-  double lift;
-  double thruster1 = joy->axes[;
-  double thruster2;
-  double thruster3;
-  double thruster4;
-  double thruster5;
+  double lift=0;
+  double thruster1=0;
+  double thruster2=0;
+  double thruster3=0;
+  double thruster4=0;
+  double thruster5=0;
   
-  
+
+  ROS_DEBUG("joyCallback executed");
+  printf("joyCallback executed\n");
   if (joy->buttons[7] == 1)
     {
       startButtonDepressed = true;
+	ROS_DEBUG("start depressed");
+	printf("start depressed\n");
     }
   else if (joy->buttons[7] == 0 and startButtonDepressed)
     {
@@ -84,7 +88,9 @@ void XboxTeleop::joyCallback(const sensor_msgs::Joy::ConstPtr& joy)
 
 int main(int argc, char** argv)
 {
-  ros::init(argc, argv, "xbox_teleop");
+  ros::init(argc, argv, "XboxTeleop");
   XboxTeleop xbox_teleop;
+  ROS_DEBUG("Xbox Teleop spinning");
+  printf("Xbox Teleop spinning\n");
   ros::spin();
 }
