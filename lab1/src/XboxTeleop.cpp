@@ -38,12 +38,13 @@ void XboxTeleop::joyCallback(const sensor_msgs::Joy::ConstPtr& joy)
 {
   hovercraft::Thruster thrust;
   double lift;
-  double thruster1;
+  double thruster1 = joy->axes[;
   double thruster2;
   double thruster3;
   double thruster4;
   double thruster5;
-
+  
+  
   if (joy->buttons[7] == 1)
     {
       startButtonDepressed = true;

@@ -1,0 +1,20 @@
+<package>
+  <description brief="lab1">
+
+     lab
+
+  </description>
+  <author>viki</author>
+  <license>BSD</license>
+  <review status="unreviewed" notes=""/>
+  <url>http://ros.org/wiki/test</url>
+  <depend package="roscpp"/>
+  <depend package="rospy"/>
+  <depend package="joy"/>
+  <depend package="cereal_port"/>
+  <depend package="rxtx"/>
+  <depend package="hoverboard"/>
+  <depend package="hovercraft"/>
+</package>
+
+
