@@ -42,3 +42,7 @@ build/
 bin/
 stack.xml
 msg_gen/
+
+# EMACS Backup Files #
+######################
+*.*~
