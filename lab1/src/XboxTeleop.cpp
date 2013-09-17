@@ -22,75 +22,80 @@ private:
   ros::NodeHandle nh_;
   ros::Publisher thruster_pub;
   ros::Subscriber joy_sub;
-  bool thrusterOn;
+  bool liftOn;
   bool startButtonDepressed;
+  const double liftPower;
+  const double thrustModifier;
 };
 
-XboxTeleop::XboxTeleop()
+XboxTeleop::XboxTeleop() : liftPower (.4), thrustModifier(.5)
 {
   thruster_pub = nh_.advertise<hovercraft::Thruster>("hovercraft/Thruster", 1);
   joy_sub = nh_.subscribe<sensor_msgs::Joy>("joy", 10, &XboxTeleop::joyCallback, this);
-  thrusterOn = false;
+  liftOn = false;
   startButtonDepressed = false;
+  liftPower = .4;
+  thrustModifier = .5;
 }
 
 void XboxTeleop::joyCallback(const sensor_msgs::Joy::ConstPtr& joy)
 {
   hovercraft::Thruster thrust;
-  bool wasPressed = false;  
-  double lift = 0;
-  double thruster1 = 0;
-  double thruster2 = 0;
-  double thruster3 = 0;
-  double thruster4 = 0;
-  double thruster5 = 0;
   ROS_DEBUG("joyCallback executed");
   printf("joyCallback executed\n");
+  
   if (joy->buttons[7] == 1 and not startButtonDepressed)
     {
-        wasPressed = true;
 	startButtonDepressed = true;
 	ROS_DEBUG("Start Button Pressed\n");
 	printf("Start Button Pressed\n");
-	if (thrusterOn)
+	thrust.thruster1 = 0;
+	thrust.thruster2 = 0;
+	thrust.thruster3 = 0;
+	thrust.thruster4 = 0;
+	thrust.thruster5 = 0;
+	if (liftOn)
 	{
 	  printf("Turning Thruster Off\n");
 	  ROS_DEBUG("Turning Thruster Off\n");
-	  thrusterOn = false;
-	  lift = 0;
-	  thruster1 = 0;
-	  thruster2 = 0;
-	  thruster3 = 0;
-	  thruster4 = 0;
-	  thruster5 = 0;
+	  liftOn = false;
+	  thrust.lift = 0;
 	}
       else
 	{
           printf("Turning Thruster On\n");
 	  ROS_DEBUG("Turning Thruster On\n");
-	  lift = .4;
-	  thrusterOn = true;
+	  thrust.lift = liftPower;
+	  liftOn = true;
 	}
+  	thruster_pub.publish(thrust);  
     }
   else if (joy->buttons[7] == 0 and startButtonDepressed)
-    {
+    { 
 	startButtonDepressed = false;
     }
- 
-  if (wasPressed)
-  {
-    thrust.lift = lift;
-    thrust.thruster1 = thruster1;
-    thrust.thruster2 = thruster2;
-    thrust.thruster3 = thruster3;
-    thrust.thruster4 = thruster4;
-    thrust.thruster5 = thruster5;
   
-    thruster_pub.publish(thrust);
-  }  
-// vel.angular = a_scale_*joy->axes[angular_];
-  // vel.linear = l_scale_*joy->axes[linear_];
-  //   vel_pub_.publish(vel);
+  if (liftOn)
+  {	
+	thrust.lift = liftPower;
+	if (joy->axes[0] < 0)
+        {
+		thrust.thruster4 = 0;
+		thrust.thruster5 = fabs(joy->axes[0]) * thrustModifier;
+        } 
+	else if(joy->axes[0] > 0)
+	{
+		thrust.thruster5 = 0;
+		thrust.thruster4 = joy->axes[0] * thrustModifier;
+	}
+        else
+	{
+		thrust.thruster5 = 0;
+		thrust.thruster4 = 0;
+	}
+  	thruster_pub.publish(thrust);  
+  }
+ 
 }
 
 int main(int argc, char** argv)
