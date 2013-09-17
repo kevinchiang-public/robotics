@@ -34,8 +34,6 @@ XboxTeleop::XboxTeleop() : liftPower (.4), thrustModifier(.5)
     joy_sub = nh_.subscribe<sensor_msgs::Joy>("joy", 10, &XboxTeleop::joyCallback, this);
     liftOn = false;
     startButtonDepressed = false;
-    liftPower = .4;
-    thrustModifier = .5;
 }
 
 void XboxTeleop::joyCallback(const sensor_msgs::Joy::ConstPtr& joy)
@@ -44,6 +42,7 @@ void XboxTeleop::joyCallback(const sensor_msgs::Joy::ConstPtr& joy)
     ROS_DEBUG("joyCallback executed");
     printf("joyCallback executed\n");
 
+    //Lift logic
     if (joy->buttons[7] == 1 and not startButtonDepressed)
     {
         startButtonDepressed = true;
@@ -75,15 +74,24 @@ void XboxTeleop::joyCallback(const sensor_msgs::Joy::ConstPtr& joy)
         startButtonDepressed = false;
     }
 
+    //Ensures all thrusters are zeroed before liftoff
     if (liftOn)
     {
+        //Initialize all the thrusters to 0.  Values are replaced if necessary.
         thrust.lift = liftPower;
-        if (joy->axes[0] < 0)
+        thrust.thruster1 = 0;
+        thrust.thruster2 = 0;
+        thrust.thruster3 = 0;
+        thrust.thruster4 = 0;
+        thrust.thruster5 = 0;
+
+        //Rotational Controls
+        if (joy->axes[0] < 0) //Counterclockwise?
         {
             thrust.thruster4 = 0;
             thrust.thruster5 = fabs(joy->axes[0]) * thrustModifier;
         }
-        else if(joy->axes[0] > 0)
+        else if(joy->axes[0] > 0) //Clockwise?
         {
             thrust.thruster5 = 0;
             thrust.thruster4 = joy->axes[0] * thrustModifier;
@@ -93,7 +101,24 @@ void XboxTeleop::joyCallback(const sensor_msgs::Joy::ConstPtr& joy)
             thrust.thruster5 = 0;
             thrust.thruster4 = 0;
         }
+
+        //Translation Controls
+        if (joy->axes[4] > 0) //Forward
+        {
+            thrust.thruster3 = joy->axes[4] * thrustModifier; //Is this the correct thruster number?
+        }
+
+        if (joy->axes[3] > 0) //Translate left
+        {
+
+        }
+        else if (joy->axes[3] < 0) //Translate right
+        {
+
+        }
         thruster_pub.publish(thrust);
+
+
     }
 
 }
