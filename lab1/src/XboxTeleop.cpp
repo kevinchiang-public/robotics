@@ -37,51 +37,58 @@ XboxTeleop::XboxTeleop()
 void XboxTeleop::joyCallback(const sensor_msgs::Joy::ConstPtr& joy)
 {
   hovercraft::Thruster thrust;
-  double lift=0;
-  double thruster1=0;
-  double thruster2=0;
-  double thruster3=0;
-  double thruster4=0;
-  double thruster5=0;
-  
-
+  bool wasPressed = false;  
+  double lift = 0;
+  double thruster1 = 0;
+  double thruster2 = 0;
+  double thruster3 = 0;
+  double thruster4 = 0;
+  double thruster5 = 0;
   ROS_DEBUG("joyCallback executed");
   printf("joyCallback executed\n");
-  if (joy->buttons[7] == 1)
+  if (joy->buttons[7] == 1 and not startButtonDepressed)
     {
-      startButtonDepressed = true;
-	ROS_DEBUG("start depressed");
-	printf("start depressed\n");
-    }
-  else if (joy->buttons[7] == 0 and startButtonDepressed)
-    {
-      startButtonDepressed = false;
-      if (thrusterOn)
+        wasPressed = true;
+	startButtonDepressed = true;
+	ROS_DEBUG("Start Button Pressed\n");
+	printf("Start Button Pressed\n");
+	if (thrusterOn)
 	{
+	  printf("Turning Thruster Off\n");
+	  ROS_DEBUG("Turning Thruster Off\n");
+	  thrusterOn = false;
 	  lift = 0;
 	  thruster1 = 0;
 	  thruster2 = 0;
 	  thruster3 = 0;
 	  thruster4 = 0;
 	  thruster5 = 0;
-	  thrusterOn = false;
 	}
       else
 	{
+          printf("Turning Thruster On\n");
+	  ROS_DEBUG("Turning Thruster On\n");
 	  lift = .4;
 	  thrusterOn = true;
 	}
     }
-
-  thrust.lift = lift;
-  thrust.thruster1 = thruster1;
-  thrust.thruster2 = thruster2;
-  thrust.thruster3 = thruster3;
-  thrust.thruster4 = thruster4;
-  thrust.thruster5 = thruster5;
-
-  thruster_pub.publish(thrust);
-  // vel.angular = a_scale_*joy->axes[angular_];
+  else if (joy->buttons[7] == 0 and startButtonDepressed)
+    {
+	startButtonDepressed = false;
+    }
+ 
+  if (wasPressed)
+  {
+    thrust.lift = lift;
+    thrust.thruster1 = thruster1;
+    thrust.thruster2 = thruster2;
+    thrust.thruster3 = thruster3;
+    thrust.thruster4 = thruster4;
+    thrust.thruster5 = thruster5;
+  
+    thruster_pub.publish(thrust);
+  }  
+// vel.angular = a_scale_*joy->axes[angular_];
   // vel.linear = l_scale_*joy->axes[linear_];
   //   vel_pub_.publish(vel);
 }
