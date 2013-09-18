@@ -6,7 +6,7 @@
   <param name="SerialPort" value="/dev/ttyUSB0" />
   <param name="BaudRate" value="38400" />
 </node>
-<node name="XboxTeleop" pkg="lab1" type="XboxTeleop" output="screen" />
+<!--node name="XboxTeleop" pkg="lab1" type="xboxTeleop.py" output="screen" /-->
 <node name="HoverboardLL" pkg="hoverboard" type="HoverboardLL"  output="screen" />
 <node name="Hovercraft" pkg="hovercraft" type="HoverCraft"  output="screen" />
 
