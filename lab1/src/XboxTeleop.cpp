@@ -88,13 +88,13 @@ void XboxTeleop::joyCallback(const sensor_msgs::Joy::ConstPtr& joy)
         {
             thrust.thruster4 = 0;
             thrust.thruster5 = fabs(joy->axes[0]) * thrustModifier;
-	    printf("Firing thruster5 with power: %f\n", thrust.thruster5);
+	    //printf("Firing thruster5 with power: %f\n", thrust.thruster5);
         }
         else if(joy->axes[0] > .1) //Clockwise?
         {
             thrust.thruster5 = 0;
             thrust.thruster4 = joy->axes[0] * thrustModifier;
-	    printf("Firing thruster4 with power: %f\n", thrust.thruster4);
+	    //printf("Firing thruster4 with power: %f\n", thrust.thruster4);
         }
 
         //Translation Controls
@@ -103,6 +103,7 @@ void XboxTeleop::joyCallback(const sensor_msgs::Joy::ConstPtr& joy)
 	double angle;
 	//angle is in degrees
 	angle=(atan2(yAxis,xAxis)+3.141593)*(180/3.141593); 
+	//pythagorean
 	double magnitude = sqrt(xAxis*xAxis+yAxis*yAxis);
 	magnitude = magnitude>1?1:magnitude;
 	printf("xAxis: %f, yAxis: %f, Angle: %f, Magnitude:, %f\n",xAxis,yAxis, angle, magnitude);
@@ -155,11 +156,11 @@ void XboxTeleop::joyCallback(const sensor_msgs::Joy::ConstPtr& joy)
 	thrust.thruster3 = thrust.thruster3<0?0:thrust.thruster3;
 
 	thrust.thruster1 = thrust.thruster1*thrustModifier*magnitude;
-	thrust.thruster2 = thrust.thruster2*thrustModifier*magnitude;
+	thrust.thruster2 = thrust.thruster2*thrustModifier*magnitude*.7; //.8 is compensating for something..
 	thrust.thruster3 = thrust.thruster3*thrustModifier*magnitude;
 	printf("t1angle   : %f, t2angle   : %f, t3angle   : %f\n",t1angle,t2angle,t3angle);
-	printf("Thruster 1: %f, Thruster 2: %f, Thruster 3: %f\n\n",thrust.thruster1,thrust.thruster2,thrust.thruster3);
-
+	printf("Thruster 1: %f, Thruster 2: %f, Thruster 3: %f\n",thrust.thruster1,thrust.thruster2,thrust.thruster3);
+	printf("Thruster 4: %f, Thruster 5: %f\n\n", thrust.thruster4, thrust.thruster5);
 	/*	//Don't delete this.
 
 	if (joy->axes[4] > .1) //Foward
