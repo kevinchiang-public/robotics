@@ -113,73 +113,73 @@ def callback(joyData):
 		thrust.thruster4 = 0
 		thrust.thruster5 = 0
 
-	#Rotational Controls
-	if rotateAxis < -.1:
-		thrust.thruster4 = 0
-		thrust.thruster5 = rotatePower * thrustModifier
-	elif rotateAxis > .1:
-		thrust.thruster4 = rotatePower * thrustModifier
-		thrust.thruster5 =0
-
-	#Translation Controls
-
-	'''
-        The theory behind this:
-        Orientation:  Right is 0 degrees.  Increasing in clockwise direction. 360 is 0
-        There are three critical points:  90, 210, and 330 degrees.  These are the points where only
-        one thruster is needed.
-
-        So the thruster1 range should increase from -30 degrees to 90 degrees, and decrease from
-        90 to 210 degrees. I'm assuming it should be continuous and equally distributed.
-        If the power for thruster1 is 1 at 90 degrees, then it should be 1-(1/120) at 89 degrees,
-        or 91 degrees. Etc...
-
-        The angles are normalized so I don't have to worry about negative numbers.
-        '''
-
-	#Thruster1
-	if t1angle < t1crit:
-		thrust.thruster1 = 1.0 - ((t1crit - t1angle)*(increment))
-	elif t1angle == t1crit:
-		thrust.thruster1 = 1.0
-	elif t1angle > t1crit:
-		thrust.thruster1 = 1.0 - ((t1angle - t1crit)*(increment))
-
-	#Thruster2
-	if t2angle < t2crit:
-		thrust.thruster2 = 1.0 - ((t2crit - t2angle)*(increment))
-	elif t2angle == t2crit:
-		thrust.thruster2 = 1.0
-	elif t2angle > t2crit:
-		thrust.thruster2 = 1.0 - ((t2angle - t2crit)*(increment))
+		#Rotational Controls
+		if rotateAxis < -.1:
+			thrust.thruster4 = 0
+			thrust.thruster5 = rotatePower * thrustModifier
+		elif rotateAxis > .1:
+			thrust.thruster4 = rotatePower * thrustModifier
+			thrust.thruster5 =0
 	
-	#Thruster3
-	if t3angle < t3crit:
-		thrust.thruster3 = 1.0 - ((t3crit - t3angle)*(increment))
-	elif t3angle == t3crit:
-		thrust.thruster3 = 1.0
-	elif t3angle > t3crit:
-		thrust.thruster3 = 1.0 - ((t3angle - t3crit)*(increment))
+		#Translation Controls
 
-	#Power Dampening and Correction
-	thrust.thruster1 = 0 if thrust.thruster1 < 0 else thrust.thruster1
-	thrust.thruster2 = 0 if thrust.thruster2 < 0 else thrust.thruster1
-	thrust.thruster3 = 0 if thrust.thruster3 < 0 else thrust.thruster1
+		'''
+		The theory behind this:
+		Orientation:  Right is 0 degrees.  Increasing in clockwise direction. 360 is 0
+		There are three critical points:  90, 210, and 330 degrees.  These are the points where only
+		one thruster is needed.
 
-	thrust.thruster1 = thrust.thruster1 * thrustModifier * translatePower
-	thrust.thruster2 = thrust.thruster2 * thrustModifier * translatePower
-	thrust.thruster3 = thrust.thruster3 * thrustModifier * translatePower
+		So the thruster1 range should increase from -30 degrees to 90 degrees, and decrease from
+		90 to 210 degrees. I'm assuming it should be continuous and equally distributed.
+		If the power for thruster1 is 1 at 90 degrees, then it should be 1-(1/120) at 89 degrees,
+		or 91 degrees. Etc...
 
-	#Debug
-	if DEBUG and xbox.liftOn:
-		print "xAxisR:",xAxisR,"\tyAxisR",yAxisR,"\tRotate Axis:",rotateAxis
-		print "LiftStatus:",xbox.liftOn,"\tStartButtonDepressed",xbox.startButtonDepressed
-		print "Angle",angle,"\tt1angle:",t1angle,"\tt2angle:",t2angle,"\tt3angle:",t3angle
-		print "Thruster1:",thrust.thruster1,"\tThruster2:",thrust.thruster2
-		print "Thruster3:",thrust.thruster3,"\tThruster4:",thrust.thruster4
-		print "Thruster5:",thrust.thruster5,"\tLift:",thrust.lift,"\n"
+		The angles are normalized so I don't have to worry about negative numbers.
+		'''
 
-	xbox.thrusterPub.publish(thrust)
+		#Thruster1
+		if t1angle < t1crit:
+			thrust.thruster1 = 1.0 - ((t1crit - t1angle)*(increment))
+		elif t1angle == t1crit:
+			thrust.thruster1 = 1.0
+		elif t1angle > t1crit:
+			thrust.thruster1 = 1.0 - ((t1angle - t1crit)*(increment))
+
+		#Thruster2
+		if t2angle < t2crit:
+			thrust.thruster2 = 1.0 - ((t2crit - t2angle)*(increment))
+		elif t2angle == t2crit:
+			thrust.thruster2 = 1.0
+		elif t2angle > t2crit:
+			thrust.thruster2 = 1.0 - ((t2angle - t2crit)*(increment))
+		
+		#Thruster3
+		if t3angle < t3crit:
+			thrust.thruster3 = 1.0 - ((t3crit - t3angle)*(increment))
+		elif t3angle == t3crit:
+			thrust.thruster3 = 1.0
+		elif t3angle > t3crit:
+			thrust.thruster3 = 1.0 - ((t3angle - t3crit)*(increment))
+
+		#Power Dampening and Correction
+		thrust.thruster1 = 0 if thrust.thruster1 < 0 else thrust.thruster1
+		thrust.thruster2 = 0 if thrust.thruster2 < 0 else thrust.thruster1
+		thrust.thruster3 = 0 if thrust.thruster3 < 0 else thrust.thruster1
+
+		thrust.thruster1 = thrust.thruster1 * thrustModifier * translatePower
+		thrust.thruster2 = thrust.thruster2 * thrustModifier * translatePower
+		thrust.thruster3 = thrust.thruster3 * thrustModifier * translatePower
+
+		#Debug
+		if DEBUG and xbox.liftOn:
+			print "xAxisR:",xAxisR,"\tyAxisR",yAxisR,"\tRotate Axis:",rotateAxis
+			print "LiftStatus:",xbox.liftOn,"\tStartButtonDepressed",xbox.startButtonDepressed
+			print "Angle",angle,"\tt1angle:",t1angle,"\tt2angle:",t2angle,"\tt3angle:",t3angle
+			print "Thruster1:",thrust.thruster1,"\tThruster2:",thrust.thruster2
+			print "Thruster3:",thrust.thruster3,"\tThruster4:",thrust.thruster4
+			print "Thruster5:",thrust.thruster5,"\tLift:",thrust.lift,"\n"
+
+		xbox.thrusterPub.publish(thrust)
 
 #Entry point for ROS
 if __name__ == '__main__':
