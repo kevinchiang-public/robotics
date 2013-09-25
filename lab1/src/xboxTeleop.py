@@ -163,8 +163,8 @@ def callback(joyData):
 
 		#Power Dampening and Correction
 		thrust.thruster1 = 0 if thrust.thruster1 < 0 else thrust.thruster1
-		thrust.thruster2 = 0 if thrust.thruster2 < 0 else thrust.thruster1
-		thrust.thruster3 = 0 if thrust.thruster3 < 0 else thrust.thruster1
+		thrust.thruster2 = 0 if thrust.thruster2 < 0 else thrust.thruster2
+		thrust.thruster3 = 0 if thrust.thruster3 < 0 else thrust.thruster3
 
 		thrust.thruster1 = thrust.thruster1 * thrustModifier * translatePower
 		thrust.thruster2 = thrust.thruster2 * thrustModifier * translatePower
