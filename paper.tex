@@ -7,6 +7,8 @@
 \usepackage{geometry}
 \usepackage{amsthm}
 \usepackage{graphicx}
+\usepackage{hyperref}
+\usepackage{subfigure}
 
 %\linespread{2}
 
@@ -36,13 +38,77 @@ The skirt was constructed by first drawing a circle 0.75 inches larger than the 
 
 The configuration of the thrusters was adopted from the instructor's design.  The three translational thrusters were separated by 120¡ separation each around the circumference of the hovercraft (thrusters 1, 2, and 3 in figure~\ref{hovercraft}), and the two rotational thrusters are set in direct opposition to one another at the base of the craft (thrusters 4 and 5 in figure~\ref{hovercraft}). This design was adopted primarily for its relatively straightforward way of implementing left and right translation using two thrusters simultaneously (with a small amount of trigonometry), as well as the simplicity of rotation (i.e., by firing a single rotational thruster).  
 
+
 This design required thrusters 1 and 3 to be relatively far away from the thrust controller on the hovercraft, so it was necessary to solder an extension to these thrusters.  However, thrusters 2, 4, and 5 were close enough to the controller that they could be attached without modifications.  The wires themselves were left unlabeled, but the thrusters corresponding to each input on the thrust controller were labeled with their corresponding connector number (as seen in figure~\ref{hovercraft}).
 
 The positioning of the thrusters and board shifted the center of gravity of the hovercraft considerably.  To ameliorate this shift, the hoverboard controller and battery were mounted on the two sides of the lift thruster (center of figure~\ref{hovercraft}), to shift the center of gravity back towards the center of the hovercraft.  
 
-
 \section*{ROS Setup and Experiments}
---  Essentially section 5
+ROS was installed using the ready-to-run virtual machine provided on \url{http://nootrix.com/wp-content/uploads/2013/01/rosGroovyGalapagos.ova}.  The VM includes all core libraries required to compile and run both C++ and Python ROS nodes, specifically the roscpp library which is a set of bindings used to link C++ code to ROS (located at /opt/ros/groovy/share/roscpp in the VM installation).   
+
+ROS provides several amenities besides libraries to aid in the design, testing, and execution of a robot.  Among these is a launch file, which allows an arbitrary number of nodes to be launched together.  One of the provided launch files ("hovercraft.launch") initially deployed three nodes: rxtx, HoverboardLL, and HoverCraft.  The launch file also allows various parameters to be configured on each node; for example, the rxtx node needs the serial port used for radio communication.  This is set to /dev/ttyUSB0 by default, but can easily be altered in the launch file.
+
+In addition to the three nodes that are deployed in the initial launch file, there are currently an additional two nodes being launched. The first, XboxTeleop, is used to control communications between the Xbox Controller and the thrusters.   The second, GyroLimiter, caps the power of the rotational thrusters to the maximum rotation rate detected by the hoverboard.  
+
+\begin{figure}
+\centering
+\includegraphics[width=1\textwidth]{images/rxgraph}
+\caption{Structure of overall ROS system}
+\label{rxgraph}
+\end{figure}
+
+Besides detecting the rotational rate of the hovercraft and controlling access to the thrusters, the hoverboard also provides some basic means of output in the form of LEDS.  These are controlled by sending messages on the topics  /hovercraft/LED and /hoverboard/LED.  The specific message types are hovercraft/LED and hoverboard/LEDRaw, respectively, though each is composed of the same basic information: a header and two 8 bit integers used to toggle the red and green light (1 for on, 2 for toggle, -1 to maintain the current value, and 0 for off).  Figure~\ref{rxgraph} shows the various nodes and messages used by the entire hovercraft, including the aforementioned LED messages.  
+
+Often, it is extremely helpful (and sometimes necessary) to display the content of the messages being published on a topic in ROS.  For example, it may be necessary to view the rotational rate of the gyroscope in real time.  The command \emph{rostopic echo /hovercraft/Gyro} will do just that: any messages being sent on the topic /hovercraft/Gyro will be displayed on the standard output.  In this specific example, it's possible to view the header of the message, as well as the angle and rate of the gyroscope.  A similar command, \emph{rostopic hz /hovercraft/Gyro} will display the rate at which messages are being published on the given topic (in this case, the messages were published to /hovercraft/Gyro at a rate of 49Hz).  
+
+In addition to simply viewing messages, it is possible to send messages to any given topic using the command \emph{rostopic pub}.  Using the LED messages above, it would be possible to toggle an LED on the hoverboard by issuing the command \emph{rostopic pub -1 /hovercraft/LED hovercraft/LED -- '\{led33\_red: 2\}}.  The specific format of the rostopic command can be divined by viewing the help message (\emph{rostopic pub --help}).  The parameters needed for the message (in this example, 
+\{led33\_red: 2\}') can be determined using the command \emph{rosmsg show hovercraft/LED}.  
+
+Sometimes, rosmsg will show two nearly identical messages (e.g., hovercraft/Gyro and hovercraft/GyroRaw).  These often measure the same information, but in different units or with different data types (pending on the implementation of the node).  For example, hovercraft/GyroRaw is bound between 0 and 360 and uses 16 bit signed integers to represent both the angle and the rate, but hovercraft/Gyro is uncapped (i.e., it can be any signed number), and each field is represented as a 64 bit float.  In this case, the units are the same as both messages measure the rate and angle in degrees and degrees per second, respectively.  This is easily determinable by viewing the message file defined in the node package.  
+
+\begin{figure}
+\centering
+\subfigure{\label{maxposzoom}\includegraphics[width=.49\textwidth]{images/maxposratezoomed}}
+\subfigure{\label{maxpos}\includegraphics[width=.49\textwidth]{images/maxposrate}}
+\caption{The maximum positive rotational rate of the hovercraft}
+\label{maxposrate}
+\end{figure}
+
+
+\begin{figure}
+\centering
+\subfigure{\label{maxnegzoom}\includegraphics[width=.49\textwidth]{images/maxnegratezoomed}}
+\subfigure{\label{maxneg}\includegraphics[width=.49\textwidth]{images/maxnegrate}}
+\caption{The maximum negative rotational rate of the hovercraft}
+\label{maxnegrate}
+\end{figure}
+
+Determining the specifics about the sensors can be done via simple experimentation in conjunction with rqt\_plot (a program that plots message data against time).  For example, to determine the maximum rotational rate that the gyroscope is capable of measuring, rqt\_plot was used to measure the /hovercraft/Gyro/angle and /hovercraft/Gyro/rate values while spinning the hovercraft at full thrust.  Figure~\ref{maxposrate} shows the maximum positive rate of spin in the counter clockwise direction (roughly 624¼/second).  The left plot shows a zoomed in version of the plot on the right.  Similarly, figure~\ref{maxnegrate} shows the maximum rotational rate in the clockwise direction (roughly 358¼/second).
+
+%NOTE: It seems like the joy node only publishes 1 message with three members, but the handout leads me to believe otherwise
+Aside from using preexisting nodes, ROS also enables users to write new nodes to add or modify the behavior of various components.  For example, publishing messages via rospub probably is not sufficient to enable fine tuned control of the hovercraft.  One solution is to use the existing joy node in ROS to publish commands from an Xbox controller using a new node (called XboxTeleop).  The joy node  itself
+publishes three messages: a header, an array of floats corresponding to the joystick movements, and an array of integers corresponding to button presses. which will be used by the XboxTeleop node  
+
+The axes message is mapped to the various Xbox inputs as follows:
+\begin{itemize}
+\item Index 0 and 1 correspond to the left joystick x and y axes (left/down correspond to negative values and vice versa).
+\item Index 2 and 5 correspond to the left and right triggers (1 being the default position and -1 being fully depressed)
+\item Index 3 and 4 correspond to the right joystick axes (identical to the left joystick axes)
+\end{itemize}
+
+The buttons have a similar mapping, with a value of 1 corresponding to pressed and 0 to unpressed:
+
+\begin{table}[h]
+    \begin{tabular}{llllllllllllllll}
+    Button & a & b & x & y & L & R & Back & Start & Xbox & Left Joy & Right Joy & $\leftarrow$ & $\rightarrow$ & $\uparrow$ & $\downarrow$ \\
+    Index  & 0 & 1 & 2 & 3 & 4    & 5     & 6    & 7     & 8    & 9           & 10           & 11        & 12         & 13      & 14        \\
+    \end{tabular}
+\end{table}
+
+An effect of the joystick publishing at a high rate is that buttons will send multiple messages when pressed even fairly quickly.  This results in the (likely) unwanted effect of having the hovercraft's lift thruster rapidly turn on and off when the start button is pressed (assuming the start button is mapped to the lift thruster).  In order to prevent this from happening, the state of the start button was saved in the XboxTeleop node: if the button was depressed and a flag corresponding to the button being pressed was unset, the thruster was turned on and the flag was set.  The flag was unset when the start button was depressed, causing only the first press of the start button to turn on the lift thruster.  
+
+%misnamed the picture...whoopsie.  Too lazy to fix.
+Figure ~\ref{rxgraph} shows the rqt\_graph of the final system.  The XboxTeleop node was initially connected directly to the /hovercraft/Thruster message, allowing direct control of the thrusters via the Xbox controller.  However, an intermediary node was created (called GyroLimiter) that capped the maximum rotational rate of the hovercraft to the maximum rate detectable by the onboard gyroscope.  
 
 \section*{Hovercraft Experiments}
 -- Essentially section 6
