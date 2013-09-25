@@ -9,12 +9,12 @@
 \usepackage{graphicx}
 \usepackage{hyperref}
 \usepackage{subfigure}
-
+%\usepackage[justification=centering]{caption}
 %\linespread{2}
 
 %Title information for the entirety of the class document
 \title{Hoverboard Construction and Experimentation using ROS}
-\author{Kevin Chiang, Tony Schneider, Angela Yu, Baoliang Zhao}
+\author{Kevin Chiang, Tony Schneider, Lina Yu, Baoliang Zhao}
 \date{Due 9/26/2013}
 \begin{document}
 \maketitle
@@ -83,7 +83,7 @@ Sometimes, rosmsg will show two nearly identical messages (e.g., hovercraft/Gyro
 \label{maxnegrate}
 \end{figure}
 
-Determining the specifics about the sensors can be done via simple experimentation in conjunction with rqt\_plot (a program that plots message data against time).  For example, to determine the maximum rotational rate that the gyroscope is capable of measuring, rqt\_plot was used to measure the /hovercraft/Gyro/angle and /hovercraft/Gyro/rate values while spinning the hovercraft at full thrust.  Figure~\ref{maxposrate} shows the maximum positive rate of spin in the counter clockwise direction (roughly 624¼/second).  The left plot shows a zoomed in version of the plot on the right.  Similarly, figure~\ref{maxnegrate} shows the maximum rotational rate in the clockwise direction (roughly 358¼/second).
+Determining the specifics about the sensors can be done via simple experimentation in conjunction with rqt\_plot (a program that plots message data against time).  For example, to determine the maximum rotational rate that the gyroscope is capable of measuring, rqt\_plot was used to measure the /hovercraft/Gyro/angle and /hovercraft/Gyro/rate values while spinning the hovercraft at full thrust.  Figure~\ref{maxposrate} shows the maximum positive rate of spin in the counter clockwise direction (roughly 624$^\circ$/second).  The left plot shows a zoomed in version of the plot on the right.  Similarly, figure~\ref{maxnegrate} shows the maximum rotational rate in the clockwise direction (roughly 358$^\circ$/second).
 
 %NOTE: It seems like the joy node only publishes 1 message with three members, but the handout leads me to believe otherwise
 Aside from using preexisting nodes, ROS also enables users to write new nodes to add or modify the behavior of various components.  For example, publishing messages via rospub probably is not sufficient to enable fine tuned control of the hovercraft.  One solution is to use the existing joy node in ROS to publish commands from an Xbox controller using a new node (called XboxTeleop).  The joy node  itself
@@ -99,9 +99,10 @@ The axes message is mapped to the various Xbox inputs as follows:
 The buttons have a similar mapping, with a value of 1 corresponding to pressed and 0 to unpressed:
 
 \begin{table}[h]
-    \begin{tabular}{llllllllllllllll}
-    Button & a & b & x & y & L & R & Back & Start & Xbox & Left Joy & Right Joy & $\leftarrow$ & $\rightarrow$ & $\uparrow$ & $\downarrow$ \\
-    Index  & 0 & 1 & 2 & 3 & 4    & 5     & 6    & 7     & 8    & 9           & 10           & 11        & 12         & 13      & 14        \\
+    \begin{tabular}{|c|c|c|c|c|c|c|c|c|c|c|c|c|c|c|c|}
+    \hline
+    Button & a & b & x & y & L & R & Back & Start & Xbox & Left Joy & Right Joy & $\leftarrow$ & $\rightarrow$ & $\uparrow$ & $\downarrow$ \\\hline
+    Index  & 0 & 1 & 2 & 3 & 4    & 5     & 6    & 7     & 8    & 9           & 10           & 11        & 12         & 13      & 14        \\\hline
     \end{tabular}
 \end{table}
 
@@ -111,6 +112,36 @@ An effect of the joystick publishing at a high rate is that buttons will send mu
 Figure ~\ref{rxgraph} shows the rqt\_graph of the final system.  The XboxTeleop node was initially connected directly to the /hovercraft/Thruster message, allowing direct control of the thrusters via the Xbox controller.  However, an intermediary node was created (called GyroLimiter) that capped the maximum rotational rate of the hovercraft to the maximum rate detectable by the onboard gyroscope.  
 
 \section*{Hovercraft Experiments}
--- Essentially section 6
+To characterize the performance and limitations of the hovercraft, experiments were performed testing its thruster, rotational, and translational capabilities.  
 
+ The minimum thrust power required to maintain lift was found to conserve power as well as preserve the integrity of the thruster.  This value was determined simply by starting at a low thruster value (specifically 0.2) and slowly turning the power on the thruster up until consistent lift was achieved.  While running the thruster at 0.2 was capable of providing lift, it had a tendency to sag due to unevenly distributed weight.  A lift power of 0.3 was found to be a reasonable compromise between lift power and conservation.  Giving the thruster more power would occasionally cause unwanted rotation ostensibly due to an uneven skirt.  This thruster force was enough to lift the hovercraft even with an additional .677 kilograms of mass onto of its base.  Additionally, with this extra mass, the hovercraft could still maintain lift and be moved after applying .55 newtons of force. 
+ 
+The required force was calculated by measuring the displacement of a spring attached to the hovercraft, then determining the weight required to cause the same amount of displacement in the spring while being hung vertically.  The force could then be determined by using the equation $f=kx$, where $k$ is a spring constant and $x$ is the displacement of the spring. Because $k$ was unknown for the spring that was used to conduct the experiment, it was simply ignored, likely causing a small amount of error in the calculated force required to move the hovercraft with additional weight.  The same experiment was repeated for the hovercraft with no additional weight.  However, the amount of displacement of the spring was immeasurable using the conventional and readily available methods.  This means a very small (near negligible) amount of force was required to move the hovercraft on its own.
+
+In addition to conserving the main lift thruster power, thrusters 4 and 5 (i.e., the rotational thrusters) were capped at the maximum rotational rate detectable by the onboard gyroscope.  This rate (seen in figures~\ref{maxposrate} and~\ref{maxnegrate}) ranged from -358$^\circ$/second to 624$^\circ$/sec.  To limit the rate, an additional node was created called GyroLimiter, which was subscribed to both /hovercraft/Gyro and /thrusterProcess (as seen in figure~\ref{rxgraph}).  GyroLimiter acted as an intermediary node between the XboxTeleop node and the thrusters themselves: If the XboxTeleop node sent a rotational command to the GyroLimiter and the gyroscope was reporting the maximum rotational rate (either positive or negative), the corresponding rotational thruster was shut off and any additional input sent to that thruster was ignored for a brief period (1 second) to prevent rapid oscillations.  
+
+The rotational rate range is not the only limitation of the gyroscope.  The gyroscope suffers from a loss of accuracy over several revolutions.  To determine how much the gyroscope deviated from the actual amount of rotation, the hovercraft was rotated a full 360$^\circ$ in one direction, ten times in a row.  At each revolution, the gyroscope's sensor was read and compared with the actual number of degrees the hovercraft had been rotated (in this case, the actual number was always in multiples of 360).  Table~\ref{revtable} shows the exact values obtained from this experiment, and figure~\ref{revs} shows a plot of the same data.  On average, the gyroscope loses roughly 10$^\circ$ per rotation.  Additionally, when the hovercraft was rotated in the opposite direction the same number of times, the angle should have (ideally) read at 0$^\circ$.  However, the observed reading was 33$^\circ$, meaning there is a different loss of accuracy pending on the direction of rotation.
+
+
+\begin{figure}
+  \includegraphics[width=.85\textwidth]{images/revs}
+
+  \caption{The ideal vs actual degrees detected by the gyroscope after 10 revolutions}
+  \label{revs}
+\end{figure}
+
+\begin{table}
+ \caption{Degrees per Revolution}
+ \begin{tabular}{| r | c | c | c | c | c | c | c | c | c|c|c|}
+    \hline
+    Observed & 0 &  350 & 701 & 1050 & 1403 & 1753 & 2105 & 2455 & 2802 & 3140&3480\\\hline
+    Ideal & 0 & 360 & 720 & 1080 & 1440 & 1800 & 2160 & 2520 & 2880 & 3240 &3600\\\hline\hline
+    Observed  & 3137 & 2795 & 2447 & 2102 & 1756 & 1411 & 1068 & 723 & 379 & 33&\\\hline
+    Ideal & 3240 & 2880 & 2520 & 2160 & 1800 & 1440 & 1080 & 720 & 360 & 0 & \\\hline
+    \end{tabular}
+    \label{revtable}
+\end{table}
+
+\section*{Conclusion}
+Blablablabla
 \end{document}
