@@ -14,7 +14,7 @@
 
 %Title information for the entirety of the class document
 \title{Hoverboard Construction and Experimentation using ROS}
-\author{Kevin Chiang, Tony Schneider, Lina Yu, Baoliang Zhao}
+\author{Kevin Chiang, Tony Schneider, Lina Yu, Baoliang Zhao\\(Point Person: Tony Schneider)}
 \date{Due 9/26/2013}
 \begin{document}
 \maketitle
@@ -119,13 +119,8 @@ To characterize the performance and limitations of the hovercraft, experiments w
 The required force was calculated by measuring the displacement of a spring attached to the hovercraft, then determining the weight required to cause the same amount of displacement in the spring while being hung vertically.  The force could then be determined by using the equation $f=kx$, where $k$ is a spring constant and $x$ is the displacement of the spring. Because $k$ was unknown for the spring that was used to conduct the experiment, it was simply ignored, likely causing a small amount of error in the calculated force required to move the hovercraft with additional weight.  The same experiment was repeated for the hovercraft with no additional weight.  However, the amount of displacement of the spring was immeasurable using the conventional and readily available methods.  This means a very small (near negligible) amount of force was required to move the hovercraft on its own.
 
 In addition to conserving the main lift thruster power, thrusters 4 and 5 (i.e., the rotational thrusters) were capped at the maximum rotational rate detectable by the onboard gyroscope.  This rate (seen in figures~\ref{maxposrate} and~\ref{maxnegrate}) ranged from -358$^\circ$/second to 624$^\circ$/sec.  To limit the rate, an additional node was created called GyroLimiter, which was subscribed to both /hovercraft/Gyro and /thrusterProcess (as seen in figure~\ref{rxgraph}).  GyroLimiter acted as an intermediary node between the XboxTeleop node and the thrusters themselves: If the XboxTeleop node sent a rotational command to the GyroLimiter and the gyroscope was reporting the maximum rotational rate (either positive or negative), the corresponding rotational thruster was shut off and any additional input sent to that thruster was ignored for a brief period (1 second) to prevent rapid oscillations.  
-
-The rotational rate range is not the only limitation of the gyroscope.  The gyroscope suffers from a loss of accuracy over several revolutions.  To determine how much the gyroscope deviated from the actual amount of rotation, the hovercraft was rotated a full 360$^\circ$ in one direction, ten times in a row.  At each revolution, the gyroscope's sensor was read and compared with the actual number of degrees the hovercraft had been rotated (in this case, the actual number was always in multiples of 360).  Table~\ref{revtable} shows the exact values obtained from this experiment, and figure~\ref{revs} shows a plot of the same data.  On average, the gyroscope loses roughly 10$^\circ$ per rotation.  Additionally, when the hovercraft was rotated in the opposite direction the same number of times, the angle should have (ideally) read at 0$^\circ$.  However, the observed reading was 33$^\circ$, meaning there is a different loss of accuracy pending on the direction of rotation.
-
-
 \begin{figure}
   \includegraphics[width=.85\textwidth]{images/revs}
-
   \caption{The ideal vs actual degrees detected by the gyroscope after 10 revolutions}
   \label{revs}
 \end{figure}
@@ -142,6 +137,17 @@ The rotational rate range is not the only limitation of the gyroscope.  The gyro
     \label{revtable}
 \end{table}
 
+The rotational rate range is not the only limitation of the gyroscope.  The gyroscope suffers from a loss of accuracy over several revolutions.  To determine how much the gyroscope deviated from the actual amount of rotation, the hovercraft was rotated a full 360$^\circ$ in one direction, ten times in a row.  At each revolution, the gyroscope's sensor was read and compared with the actual number of degrees the hovercraft had been rotated (in this case, the actual number was always in multiples of 360).  Table~\ref{revtable} shows the exact values obtained from this experiment, and figure~\ref{revs} shows a plot of the same data.  On average, the gyroscope loses roughly 10$^\circ$ per rotation.  Additionally, when the hovercraft was rotated in the opposite direction the same number of times, the angle should have (ideally) read at 0$^\circ$.  However, the observed reading was 33$^\circ$, meaning there is a different loss of accuracy pending on the direction of rotation.
+
+Configuring and characterizing the thrusters to effect translational movement was significantly more time consuming than examining the gyroscope or lift thruster.   Figure~\ref{hovercraft} shows the hovercraft with the forward position towards the top of the image.  To move forward, left, or right, two thrusters were required to provide thrust at the same time.  However, left and right translation required the two thrusters to operate at different levels due to their orientation.  Forward translation required thrusters 2 and 3 to operate in equal proportion to one another.  Left translation required thrusters 1 and 3, with thruster 3 supplying 3 times the amount of thrust.  Similarly, right translation required thrusters 1 and 2 to fire, but with thruster 2 providing 3 times the amount of thrust.  Backward translation required only thruster 1 to fire.
+
+To enable finer control over the translational movements of the hovercraft, an equation was derived using the known angles between thrusters.  Specifically, if the desired angle to move in is $\theta$ and all thrusters provide the same thrust at the same power level, then $\theta = \arctan(\frac{yAxis}{xAxis}) * \frac{180}{\pi} + 180)$ (the addition of 180 normalizes the angle to [0,360]).  The power needed for each thruster was then determined by finding the hypotenuse of the triangle formed by x and y axes of the joystick.  This enabled the hovercraft to simultaneously 
+
+To test the translational abilities of the hovercraft,  the hovercraft was driven over tape on the floor that formed something resembling a star pattern with edges at roughly 45$^circ$ angles.  The goal was to translate along one edge of the pattern, then back, and continue along different edges until each translational direction had been tested.  Overall, the hovercraft performed admirably: it was capable of moving at the desired angle, but typically deviated from the path when stopping due to a slight rotation (likely due to weight balance issues) and inertia.  
+
+To remedy inertial effect the lift power was decreased to increase the friction of the hovercraft.  To curb the rotational effects somewhat, the thrusters were manually calibrated to attempt to decouple the translation and rotation.  Adopting a different equation (perhaps a vector based algorithm) or altering the layout of the thrusters on the hovercraft might produce better translational capabilities (or by adding an additional thruster to the hovercraft, mitigating the need to fire two thrusters simultaneously).
+
+
 \section*{Conclusion}
-Blablablabla
+Designing, assembling, and programming a hovercraft turned out to be a more arduous and time consuming task than initially thought.  The task involved a fair amount of handiness, programming skills, and mathematical knowledge to complete.  To streamline the entire process, two groups were formed: Baoliang Zhao and Lina Yu each spent 12 hours building the hardware, running the translation and force test experiments, and manually calibrating the thrusters.  Kevin Chiang and Tony Schneider spent roughly the same amount of time programming, testing, and getting the translational controls to work.  One of the most trying and difficult pieces of functionality to design was the translation algorithm, with a close second being the manual calibration of the thrusters. However, the hardest part of design may have been finally settling on a name: Dopey (though, Puck, Sunny, Halo, and Drifter were all close runner-ups).
 \end{document}
