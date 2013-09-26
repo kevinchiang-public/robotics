@@ -6,15 +6,16 @@
   <param name="SerialPort" value="/dev/ttyUSB0" />
   <param name="BaudRate" value="38400" />
 </node>
-<!--node name="XboxTeleop" pkg="lab1" type="xboxTeleop.py" output="screen" /-->
 <node name="HoverboardLL" pkg="hoverboard" type="HoverboardLL"  output="screen" />
 <node name="Hovercraft" pkg="hovercraft" type="HoverCraft"  output="screen" />
 
-
-<!--node respawn="true" pkg="joy"
+<node respawn="true" pkg="joy"
         type="joy_node" name="xbox_joy" >
-   <param name="dev" type="string" value="/dev/input/js1" />
+   <param name="dev" type="string" value="/dev/input/js0" />
    <param name="deadzone" value="0.12" />
-</node-->
+</node>
+
+<node name="XboxTeleop" pkg="lab1" type="xboxTeleop.py" output="screen" />
+<node name="gyroLimiter" pkg="lab1" type="gyroLimiter.py" output="screen" />
 
 </launch>

@@ -40,7 +40,7 @@ class config():
         tAmod= .7 # Multiplies all thrusters (except lift) further by this number
 
 class XboxTeleop():
-	thrusterPub = rospy.Publisher('hovercraft/Thruster',Thruster)
+	thrusterPub = rospy.Publisher('/thrusterProcess',Thruster)
 	liftOn = False
 	startButtonDepressed = False
 
