@@ -19,7 +19,7 @@ def callback(move):
 	x = move.x
 	y = move.y
 	thrust = Thruster()
-	thrust.lift = .4
+	thrust.lift = .3
 	thrust.thruster1=0
 	thrust.thruster2=0
 	thrust.thruster3=0

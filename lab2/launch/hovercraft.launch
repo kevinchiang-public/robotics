@@ -13,9 +13,14 @@
    <param name="deadzone" value="0.12" />
 </node>
 
-<node name="angularPositionPID" pkg="lab2" type="angularPositionPID.py" output="screen" >
-	<param name="P" type="string" value=".006"/>
-	<param name="D" type="string" value=".6"/>
+<!--node name="angularPositionPID" pkg="lab2" type="angularPositionPID.py" output="screen" >
+	<param name="P" type="string" value=".007"/>
+	<param name="D" type="string" value="0.04"/>
+</node-->
+<node name="angularVelocityPID" pkg="lab2" type="angularVelocityPID.py" output="screen" >
+	<param name="targetRate" type="string" value="0"/>
+	<param name="P" type="string" value=".007"/>
+	<param name="D" type="string" value="0.04"/>
 </node>
 <node name="thrusterMapping" pkg="lab2" type="thrusterMapping.py" output="screen" />
 </launch>
