@@ -1,0 +1,8 @@
+<launch>
+
+<node name="angularPositionPID" pkg="lab2" type="angularPositionPID.py" output="screen" >
+        <param name="P" type="string" value=".004"/>
+        <param name="D" type="string" value=".004"/>
+</node>
+<node name="thrusterMapping" pkg="lab2" type="thrusterMapping.py" output="screen" />
+</launch>
