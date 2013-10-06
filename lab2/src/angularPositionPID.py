@@ -39,7 +39,7 @@ def gyroCallback(gyro):
 	D = float(rospy.get_param('~D', '.01'))
 	printD(P)
 	r = P*(targetAngle - gyro.angle)+D*((targetAngle - gyro.angle)-previousError)
-	#TODO Derivative part
+	#Derivative part
 	previousError = targetAngle - gyro.angle
 	print "TargetAngle:",targetAngle,"\tGyro Angle:",gyro.angle,"\tr:",r,"\tAngle Difference:",previousError
 	move.theta = r #if math.fabs(targetAngle - gyro.angle) > 2 else 0
