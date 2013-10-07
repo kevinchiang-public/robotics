@@ -22,15 +22,21 @@ def printD(string):
 
 def listener():
 	rospy.init_node('AngularPositionPID')
+	rospy.Subscriber('/arbitratorOut',Movement,arbitratorCallback)
 	rospy.Subscriber('/hovercraft/Gyro',Gyro,gyroCallback)
 	rospy.Subscriber('/joy',Joy,joyCallback)
 	rospy.spin()
+
+def arbitratorCallback(move):
+	global targetAngle
+	targetAngle = move.theta
 
 def gyroCallback(gyro):
 	global targetAngle
 	global previousError
 	global first
-	pub = rospy.Publisher('/thrusterMapping',Movement)
+	global DEBUG
+	pub = rospy.Publisher('/angularPositionOut',Movement)
 	move = Movement()
 	if first:
 		targetAngle = gyro.angle
@@ -41,7 +47,8 @@ def gyroCallback(gyro):
 	r = P*(targetAngle - gyro.angle)+D*((targetAngle - gyro.angle)-previousError)
 	#Derivative part
 	previousError = targetAngle - gyro.angle
-	print "TargetAngle:",targetAngle,"\tGyro Angle:",gyro.angle,"\tr:",r,"\tAngle Difference:",previousError
+	if DEBUG:
+		print "TargetAngle:",targetAngle,"\tGyro Angle:",gyro.angle,"\tr:",r,"\tAngle Difference:",previousError
 	move.theta = r #if math.fabs(targetAngle - gyro.angle) > 2 else 0
 	if math.fabs(targetAngle - gyro.angle) < 3:
 		move.theta = 0

@@ -1,0 +1,35 @@
+<launch>
+<!-- complete.launch -->
+<!-- actually it's missing triangle and reactive control -->
+	<group>
+		<node name="RxTx" pkg="rxtx" type="RxTx" output="screen">
+		  <param name="SerialPort" value="/dev/ttyUSB0" />
+		  <param name="BaudRate" value="38400" />
+		</node>
+		<node name="HoverboardLL" pkg="hoverboard" type="HoverboardLL"  output="screen" />
+		<node name="Hovercraft" pkg="hovercraft" type="HoverCraft"  output="screen" />
+	</group>
+	<group>
+		<node respawn="true" pkg="joy"
+			type="joy_node" name="xbox_joy" >
+		   <param name="dev" type="string" value="/dev/input/js0" />
+		   <param name="deadzone" value="0.12" />
+		</node>
+		<node name="joystickControls" pkg="lab2" type="joystick.py" output="screen" />
+		<!--node name="angleIntegrator" pkg="lab2" type="angleIntegrator.py" output="screen" /-->
+	</group>
+	<node name="arbitrator" pkg="lab2" type="arbitrator.py" output="screen" />
+	<group>
+		<node name="angularPositionPID" pkg="lab2" type="angularPositionPID.py" output="screen" >
+			<param name="P" type="string" value=".007"/>
+			<param name="D" type="string" value="0.04"/>
+		</node>
+		<node name="angularVelocityPID" pkg="lab2" type="angularVelocityPID.py" output="screen" >
+			<param name="targetRate" type="string" value="0"/>
+			<param name="P" type="string" value=".007"/>
+			<param name="D" type="string" value="0.04"/>
+		</node>
+	</group>
+	<node name="thrusterMapping" pkg="lab2" type="thrusterMapping.py" output="screen" />
+</launch>
+

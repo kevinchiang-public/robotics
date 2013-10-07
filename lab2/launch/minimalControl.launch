@@ -1,0 +1,7 @@
+<launch>
+<!-- Minimal Control Launch File -->
+
+	<node name="JoyStickControls" pkg="lab2" type="joystick.py" output="screen" />
+	<node name="Arbitrator" pkg="lab2" type="arbitrator.py" output="screen" />
+
+</launch>

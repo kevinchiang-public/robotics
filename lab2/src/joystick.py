@@ -4,7 +4,7 @@ import roslib
 roslib.load_manifest('hovercraft')
 roslib.load_manifest('lab2')
 from sensor_msgs.msg import Joy
-from lab2.msg import Movement
+from lab2.msg import MovementRaw
 from lab2.msg import Switcher
 import math
 
@@ -12,7 +12,7 @@ import math
 #Set DEBUG to True if you want to display the variables in console
 #Not logged
 DEBUG=True
-
+xbox = None
 switchState = 0 # Hovercraft responds to joystick movement controls on startup
 
 #Use printD to enable DEBUG toggling functionality
@@ -22,9 +22,9 @@ def printD(string):
                 print string
 
 class XboxTeleop():
-        thrusterPub = rospy.Publisher('/joyOut',Movement)
+        angleIntegratorPub = rospy.Publisher('/joyOut',MovementRaw)
 	arbitratorPub=rospy.Publisher('/joyArbitrator',Switcher)
-	movement = Movement()
+	movement = MovementRaw()
 	switcher = Switcher()
         liftOn = False
         startButtonDepressed = False
@@ -38,7 +38,7 @@ def callback(joyData):
 	TRIANGLE = 1
 	REACTIVE = 2
 
-	xbox = XboxTeleop()
+	global xbox# = XboxTeleop()
 	start = joyData.buttons[7]
 	leftButton = joyData.buttons[4]
 	rightButton= joyData.buttons[5]
@@ -74,10 +74,16 @@ def callback(joyData):
 		#Cycle left (JOYSTICK, TRIANGLE, REACTIVE)
 		if switchState == JOYSTICK:
 			switchState = REACTIVE
-		elif switchState == REACTIVE
+			printD("Reactive Control Activated\n")
+			xbox.switcher.state = switchState
+		elif switchState == REACTIVE:
 			switchState = TRIANGLE
-		elif switchsState == TRIANGLE
-			switchState == JOYSTICK
+			printD("Triangle Activated\n")
+			xbox.switcher.state = switchState
+		elif switchState == TRIANGLE:
+			switchState = JOYSTICK
+			printD("Joystick Control Activated\n")
+			xbox.switcher.state = switchState
 
 	elif leftButton == 0 and xbox.leftButtonDepressed:
 		xbox.leftButtonDepressed = False
@@ -91,25 +97,39 @@ def callback(joyData):
 		#Cycle Right (JOYSTICK, TRIANGLE, REACTIVE)
 		if switchState == JOYSTICK:
 			switchState = TRIANGLE
-		elif switchState == TRIANGLE
+			printD("Triangle Activated\n")
+			xbox.switcher.state = switchState
+		elif switchState == TRIANGLE:
 			switchState = REACTIVE
-		elif switchsState == REACTIVE
-			switchState == JOYSTICK
+			printD("Reactive Control Activated\n")
+			xbox.switcher.state = switchState
+		elif switchState == REACTIVE:
+			switchState = JOYSTICK
+			printD("Joystick Control Activated\n")
+			xbox.switcher.state = switchState
 	elif rightButton == 0 and xbox.rightButtonDepressed:
 		xbox.rightButtonDepressed = True
 
-	xbox.switcher.state = switchState
 
 	#Translational Control Passthrough
-	xbox.movement.x = xAxisR
-	xbox.movement.y = yAxisR
+	xbox.movement.xR = xAxisR
+	xbox.movement.yR = yAxisR
+	xbox.movement.xL = xAxisL
+	xbox.movement.yL = yAxisL
 
-	#TODO Figure out how theta is going to work
+	
+
 	#Publish to AngleIntegrator
+	xbox.angleIntegratorPub.publish(xbox.movement)
+
+	#Publish to Arbitrator
 	xbox.arbitratorPub.publish(xbox.switcher)
 		
 def listener():
 	rospy.init_node('joystick')
+	printD("Joystick Spinning")
+	global xbox
+	xbox = XboxTeleop()
 	rospy.Subscriber('/joy',Joy, callback)
 	rospy.spin()
 

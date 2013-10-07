@@ -8,23 +8,28 @@ from hovercraft.msg import Thruster
 from sensor_msgs.msg import Joy
 import math
 
+DEBUG=False
+thruster=Thruster()
 
 def listener():
-        rospy.init_node('thrusterMapping')
-        rospy.Subscriber("/thrusterMapping",Movement,callback)
-        rospy.spin()
+		rospy.init_node('thrusterMapping')
+		rospy.Subscriber("/thrusterMapping",Movement,callback)
+		rospy.Subscriber("/arbitratorThruster",Thruster,arbitratorCallback)
+		rospy.spin()
+
+def arbitratorCallback(thrust):
+	global thruster
+	thruster = thrust
 
 def callback(move):
+	global thruster
+	global DEBUG
 	theta = move.theta
 	x = move.x
 	y = move.y
-	thrust = Thruster()
-	thrust.lift = .3
-	thrust.thruster1=0
-	thrust.thruster2=0
-	thrust.thruster3=0
-	thrust.thruster4=0
-	thrust.thruster5=0
+	thrust = thruster
+	#print thrust
+
 	if theta >0:
 		#Turn on 4
 		thrust.thruster5 = 0
@@ -37,11 +42,12 @@ def callback(move):
 		thrust.thruster5 = thrust.thruster5 if thrust.thruster5 < .5 else .5
 
 	pub = rospy.Publisher('/hovercraft/Thruster',Thruster)
-	print "Theta:",theta,"\tThruster 4:",thrust.thruster4,"\tThruster 5:",thrust.thruster5
+	if DEBUG:
+		print "Theta:",theta,"\tThruster 4:",thrust.thruster4,"\tThruster 5:",thrust.thruster5
 	pub.publish(thrust)
 
 
 
 #Entry point for ROS
 if __name__ == '__main__':
-        listener()
+	listener()

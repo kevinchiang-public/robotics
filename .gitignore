@@ -46,3 +46,7 @@ msg_gen/
 # EMACS Backup Files #
 ######################
 *.*~
+
+# PyCharm Files #
+#################
+*.idea/*

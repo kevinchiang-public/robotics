@@ -7,4 +7,10 @@
 <node name="HoverboardLL" pkg="hoverboard" type="HoverboardLL"  output="screen" />
 <node name="Hovercraft" pkg="hovercraft" type="HoverCraft"  output="screen" />
 
+<node respawn="true" pkg="joy"
+        type="joy_node" name="xbox_joy" >
+   <param name="dev" type="string" value="/dev/input/js0" />
+   <param name="deadzone" value="0.12" />
+</node>
+
 </launch>
