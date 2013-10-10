@@ -43,7 +43,7 @@ def gyroCallback(gyro):
 		first = False
 	P = float(rospy.get_param('~P', '.01'))
 	D = float(rospy.get_param('~D', '.01'))
-	printD(P)
+
 	r = P*(targetAngle - gyro.angle)+D*((targetAngle - gyro.angle)-previousError)
 	#Derivative part
 	previousError = targetAngle - gyro.angle
@@ -54,6 +54,7 @@ def gyroCallback(gyro):
 		move.theta = 0
 	move.x=0
 	move.y=0
+
 	pub.publish(move)
 
 

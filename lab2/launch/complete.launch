@@ -21,11 +21,11 @@
 	<node name="arbitrator" pkg="lab2" type="arbitrator.py" output="screen" />
 	<group>
 		<node name="angularPositionPID" pkg="lab2" type="angularPositionPID.py" output="screen" >
-			<param name="P" type="string" value=".007"/>
-			<param name="D" type="string" value="0.04"/>
+			<param name="P" type="string" value="1"/>
+			<param name="D" type="string" value="0"/>
 		</node>
 		<node name="angularVelocityPID" pkg="lab2" type="angularVelocityPID.py" output="screen" >
-			<param name="targetRate" type="string" value="0"/>
+			<param name="targetRate" type="string" value="10"/>
 			<param name="P" type="string" value=".007"/>
 			<param name="D" type="string" value="0.04"/>
 		</node>

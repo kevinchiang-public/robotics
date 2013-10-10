@@ -8,12 +8,12 @@ from sensor_msgs.msg import Joy
 from lab2.msg import Movement
 import math
 
-DEBUG = False
+DEBUG = True
 xDepressed = False
 bDepressed = False
-#targetRate= float(rospy.get_param('~targetRate','0'))
-targetRate=0
-first = True
+#targetRate= float(rospy.get_param('~targetRate','10'))
+targetRate=10
+first = False
 previousError=0
 
 def printD(string):
@@ -24,12 +24,12 @@ def printD(string):
 def listener():
 	rospy.init_node('AngularVelocityPID')
 	rospy.Subscriber('/hovercraft/Gyro',Gyro,gyroCallback)
-	rospy.Subscriber('/anglePositionOut',Movement,positionCallback)
+	rospy.Subscriber('/angularPositionOut',Movement,positionCallback)
 	rospy.spin()
 
 def positionCallback(move):
 	global targetRate
-	targetRate = move.theta
+	#targetRate = move.theta
 
 def gyroCallback(gyro):
 	global targetRate
