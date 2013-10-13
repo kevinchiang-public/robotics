@@ -17,7 +17,7 @@ class ThrusterMapping():
     #def arbitratorCallback(thrust):
         #self._thruster = thrust
 
-    def fireThrusters(move):
+    def fireThrusters(self, move):
         theta = move.theta
         x = move.x
         y = move.y
