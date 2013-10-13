@@ -8,11 +8,11 @@ import math
 
 class AngleIntegrator():
     def __init__self(self):
-        rospy.init_node('JoystickAngleIntegrator')
-        rospy.Subscriber('/joyOut', MovementRaw, callback)
+        self.debug = rospy.get_param('~debug', '0')
+        rospy.init_node('AngleIntegrator')
+        rospy.Subscriber('/joyOut', MovementRaw, self.interpretJoystick)
 
-
-def callback(move):
+    def interpretJoystick(move):
         publisher = rospy.Publisher('/angleIntegratorOut',Movement)
         xAxisL = move.xL
         yAxisL = move.yL
@@ -34,8 +34,7 @@ def callback(move):
             rotationalAngle = math.fabs(rotationalAngle)
 
         #Prints all information related to the integrator if need be
-        debug = rospy.get_param('~debug', '0')
-        if (debug == 1):
+        if (self.debug == 1):
             print("xL: %6.2f  yL: %6.2f  Angle: %6.2f  Magnitude:%6.2f  "
                   "xR: %6.2f  yR: %6.2f" % (xAxisL,yAxisL,rotationalAngle,
                                             magnitude,xAxisR,yAxisR))
