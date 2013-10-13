@@ -8,8 +8,8 @@ import math
 
 class ThrusterMapping():
     def __init__self(self):
-        self._thruster = thruster()
-        debug = rospy.get_param('~debug', '0')
+        self.thrust = thruster()
+        self.debug = rospy.get_param('~debug', '0')
         rospy.init_node('thrusterMapping')
         rospy.Subscriber("/thrusterMapping",Movement,self.fireThrusters)
         #rospy.Subscriber("/arbitratorThruster",Thruster,arbitratorCallback)
@@ -24,21 +24,21 @@ class ThrusterMapping():
 
         if theta >0:
             #Turn on 4
-            thrust.thruster5 = 0
-            thrust.thruster4 = math.fabs(theta)
-            thrust.thruster4 = thrust.thruster4 if thrust.thruster4 < .5 else .5
+            self.thrust.thruster5 = 0
+            self.thrust.thruster4 = math.fabs(theta)
+            self.thrust.thruster4 = thrust.thruster4 if thrust.thruster4 < .5 else .5
         elif theta<0:
             #Turn on 5
-            thrust.thruster4 = 0
-            thrust.thruster5 = math.fabs(theta)
-            thrust.thruster5 = thrust.thruster5 if thrust.thruster5 < .5 else .5
+            self.thrust.thruster4 = 0
+            self.thrust.thruster5 = math.fabs(theta)
+            self.thrust.thruster5 = thrust.thruster5 if thrust.thruster5 < .5 else .5
 
-        if (debug == 1):
+        if (self.debug == 1):
             print ("Theta:%6.2f  Thruster 4:%6.2f  Thruster 5:%6.2f" %
-                   (theta,thrust.thruster4,thrust.thruster5))
+                   (theta, self.thrust.thruster4, self.thrust.thruster5))
 
         pub = rospy.Publisher('/hovercraft/Thruster', Thruster)
-        pub.publish(thrust)
+        pub.publish(self.thrust)
 
 #Entry point for ROS
 if __name__ == '__main__':
