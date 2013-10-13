@@ -7,12 +7,11 @@ from lab2.msg import MovementRaw, Movement
 import math
 
 class AngleIntegrator():
-    def __init__self(self):
+    def __init__(self):
         self.debug = rospy.get_param('~debug', '0')
-        rospy.init_node('AngleIntegrator')
         rospy.Subscriber('/joyOut', MovementRaw, self.interpretJoystick)
 
-    def interpretJoystick(move):
+    def interpretJoystick(self,move):
         publisher = rospy.Publisher('/angleIntegratorOut',Movement)
         xAxisL = move.xL
         yAxisL = move.yL

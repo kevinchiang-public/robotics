@@ -28,12 +28,65 @@ class Arbitrator():
         elif (switch.state == 2):
             self.state = 'Reactive'
 
+<<<<<<< HEAD
         publisher = rospy.Publisher('/arbitratorOut', Movement)
         if not liftOn:
             self.liftOn = true
             publisher.publish(Movement(0,0,0))
         elif liftOn:
             publisher.publish(self.movement)
+=======
+	state = switcher.state
+	liftOn  = switcher.lift
+	'''
+	publisher = rospy.Publisher('/arbitratorThruster',Thruster)
+	thrust = Thruster()
+	if not liftOn:
+		offPub = rospy.Publisher('/hovercraft/Thruster',Thruster)
+		thrust.lift = 0 
+		thrust.thruster1=0
+		thrust.thruster2=0
+		thrust.thruster3=0
+		thrust.thruster4=0
+		thrust.thruster5=0
+		offPub.publish(thrust)
+	elif liftOn:
+		thrust.lift = .35	
+		thrust.thruster1=0
+		thrust.thruster2=0
+		thrust.thruster3=0
+		thrust.thruster4=0
+		thrust.thruster5=0
+	publisher.publish(thrust)
+	'''
+	'''
+	if liftOn:
+		if state == JOYSTICK:
+			pass #TODO implement what happens during joystick control
+		elif state == TRIANGLE:
+			pass #TODO see above
+		elif state == REACTIVE:
+			pass #TODO see above
+	'''
+	
+def manualCallback(move):
+	global state
+	publisher = rospy.Publisher('/arbitratorOut',Movement)
+	JOYSTICK = 0
+	TRIANGLE = 1
+	REACTIVE = 2
+	if liftOn and state==JOYSTICK:
+		publisher.publish(move)
+	elif not liftOn:
+		off = Movement()
+		off.theta = 0
+		off.x=0
+		off.y=0
+		publisher.publish(off)
+		
+def triangleCallback():
+	pass #TODO implement this.  The logic should be similar to manualCallback
+>>>>>>> f206ec4eb970de984e84563cc89f6ad546108952
 
     def manualJoyControl(self, move):
         if self.state is 'Manual':
