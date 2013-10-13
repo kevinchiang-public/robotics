@@ -8,12 +8,13 @@ from sensor_msgs.msg import Joy
 from lab2.msg import Movement
 import math
 
-DEBUG = True
+DEBUG = False
 xDepressed = False
 bDepressed = False
 targetAngle= 0
 first = True
 previousError=0
+lift=0
 
 def printD(string):
 	global DEBUG
@@ -29,13 +30,16 @@ def listener():
 
 def arbitratorCallback(move):
 	global targetAngle
+	global lift
 	targetAngle = move.theta
+	lift=move.lift
 
 def gyroCallback(gyro):
 	global targetAngle
 	global previousError
 	global first
 	global DEBUG
+	global lift
 	pub = rospy.Publisher('/angularPositionOut',Movement)
 	move = Movement()
 	if first:
@@ -54,7 +58,7 @@ def gyroCallback(gyro):
 		move.theta = 0
 	move.x=0
 	move.y=0
-
+	move.lift=lift
 	pub.publish(move)
 
 

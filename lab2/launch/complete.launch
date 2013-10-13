@@ -18,7 +18,10 @@
 		<node name="joystickControls" pkg="lab2" type="joystick.py" output="screen" />
 		<node name="angleIntegrator" pkg="lab2" type="angleIntegrator.py" output="screen" />
 	</group>
-	<node name="arbitrator" pkg="lab2" type="arbitrator.py" output="screen" />
+	<node name="arbitrator" pkg="lab2" type="arbitrator.py" output="screen" >
+		<param name="debug" type="string" value="1" />
+	</node>
+	
 	<group>
 		<node name="angularPositionPID" pkg="lab2" type="angularPositionPID.py" output="screen" >
 			<param name="P" type="string" value="1"/>
@@ -31,7 +34,7 @@
 		</node>
 	</group>
 	<node name="thrusterMapping" pkg="lab2" type="thrusterMapping.py" output="screen" >
-		<param name="debug" type="string" value="1" />
+		<param name="debug" type="string" value="0" />
 	</node>
 </launch>
 

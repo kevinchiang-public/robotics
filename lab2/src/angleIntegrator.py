@@ -43,6 +43,7 @@ class AngleIntegrator():
         moveOut.theta = rotationalAngle
         moveOut.x = xAxisR
         moveOut.y = yAxisR
+	moveOut.lift=0
         publisher.publish(moveOut)
 
 if __name__ == '__main__':

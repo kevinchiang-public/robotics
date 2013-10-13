@@ -13,7 +13,7 @@ class ThrusterMapping():
         self.debug = float(rospy.get_param('~debug', '0'))
 	print "Thruster Mapping Initialized"
         rospy.Subscriber("/thrusterMapping",Movement,self.fireThrusters)
-        rospy.Subscriber("/arbitratorThruster",Thruster,self.arbitratorCallback)
+        #No longer used::rospy.Subscriber("/arbitratorThruster",Thruster,self.arbitratorCallback)
 	rospy.spin()
 
     def arbitratorCallback(self,thrust):
@@ -23,7 +23,7 @@ class ThrusterMapping():
         theta = move.theta
         x = move.x
         y = move.y
-
+	self.thrust.lift=move.lift
 	#Translation
 	coef=0.5
 	tr1x=0

@@ -7,13 +7,14 @@ import struct
 import std_msgs.msg
 
 class Movement(genpy.Message):
-  _md5sum = "ef5b75922d4006db35a633601196408f"
+  _md5sum = "8d8a85317ed769830e7fab9242e1de6a"
   _type = "lab2/Movement"
   _has_header = True #flag to mark the presence of a Header object
   _full_text = """Header header
 float32 theta  #Angular Position or Thrust
 float32 x	#Translational x vector component
 float32 y	#Translational y vector component
+float32 lift	#liftPower
 
 ================================================================================
 MSG: std_msgs/Header
@@ -34,8 +35,8 @@ time stamp
 string frame_id
 
 """
-  __slots__ = ['header','theta','x','y']
-  _slot_types = ['std_msgs/Header','float32','float32','float32']
+  __slots__ = ['header','theta','x','y','lift']
+  _slot_types = ['std_msgs/Header','float32','float32','float32','float32']
 
   def __init__(self, *args, **kwds):
     """
@@ -45,7 +46,7 @@ string frame_id
     changes.  You cannot mix in-order arguments and keyword arguments.
 
     The available fields are:
-       header,theta,x,y
+       header,theta,x,y,lift
 
     :param args: complete set of field values, in .msg order
     :param kwds: use keyword arguments corresponding to message field names
@@ -62,11 +63,14 @@ string frame_id
         self.x = 0.
       if self.y is None:
         self.y = 0.
+      if self.lift is None:
+        self.lift = 0.
     else:
       self.header = std_msgs.msg.Header()
       self.theta = 0.
       self.x = 0.
       self.y = 0.
+      self.lift = 0.
 
   def _get_types(self):
     """
@@ -89,7 +93,7 @@ string frame_id
         length = len(_x)
       buff.write(struct.pack('<I%ss'%length, length, _x))
       _x = self
-      buff.write(_struct_3f.pack(_x.theta, _x.x, _x.y))
+      buff.write(_struct_4f.pack(_x.theta, _x.x, _x.y, _x.lift))
     except struct.error as se: self._check_types(se)
     except TypeError as te: self._check_types(te)
 
@@ -117,8 +121,8 @@ string frame_id
         self.header.frame_id = str[start:end]
       _x = self
       start = end
-      end += 12
-      (_x.theta, _x.x, _x.y,) = _struct_3f.unpack(str[start:end])
+      end += 16
+      (_x.theta, _x.x, _x.y, _x.lift,) = _struct_4f.unpack(str[start:end])
       return self
     except struct.error as e:
       raise genpy.DeserializationError(e) #most likely buffer underfill
@@ -140,7 +144,7 @@ string frame_id
         length = len(_x)
       buff.write(struct.pack('<I%ss'%length, length, _x))
       _x = self
-      buff.write(_struct_3f.pack(_x.theta, _x.x, _x.y))
+      buff.write(_struct_4f.pack(_x.theta, _x.x, _x.y, _x.lift))
     except struct.error as se: self._check_types(se)
     except TypeError as te: self._check_types(te)
 
@@ -169,12 +173,12 @@ string frame_id
         self.header.frame_id = str[start:end]
       _x = self
       start = end
-      end += 12
-      (_x.theta, _x.x, _x.y,) = _struct_3f.unpack(str[start:end])
+      end += 16
+      (_x.theta, _x.x, _x.y, _x.lift,) = _struct_4f.unpack(str[start:end])
       return self
     except struct.error as e:
       raise genpy.DeserializationError(e) #most likely buffer underfill
 
 _struct_I = genpy.struct_I
+_struct_4f = struct.Struct("<4f")
 _struct_3I = struct.Struct("<3I")
-_struct_3f = struct.Struct("<3f")

@@ -8,14 +8,14 @@ from sensor_msgs.msg import Joy
 from lab2.msg import Movement
 import math
 
-DEBUG = True
+DEBUG = rospy.get_param('~debug',False)
 xDepressed = False
 bDepressed = False
 #targetRate= float(rospy.get_param('~targetRate','10'))
 targetRate=0
 first = False
 previousError=0
-
+lift=0
 def printD(string):
 	global DEBUG
 	if DEBUG:
@@ -29,13 +29,15 @@ def listener():
 
 def positionCallback(move):
 	global targetRate
+	global lift
 	targetRate = move.theta
-
+	lift = move.lift
 def gyroCallback(gyro):
 	global targetRate
 	global previousError
 	global DEBUG
 	global first
+	global lift
 	pub = rospy.Publisher('/thrusterMapping',Movement)
 	move = Movement()
 	if first:
@@ -54,6 +56,7 @@ def gyroCallback(gyro):
 		move.theta = 0
 	move.x=0
 	move.y=0
+	move.lift=lift
 	pub.publish(move)
 
 if __name__ == '__main__':

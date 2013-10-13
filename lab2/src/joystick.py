@@ -120,17 +120,23 @@ def callback(joyData):
 	
 
 	#Publish to AngleIntegrator
-	xbox.angleIntegratorPub.publish(xbox.movement)
+	#xbox.angleIntegratorPub.publish(xbox.movement)
 
 	#Publish to Arbitrator
 	xbox.arbitratorPub.publish(xbox.switcher)
 		
+def timerCallback(event):
+	#I'm not sure what to do with event
+	global xbox
+	xbox.angleIntegratorPub.publish(xbox.movement)
+
 def listener():
 	rospy.init_node('joystick')
 	printD("Joystick Spinning")
 	global xbox
 	xbox = XboxTeleop()
 	rospy.Subscriber('/joy',Joy, callback)
+	rospy.Timer(rospy.Duration(.1), timerCallback)
 	rospy.spin()
 
 if __name__ == '__main__':
