@@ -8,7 +8,7 @@ import math
 
 class AngleIntegrator():
     def __init__(self):
-        self.debug = rospy.get_param('~debug', '0')
+        self.debug = float(rospy.get_param('~debug', '0'))
         rospy.Subscriber('/joyOut', MovementRaw, self.interpretJoystick)
 
     def interpretJoystick(self,move):
@@ -43,7 +43,6 @@ class AngleIntegrator():
         moveOut.theta = rotationalAngle
         moveOut.x = xAxisR
         moveOut.y = yAxisR
-	moveOut.lift=0
         publisher.publish(moveOut)
 
 if __name__ == '__main__':

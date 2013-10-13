@@ -13,9 +13,8 @@ xDepressed = False
 bDepressed = False
 #targetRate= float(rospy.get_param('~targetRate','10'))
 targetRate=0
-first = False
 previousError=0
-lift=0
+movePass=Movement()
 def printD(string):
 	global DEBUG
 	if DEBUG:
@@ -29,20 +28,17 @@ def listener():
 
 def positionCallback(move):
 	global targetRate
-	global lift
+	global movePass
+	movePass = move
 	targetRate = move.theta
-	lift = move.lift
+
 def gyroCallback(gyro):
 	global targetRate
 	global previousError
 	global DEBUG
-	global first
-	global lift
+	global movePass
 	pub = rospy.Publisher('/thrusterMapping',Movement)
 	move = Movement()
-	if first:
-		targetRate = gyro.rate
-		first = False
 	P = float(rospy.get_param('~P', '.01'))
 	D = float(rospy.get_param('~D', '.01'))
 	printD(P)
@@ -54,9 +50,8 @@ def gyroCallback(gyro):
 	move.theta = r #if math.fabs(targetAngle - gyro.angle) > 2 else 0
 	if math.fabs(targetRate - gyro.rate) < 3:
 		move.theta = 0
-	move.x=0
-	move.y=0
-	move.lift=lift
+	move.x=movePass.x
+	move.y=movePass.y
 	pub.publish(move)
 
 if __name__ == '__main__':

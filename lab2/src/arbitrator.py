@@ -36,22 +36,20 @@ class Arbitrator():
 	    tempMove.theta=0
 	    tempMove.x=0
 	    tempMove.y=0
-	    tempMove.lift=0
 	    if self.debug == 1: 
-	        print('In arbitrator: Lift:%3.2f  X:%3.2f  Y:%3.2f  Theta:%3.2f  State:%10s' % 
-		     (tempMove.lift, tempMove.x, tempMove.y, tempMove.theta, self.state))
+	        print('In arbitrator: X:%3.2f  Y:%3.2f  Theta:%3.2f  State:%10s' %
+		     (tempMove.x, tempMove.y, tempMove.theta, self.state))
             publisher.publish(tempMove)
         elif self.liftOn:
 	    if self.debug == 1:
-	        print('In arbitrator: Lift:%3.2f  X:%3.2f  Y:%3.2f  Theta:%3.2f  State:%10s' % 
-		     (tempMove.lift, tempMove.x, tempMove.y, tempMove.theta, self.state))
+	        print('In arbitrator: X:%3.2f  Y:%3.2f  Theta:%3.2f  State:%10s' %
+		     (tempMove.x, tempMove.y, tempMove.theta, self.state))
 	  
             publisher.publish(self.movement)
 
     def manualJoyControl(self, move):
         if self.state is 'Manual':
             self.movement = move
-	    self.movement.lift=.3
 
     def triangleCallback(self, move):
         if self.state is 'Triangle':

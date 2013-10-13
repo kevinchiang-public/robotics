@@ -8,13 +8,13 @@ from sensor_msgs.msg import Joy
 from lab2.msg import Movement
 import math
 
-DEBUG = False
+DEBUG = True
 xDepressed = False
 bDepressed = False
 targetAngle= 0
 first = True
 previousError=0
-lift=0
+movement= Movement()
 
 def printD(string):
 	global DEBUG
@@ -25,21 +25,22 @@ def listener():
 	rospy.init_node('AngularPositionPID')
 	rospy.Subscriber('/arbitratorOut',Movement,arbitratorCallback)
 	rospy.Subscriber('/hovercraft/Gyro',Gyro,gyroCallback)
-	rospy.Subscriber('/joy',Joy,joyCallback)
+	#rospy.Subscriber('/joy',Joy,joyCallback)
 	rospy.spin()
 
 def arbitratorCallback(move):
+	global movement
 	global targetAngle
-	global lift
 	targetAngle = move.theta
-	lift=move.lift
+	movement = move
+	print ("Arbitrator Callback: TargetAngle=%6.2f"%(targetAngle) )
 
 def gyroCallback(gyro):
 	global targetAngle
 	global previousError
 	global first
 	global DEBUG
-	global lift
+	global movement
 	pub = rospy.Publisher('/angularPositionOut',Movement)
 	move = Movement()
 	if first:
@@ -56,12 +57,11 @@ def gyroCallback(gyro):
 	move.theta = r #if math.fabs(targetAngle - gyro.angle) > 2 else 0
 	if math.fabs(targetAngle - gyro.angle) < 3:
 		move.theta = 0
-	move.x=0
-	move.y=0
-	move.lift=lift
+	move.x=movement.x
+	move.y=movement.y
 	pub.publish(move)
 
-
+'''
 def joyCallback(joy):
 	global xDepressed
 	global bDepressed
@@ -83,6 +83,6 @@ def joyCallback(joy):
 		bDepressed = False
 	if xButton == 0 and xDepressed:
 		xDepressed = False
-
+'''
 if __name__ == '__main__':
 	listener() 
