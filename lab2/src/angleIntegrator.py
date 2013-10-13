@@ -6,10 +6,11 @@ from sensor_msgs.msg import Joy
 from lab2.msg import MovementRaw, Movement
 import math
 
-def listener():
+class AngleIntegrator():
+    def __init__self(self):
         rospy.init_node('JoystickAngleIntegrator')
         rospy.Subscriber('/joyOut', MovementRaw, callback)
-        rospy.spin()
+
 
 def callback(move):
         publisher = rospy.Publisher('/angleIntegratorOut',Movement)
@@ -47,4 +48,8 @@ def callback(move):
         publisher.publish(moveOut)
 
 if __name__ == '__main__':
-        listener()
+    rospy.init_node('AngleIntegrator')
+    try:
+        ne = AngleIntegrator()
+        rospy.spin()
+    except rospy.ROSInterruptException: pass
