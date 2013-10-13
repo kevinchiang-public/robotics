@@ -12,7 +12,7 @@ DEBUG = True
 xDepressed = False
 bDepressed = False
 #targetRate= float(rospy.get_param('~targetRate','10'))
-targetRate=10
+targetRate=0
 first = False
 previousError=0
 
@@ -29,7 +29,7 @@ def listener():
 
 def positionCallback(move):
 	global targetRate
-	#targetRate = move.theta
+	targetRate = move.theta
 
 def gyroCallback(gyro):
 	global targetRate

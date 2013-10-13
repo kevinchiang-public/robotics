@@ -16,7 +16,7 @@
 		   <param name="deadzone" value="0.12" />
 		</node>
 		<node name="joystickControls" pkg="lab2" type="joystick.py" output="screen" />
-		<!--node name="angleIntegrator" pkg="lab2" type="angleIntegrator.py" output="screen" /-->
+		<node name="angleIntegrator" pkg="lab2" type="angleIntegrator.py" output="screen" />
 	</group>
 	<node name="arbitrator" pkg="lab2" type="arbitrator.py" output="screen" />
 	<group>
@@ -30,6 +30,8 @@
 			<param name="D" type="string" value="0.04"/>
 		</node>
 	</group>
-	<node name="thrusterMapping" pkg="lab2" type="thrusterMapping.py" output="screen" />
+	<node name="thrusterMapping" pkg="lab2" type="thrusterMapping.py" output="screen" >
+		<param name="debug" type="string" value="1" />
+	</node>
 </launch>
 

@@ -38,9 +38,10 @@ def callback(switcher):
 
 	state = switcher.state
 	liftOn  = switcher.lift
+	'''
 	publisher = rospy.Publisher('/arbitratorThruster',Thruster)
 	thrust = Thruster()
-	if not liftOn and thrustersOn(currentThrust):
+	if not liftOn:
 		offPub = rospy.Publisher('/hovercraft/Thruster',Thruster)
 		thrust.lift = 0 
 		thrust.thruster1=0
@@ -50,13 +51,14 @@ def callback(switcher):
 		thrust.thruster5=0
 		offPub.publish(thrust)
 	elif liftOn:
-		thrust.lift = .3	
+		thrust.lift = .35	
 		thrust.thruster1=0
 		thrust.thruster2=0
 		thrust.thruster3=0
 		thrust.thruster4=0
 		thrust.thruster5=0
 	publisher.publish(thrust)
+	'''
 	'''
 	if liftOn:
 		if state == JOYSTICK:
@@ -70,8 +72,17 @@ def callback(switcher):
 def manualCallback(move):
 	global state
 	publisher = rospy.Publisher('/arbitratorOut',Movement)
+	JOYSTICK = 0
+	TRIANGLE = 1
+	REACTIVE = 2
 	if liftOn and state==JOYSTICK:
 		publisher.publish(move)
+	elif not liftOn:
+		off = Movement()
+		off.theta = 0
+		off.x=0
+		off.y=0
+		publisher.publish(off)
 		
 def triangleCallback():
 	pass #TODO implement this.  The logic should be similar to manualCallback
