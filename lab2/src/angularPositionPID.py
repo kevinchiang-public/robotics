@@ -17,26 +17,26 @@ class AngularPositionPID():
         self.previousError = 0
         self.movement = Movement()
         self.first = True
-        rospy.init_node('AngularPositionPID')
+
         rospy.Subscriber('/arbitratorOut', Movement, self.arbitratorCallback)
         rospy.Subscriber('/hovercraft/Gyro', Gyro, self.gyroCallback)
 
     def debugPrint(self, string):
-        if self.debug == 1:
+        if (self.debug == 1):
             print string
 
     def arbitratorCallback(self, move):
         self.movement = move
 
     def gyroCallback(self, gyro):
-        targetAngle = self.movement.theta
         #Initialize the target angle to the angle of the
         #hovercraft when it first turns on (prevents
         #spinning when the craft is launched)
         if self.first:
-            self.targetAngle = gyro.angle
+            self.movement.theta = gyro.angle
             self.first = False
 
+        targetAngle = self.movement.theta
         #Proportional and Derivative computations
         r = self.P*(targetAngle - gyro.angle)
         r = r + self.D*((targetAngle - gyro.angle)-self.previousError)
@@ -45,20 +45,21 @@ class AngularPositionPID():
         #Deadband
         if math.fabs(targetAngle - gyro.angle) < 3:
             r = 0
-
-        self.printDebug("PosPID: TargetAngle:{%6.2f}  GyroAngle:{%6.2f}  "
-                        "Diff: {%6.2f}}".format(targetAngle,
+	print('P: ' + str(self.P) + '  D:' + str(self.D) + '  debug: ' + str(self.debug))
+        self.debugPrint("PosPID: TargetAngle:{:6.2f}  GyroAngle:{:6.2f}  "
+                        "Diff: {:6.2f}".format(targetAngle,
                                                 gyro.angle, self.previousError))
 
         #Ship message off to VelocityPID
         move = Movement()
         pub = rospy.Publisher('/angularPositionOut',Movement)
         move.theta = r
-        move.x = movement.x
-        move.y = movement.y
+        move.x = self.movement.x
+        move.y = self.movement.y
         pub.publish(move)
 
 if __name__ == '__main__':
+    rospy.init_node('AngularPositionPID')
     try:
         ne = AngularPositionPID()
         rospy.spin()

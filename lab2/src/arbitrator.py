@@ -14,14 +14,13 @@ class Arbitrator():
         self.movement = Movement()
         self.liftOn = False
         self.state = 'Manual'
-        rospy.init_node('Arbitrator')
+
         rospy.Subscriber('/joyArbitrator', Switcher, self.joyCallback)
         rospy.Subscriber('/angleIntegratorOut', Movement, self.manualJoyControl)
         #rospy.Subscriber('/triangleOut', Movement?, triangleCallback)
         #rospy.Subscriber('/reactiveOut', Movement?, reactiveCallback)
 
     def joyCallback(self, switch):
-	print self.debug
 	self.liftOn = switch.lift
         if (switch.state == 0):
             self.state = 'Manual'
@@ -29,7 +28,6 @@ class Arbitrator():
             self.state = 'Triangle'
         elif (switch.state == 2):
             self.state = 'Reactive'
-
         publisher = rospy.Publisher('/arbitratorOut', Movement)
         if not self.liftOn:
 	    tempMove=Movement()
@@ -37,13 +35,13 @@ class Arbitrator():
 	    tempMove.x=0
 	    tempMove.y=0
 	    if self.debug == 1: 
-	        print('In arbitrator: X:%3.2f  Y:%3.2f  Theta:%3.2f  State:%10s' %
+	    	print('In arbitrator: X:%3.2f  Y:%3.2f  Theta:%3.2f  State:%10s' %
 		     (tempMove.x, tempMove.y, tempMove.theta, self.state))
             publisher.publish(tempMove)
         elif self.liftOn:
 	    if self.debug == 1:
-	        print('In arbitrator: X:%3.2f  Y:%3.2f  Theta:%3.2f  State:%10s' %
-		     (tempMove.x, tempMove.y, tempMove.theta, self.state))
+	    	print('In arbitrator: X:%3.2f  Y:%3.2f  Theta:%3.2f  State:%10s' %
+		     (self.movement.x, self.movement.y, self.movement.theta, self.state))
 	  
             publisher.publish(self.movement)
 
@@ -60,6 +58,7 @@ class Arbitrator():
             self.movement = move
 
 if __name__ == '__main__':
+    rospy.init_node('Arbitrator')
     try:
         ne = Arbitrator()
         rospy.spin()

@@ -16,7 +16,7 @@ class AngularVelocityPID():
 
         self.previousError = 0
         self.movePass = Movement()
-        rospy.init_node('AngularVelocityPID')
+
         rospy.Subscriber('/hovercraft/Gyro', Gyro, self.gyroCallback)
         rospy.Subscriber('/angularPositionOut', Movement, self.positionPIDCallback)
 
@@ -29,15 +29,11 @@ class AngularVelocityPID():
 
     def gyroCallback(self, gyro):
         targetRate = self.movePass.theta
-
+	print('P: ' + str(self.P) + '  D:' + str(self.D) + '  debug: ' + str(self.debug))
         #Proportional and Derivative computations
         r = self.P*(targetRate - gyro.rate)
         r = r + self.D*((targetRate - gyro.rate)-self.previousError)
         self.previousError = targetRate - gyro.rate
-
-        #Deadband
-        if math.fabs(targetRate - gyro.rate) < 3:
-            r = 0
 
         self.debugPrint('VelPID: TargetRate:{:5.3f}  Gyro Rate:{:5.3f}  '
                         'RateDiff:{:5.3f}'.format(targetRate, gyro.rate,
@@ -46,11 +42,12 @@ class AngularVelocityPID():
         pub = rospy.Publisher('/thrusterMapping',Movement)
         move = Movement()
         move.theta = r
-        move.x = movePass.x
-        move.y = movePass.y
+        move.x = self.movePass.x
+        move.y = self.movePass.y
         pub.publish(move)
 
 if __name__ == '__main__':
+    rospy.init_node('AngularVelocityPID')
     try:
         ne = AngularVelocityPID()
         rospy.spin()

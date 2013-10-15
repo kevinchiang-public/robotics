@@ -25,7 +25,7 @@ class ThrusterMapping():
         y = move.y
 
         #initate lift
-        self.thrust.lift=.35
+        self.thrust.lift=.3
 
         #Translation
         coef=0.5
@@ -50,7 +50,7 @@ class ThrusterMapping():
         self.thrust.thruster2=tr2x+tr2y
         self.thrust.thruster3=tr3x+tr3y
 
-
+	print('Theta in thruster: ' + str(theta))
         if theta >0:
             #Turn on 4
             self.thrust.thruster5 = 0
