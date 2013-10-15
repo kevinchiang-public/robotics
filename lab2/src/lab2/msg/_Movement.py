@@ -7,13 +7,14 @@ import struct
 import std_msgs.msg
 
 class Movement(genpy.Message):
-  _md5sum = "191c0553ae7db39309b5071877dccd86"
+  _md5sum = "cd152c90d37a0c74b1c573deee0d4d51"
   _type = "lab2/Movement"
   _has_header = True #flag to mark the presence of a Header object
   _full_text = """Header header
 float32 theta   #Angular Position or Thrust
 float32 x	#Translational x vector component
 float32 y	#Translational y vector component
+float32 mag     #The magnitude of the left joystick w.r.t. x and y component
 bool    lift	#Whether the lift is on or off
 
 ================================================================================
@@ -35,8 +36,8 @@ time stamp
 string frame_id
 
 """
-  __slots__ = ['header','theta','x','y','lift']
-  _slot_types = ['std_msgs/Header','float32','float32','float32','bool']
+  __slots__ = ['header','theta','x','y','mag','lift']
+  _slot_types = ['std_msgs/Header','float32','float32','float32','float32','bool']
 
   def __init__(self, *args, **kwds):
     """
@@ -46,7 +47,7 @@ string frame_id
     changes.  You cannot mix in-order arguments and keyword arguments.
 
     The available fields are:
-       header,theta,x,y,lift
+       header,theta,x,y,mag,lift
 
     :param args: complete set of field values, in .msg order
     :param kwds: use keyword arguments corresponding to message field names
@@ -63,6 +64,8 @@ string frame_id
         self.x = 0.
       if self.y is None:
         self.y = 0.
+      if self.mag is None:
+        self.mag = 0.
       if self.lift is None:
         self.lift = False
     else:
@@ -70,6 +73,7 @@ string frame_id
       self.theta = 0.
       self.x = 0.
       self.y = 0.
+      self.mag = 0.
       self.lift = False
 
   def _get_types(self):
@@ -93,7 +97,7 @@ string frame_id
         length = len(_x)
       buff.write(struct.pack('<I%ss'%length, length, _x))
       _x = self
-      buff.write(_struct_3fB.pack(_x.theta, _x.x, _x.y, _x.lift))
+      buff.write(_struct_4fB.pack(_x.theta, _x.x, _x.y, _x.mag, _x.lift))
     except struct.error as se: self._check_types(se)
     except TypeError as te: self._check_types(te)
 
@@ -121,8 +125,8 @@ string frame_id
         self.header.frame_id = str[start:end]
       _x = self
       start = end
-      end += 13
-      (_x.theta, _x.x, _x.y, _x.lift,) = _struct_3fB.unpack(str[start:end])
+      end += 17
+      (_x.theta, _x.x, _x.y, _x.mag, _x.lift,) = _struct_4fB.unpack(str[start:end])
       self.lift = bool(self.lift)
       return self
     except struct.error as e:
@@ -145,7 +149,7 @@ string frame_id
         length = len(_x)
       buff.write(struct.pack('<I%ss'%length, length, _x))
       _x = self
-      buff.write(_struct_3fB.pack(_x.theta, _x.x, _x.y, _x.lift))
+      buff.write(_struct_4fB.pack(_x.theta, _x.x, _x.y, _x.mag, _x.lift))
     except struct.error as se: self._check_types(se)
     except TypeError as te: self._check_types(te)
 
@@ -174,8 +178,8 @@ string frame_id
         self.header.frame_id = str[start:end]
       _x = self
       start = end
-      end += 13
-      (_x.theta, _x.x, _x.y, _x.lift,) = _struct_3fB.unpack(str[start:end])
+      end += 17
+      (_x.theta, _x.x, _x.y, _x.mag, _x.lift,) = _struct_4fB.unpack(str[start:end])
       self.lift = bool(self.lift)
       return self
     except struct.error as e:
@@ -183,4 +187,4 @@ string frame_id
 
 _struct_I = genpy.struct_I
 _struct_3I = struct.Struct("<3I")
-_struct_3fB = struct.Struct("<3fB")
+_struct_4fB = struct.Struct("<4fB")
