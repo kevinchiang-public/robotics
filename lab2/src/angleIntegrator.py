@@ -9,6 +9,7 @@ import math
 class AngleIntegrator():
     def __init__(self):
         self.debug = float(rospy.get_param('~debug', '0'))
+        self.previousAngle = 0
         rospy.Subscriber('/joyOut', MovementRaw, self.interpretJoystick)
 
     def interpretJoystick(self,move):
@@ -31,6 +32,9 @@ class AngleIntegrator():
             if (rotationalAngle > 0):
                 rotationalAngle = rotationalAngle - 360
             rotationalAngle = math.fabs(rotationalAngle)
+            self.previousAngle = rotationalAngle
+        else:  #Maintain current heading if the joystick is let go of
+            rotationalAngle = self.previousAngle
 
         #Prints all information related to the integrator if need be
         if (self.debug == 1):
