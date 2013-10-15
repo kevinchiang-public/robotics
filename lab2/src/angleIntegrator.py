@@ -17,7 +17,6 @@ class AngleIntegrator():
         #Used to determine whether to use input from joy or +- 90 degrees from x/b
         #Note: x/b adds to rotation starting at 0.  Doesn't add to current angle.
         self.useJoystick = False
-        self.buttonTargetAngle = 0
 
         rospy.Subscriber('/joyOut', MovementRaw, self.interpretJoystick)
 
@@ -33,10 +32,10 @@ class AngleIntegrator():
         #X/B button toggle logic
         if bButton == 1 and not self.bButtonDepressed:
             self.bButtonDepressed = True
-            self.buttonTargetAngle += 90
+            self.buttonTargetAngle = self.buttonTargetAngle + 90
         elif xButton == 1 and not self.xButtonDepressed:
             self.xButtonDepressed = True
-            self.buttonTargetAngle += -90
+            self.buttonTargetAngle = self.buttonTargetAngle - 90
         if bButton == 0 and self.bButtonDepressed:
             self.bButtonDepressed = False
         if xButton == 0 and self.xButtonDepressed:
@@ -47,8 +46,6 @@ class AngleIntegrator():
         #Convert it to degrees and make it so that it goes from 0-360 starting
         #at the positive y axis (to match with the front of the hovercraft).
         #Uses extreme deadzone to makesure accidental rotations don't happen.
-        #We may want to incorporate the magnitude later
-        #to control target velocity maybe (as a multiplier, perhaps?)
         magnitudeThreshold = 1
         magnitude = math.sqrt(xAxisL**2 + yAxisL**2)
         rotationalAngle = 0
@@ -69,8 +66,12 @@ class AngleIntegrator():
         moveOut = Movement()
         if magnitude >= magnitudeThreshold:
             moveOut.theta = rotationalAngle
+            moveOut.modType = 'Bound'
         else:
+            magnitude = 1   #Joystick shouldn't have an effect on the angular position
             moveOut.theta = self.buttonTargetAngle
+            moveOut.modType = 'Add'
+
         moveOut.x = xAxisR
         moveOut.y = yAxisR
         moveOut.mag = magnitude

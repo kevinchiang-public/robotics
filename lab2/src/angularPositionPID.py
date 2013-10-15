@@ -15,7 +15,7 @@ class AngularPositionPID():
         self.D = float(rospy.get_param('~D', '.01'))
 
         self.previousError = 0
-
+        self.initialHeading = 0
         #Initialize lift to false to make sure no thrusters fire on start
         self.movement = Movement()
         self.movement.lift = False
@@ -37,15 +37,29 @@ class AngularPositionPID():
         #spinning when the craft is launched)
         if self.first:
             self.movement.theta = gyro.angle
+            self.initialHeading = gyro.angle
             self.first = False
 
         #Check to see if the magnitude is low.  If so,
         #set the target angle to the current angle (so if
-        #the joy isn't depressed anymore, it stops moving)
+        #the joy isn't depressed anymore, it stops moving).
+        #Should be hard coded to 1 for any input that didn't
+        #originate from the left joystick.
         if self.movement.mag < .5:
             self.movement.theta = gyro.angle
 
-        targetAngle = self.movement.theta
+        #Determine how the target angle should be affected given theta
+        #(see Movement.msg for details)
+        if self.movement.modType is 'Add':
+            targetAngle = gyro.angle + self.movement.theta
+        elif self.movement.modType is 'Set':
+            targetAngle = self.movement.theta
+        elif self.movement.modType is 'Bound': #NOTE: CHECK THIS LOGIC
+            #Get degree offset from sensed current angle
+            targetAngle = (gyro.angle % 360) - self.movement.theta
+            #Calculate actual target
+            targetAngle = targetAngle + gyro.angle + self.initialHeading
+
         #Proportional and Derivative computations
         r = self.P*(targetAngle - gyro.angle)
         r = r + self.D*((targetAngle - gyro.angle)-self.previousError)
