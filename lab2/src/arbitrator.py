@@ -45,15 +45,21 @@ class Arbitrator():
 
     def manualJoyControl(self, move):
         if self.state is 'Manual':
+	    liftState = self.movement.lift
             self.movement = move
+	    self.movement.lift = liftState
 
     def triangleCallback(self, move):
         if self.state is 'Triangle':
+	    liftState = self.movement.lift
             self.movement = move
+	    self.movement.lift = liftState
 
     def reactiveCallback(self, move):
         if self.state is 'Reactive':
+	    liftState = self.movement.lift
             self.movement = move
+	    self.movement.lift = liftState
 
 if __name__ == '__main__':
     rospy.init_node('Arbitrator')
