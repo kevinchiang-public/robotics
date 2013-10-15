@@ -61,7 +61,7 @@ class XboxTeleop():
 
             #Cycle left (JOYSTICK, TRIANGLE, REACTIVE)
             self.switchState = 2 if self.switchState - 1 < 0 else self.switchState - 1
-            debugPrint(self, "State is: " +  str(self.stateIndex))
+            self.debugPrint("State is: " +  str(self.switchState))
         elif leftButton == 0 and self.leftButtonDepressed:
             self.leftButtonDepressed = False
 
@@ -73,14 +73,16 @@ class XboxTeleop():
 
             #Cycle right (Joystick ,triangle, reactive)
             self.switchState = 0 if self.switchState + 1 > 2 else self.switchState + 1
+            self.debugPrint("State is: " +  str(self.switchState))
         elif rightButton == 0 and self.rightButtonDepressed:
-            self.rightButtonDepressed = True
+            self.rightButtonDepressed = False
 
         #Translational Control Passthrough
 	self.movement.xR = joyData.axes[3]
 	self.movement.yR = joyData.axes[4]
 	self.movement.xL = joyData.axes[0]
 	self.movement.yL = joyData.axes[1]
+	self.switcher.state=self.switchState
 
     def timerCallback(self, event):
         if self.liftOn: #Don't publish anything if the lift isn't on (prevents thrusters from firing)

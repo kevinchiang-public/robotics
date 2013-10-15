@@ -25,7 +25,7 @@ class ThrusterMapping():
         y = move.y
 
         #initate lift
-        self.thrust.lift=.3
+        self.thrust.lift=.35
 
         #Translation
         coef=0.5
