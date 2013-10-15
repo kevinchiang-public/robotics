@@ -26,9 +26,12 @@ class AngleIntegrator():
         yAxisL = move.yL
         xAxisR = move.xR
         yAxisR = move.yR
+        leftBumperMag = move.bumperL
+        rightBumperMag = move.bumperR
         xButton = move.xButton
         bButton = move.bButton
 
+        #Note: Joystick overrides the bumpers which overrides buttons
         #X/B button toggle logic
         if bButton == 1 and not self.bButtonDepressed:
             self.bButtonDepressed = True
@@ -41,6 +44,12 @@ class AngleIntegrator():
         if xButton == 0 and self.xButtonDepressed:
             self.xButtonDepressed = False
 
+        #Bumper logic (rotational spin using shoulders)
+        #Right overrides left
+        if rightBumperMag != 1:
+            bumperMag = (1 - rightBumperMag)
+        elif leftBumperMag != 1:
+            bumperMag = (1 - leftBumperMag)
 
         #Get the arctangent of xAxis/yAxis to get the angle in radians.
         #Convert it to degrees and make it so that it goes from 0-360 starting
@@ -55,18 +64,16 @@ class AngleIntegrator():
                 rotationalAngle = rotationalAngle - 360
             rotationalAngle = math.fabs(rotationalAngle)
 
-        #Prints all information related to the integrator if need be
-        if (self.debug == 1):
-            print("xL: %6.2f  yL: %6.2f  Angle: %6.2f  Magnitude:%6.2f  "
-                  "xR: %6.2f  yR: %6.2f" % (xAxisL,yAxisL,rotationalAngle,
-                                            magnitude,xAxisR,yAxisR))
-
         #Ships off the message to the arbitrator
         #Joystick overrides button target commands
         moveOut = Movement()
         if magnitude >= magnitudeThreshold:
             moveOut.theta = rotationalAngle
             moveOut.modType = 'Bound'
+        elif rightBumperMag != 1 or leftBumperMag != 1:
+            moveOut.theta = bumperMag
+            moveOut.modType = 'Add'
+            moveOut.magnitude = 1
         else:
             magnitude = 1   #Joystick shouldn't have an effect on the angular position
             moveOut.theta = self.buttonTargetAngle
@@ -76,6 +83,12 @@ class AngleIntegrator():
         moveOut.y = yAxisR
         moveOut.mag = magnitude
         publisher.publish(moveOut)
+
+        #Prints all information related to the integrator if need be
+        if (self.debug == 1):
+            print("xL: %6.2f  yL: %6.2f  Angle: %6.2f  Magnitude:%6.2f  "
+                  "xR: %6.2f  yR: %6.2f" % (xAxisL,yAxisL,rotationalAngle,
+                                            magnitude,xAxisR,yAxisR))
 
 if __name__ == '__main__':
     rospy.init_node('AngleIntegrator')

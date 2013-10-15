@@ -78,6 +78,8 @@ class XboxTeleop():
         self.movement.yR = joyData.axes[4]
         self.movement.xL = joyData.axes[0]
         self.movement.yL = joyData.axes[1]
+        self.movement.bumperL = joyData.axes[2]
+        self.movement.bumperR = joyData.axes[5]
 
         #Note: Flipped on purpose
         self.movement.xButton = joyData.buttons[1]
