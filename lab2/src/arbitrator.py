@@ -39,21 +39,9 @@ class Arbitrator():
         publisher = rospy.Publisher('/arbitratorOut', Movement)
         publisher.publish(self.movement)
 
-        if not self.liftOn:
-            tempMove=Movement()
-            tempMove.theta=0
-            tempMove.x=0
-            tempMove.y=0
-            if self.debug == 1:
-                print('In arbitrator: X:%3.2f  Y:%3.2f  Theta:%3.2f  State:%10s' %
-                     (tempMove.x, tempMove.y, tempMove.theta, self.state))
-            publisher.publish(tempMove)
-        elif self.liftOn:
-            if self.debug == 1:
-                print('In arbitrator: X:%3.2f  Y:%3.2f  Theta:%3.2f  State:%10s' %
-                     (self.movement.x, self.movement.y, self.movement.theta, self.state))
-
-            publisher.publish(self.movement)
+        if self.debug == 1:
+            print('In arbitrator: X:%3.2f  Y:%3.2f  Theta:%3.2f  State:%10s' %
+                  (self.movement.x, self.movement.y, self.movement.theta, self.state))
 
     def manualJoyControl(self, move):
         if self.state is 'Manual':
