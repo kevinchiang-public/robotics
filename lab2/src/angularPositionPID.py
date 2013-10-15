@@ -39,6 +39,12 @@ class AngularPositionPID():
             self.movement.theta = gyro.angle
             self.first = False
 
+        #Check to see if the magnitude is low.  If so,
+        #set the target angle to the current angle (so if
+        #the joy isn't depressed anymore, it stops moving)
+        if self.movement.magnitude < .5:
+            self.movement.theta = gyro.angle
+
         targetAngle = self.movement.theta
         #Proportional and Derivative computations
         r = self.P*(targetAngle - gyro.angle)
