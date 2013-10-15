@@ -78,6 +78,10 @@ class XboxTeleop():
         self.movement.yR = joyData.axes[4]
         self.movement.xL = joyData.axes[0]
         self.movement.yL = joyData.axes[1]
+
+        #Note: Flipped on purpose
+        self.movement.xButton = joyData.buttons[1]
+        self.movement.bButton = joyData.buttons[2]
         self.switcher.state=self.switchState
 
     def timerCallback(self, event):

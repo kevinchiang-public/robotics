@@ -9,6 +9,16 @@ import math
 class AngleIntegrator():
     def __init__(self):
         self.debug = float(rospy.get_param('~debug', '0'))
+
+        #Used to track button toggle states
+        self.xButtonDepressed = False
+        self.bButtonDepressed = False
+
+        #Used to determine whether to use input from joy or +- 90 degrees from x/b
+        #Note: x/b adds to rotation starting at 0.  Doesn't add to current angle.
+        self.useJoystick = False
+        self.buttonTargetAngle = 0
+
         rospy.Subscriber('/joyOut', MovementRaw, self.interpretJoystick)
 
     def interpretJoystick(self,move):
@@ -17,6 +27,21 @@ class AngleIntegrator():
         yAxisL = move.yL
         xAxisR = move.xR
         yAxisR = move.yR
+        xButton = move.xButton
+        bButton = move.bButton
+
+        #X/B button toggle logic
+        if bButton == 1 and not bButtonDepressed:
+                bButtonDepressed = True
+                self.buttonTargetAngle += 90
+        elif xButton == 1 and not xDepressed:
+                xButtonDepressed = True
+                self.buttonTargetAngle += -90
+        if bButton == 0 and bDepressed:
+                bDepressed = False
+        if xButton == 0 and xDepressed:
+                xDepressed = False
+
 
         #Get the arctangent of xAxis/yAxis to get the angle in radians.
         #Convert it to degrees and make it so that it goes from 0-360 starting
@@ -24,9 +49,10 @@ class AngleIntegrator():
         #Uses extreme deadzone to makesure accidental rotations don't happen.
         #We may want to incorporate the magnitude later
         #to control target velocity maybe (as a multiplier, perhaps?)
+        magnitudeThreshold = 1
         magnitude = math.sqrt(xAxisL**2 + yAxisL**2)
         rotationalAngle = 0
-        if magnitude >= 1:
+        if magnitude >= magnitudeThreshold:
             rotationalAngle = round(math.atan2(xAxisL,yAxisL)*(180.0/3.141593),4)
             if (rotationalAngle > 0):
                 rotationalAngle = rotationalAngle - 360
@@ -39,8 +65,12 @@ class AngleIntegrator():
                                             magnitude,xAxisR,yAxisR))
 
         #Ships off the message to the arbitrator
+        #Joystick overrides button target commands
         moveOut = Movement()
-        moveOut.theta = rotationalAngle
+        if magnitude >= magnitudeThreshold:
+            moveOut.theta = rotationalAngle
+        else:
+            moveOut.theta = self.buttonTargetAngle
         moveOut.x = xAxisR
         moveOut.y = yAxisR
         moveOut.mag = magnitude
