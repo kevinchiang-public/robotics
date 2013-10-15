@@ -15,8 +15,12 @@ class AngularPositionPID():
         self.D = float(rospy.get_param('~D', '.01'))
 
         self.previousError = 0
+
+        #Initialize lift to false to make sure no thrusters fire on start
         self.movement = Movement()
+        self.movement.lift = False
         self.first = True
+
         rospy.init_node('AngularPositionPID')
         rospy.Subscriber('/arbitratorOut', Movement, self.arbitratorCallback)
         rospy.Subscriber('/hovercraft/Gyro', Gyro, self.gyroCallback)
@@ -56,6 +60,7 @@ class AngularPositionPID():
         move.theta = r
         move.x = movement.x
         move.y = movement.y
+        move.lift = movement.lift
         pub.publish(move)
 
 if __name__ == '__main__':

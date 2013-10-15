@@ -15,24 +15,22 @@ class XboxTeleop():
         self.switchState = 0
         self.movement = MovementRaw()
         self.switcher = Switcher()
+
+        #Initialize the lift to false so no thrusters fire on launch
+        self.switcher.lift = False
         self.liftOn = False
-        self.startButtonDepressed = False #Used for toggling buttons
-        self.leftButtonDepressed = False  #Used for toggling buttons
-        self.rightButtonDepressed = False #Used for toggling buttons
 
-    	rospy.Subscriber('/joy',Joy, self.joystickCallback)
+        #Used to track button toggles
+        self.startButtonDepressed = False
+        self.leftButtonDepressed = False
+        self.rightButtonDepressed = False
+
+        rospy.Subscriber('/joy',Joy, self.joystickCallback)
         rospy.Timer(rospy.Duration(.1), self.timerCallback)
-
         self.debugPrint('Joystick Spinning')
-        if (self.debug == 1):
-            print("Joystick Spinning")
-        rospy.spin()
 
     def joystickCallback(self, joyData):
         #Switcher reminder: (Variables to help with naming conventions)
-        JOYSTICK = 0
-        TRIANGLE = 1
-        REACTIVE = 2
         leftButton = joyData.buttons[4]
         rightButton= joyData.buttons[5]
         start = joyData.buttons[7]
@@ -61,34 +59,30 @@ class XboxTeleop():
 
             #Cycle left (JOYSTICK, TRIANGLE, REACTIVE)
             self.switchState = 2 if self.switchState - 1 < 0 else self.switchState - 1
-            debugPrint(self, "State is: " +  str(self.stateIndex))
+            debugPrint(self, "State is: " +  str(self.switchState))
         elif leftButton == 0 and self.leftButtonDepressed:
             self.leftButtonDepressed = False
 
         #Right Button Logic
-        #Right button may have priority, but is untested
         if rightButton == 1 and not self.rightButtonDepressed:
             self.rightButtonDepressed = True
             self.debugPrint("Right Button Pressed")
-
             #Cycle right (Joystick ,triangle, reactive)
             self.switchState = 0 if self.switchState + 1 > 2 else self.switchState + 1
         elif rightButton == 0 and self.rightButtonDepressed:
-            self.rightButtonDepressed = True
+            self.rightButtonDepressed = False
 
         #Translational Control Passthrough
-	self.movement.xR = joyData.axes[3]
-	self.movement.yR = joyData.axes[4]
-	self.movement.xL = joyData.axes[0]
-	self.movement.yL = joyData.axes[1]
+        self.movement.xR = joyData.axes[3]
+        self.movement.yR = joyData.axes[4]
+        self.movement.xL = joyData.axes[0]
+        self.movement.yL = joyData.axes[1]
 
     def timerCallback(self, event):
-        if self.liftOn: #Don't publish anything if the lift isn't on (prevents thrusters from firing)
-            angleIntegratorPub = rospy.Publisher('/joyOut',MovementRaw)
-            arbitratorPub = rospy.Publisher('/joyArbitrator',Switcher)
-            angleIntegratorPub.publish(self.movement)
-            arbitratorPub.publish(self.switcher)
-
+        angleIntegratorPub = rospy.Publisher('/joyOut',MovementRaw)
+        arbitratorPub = rospy.Publisher('/joyArbitrator',Switcher)
+        angleIntegratorPub.publish(self.movement)
+        arbitratorPub.publish(self.switcher)
 
     def debugPrint(self, stringToPrint):
         if (self.debug == 1):
@@ -98,4 +92,5 @@ if __name__ == '__main__':
     rospy.init_node('XboxTeleop')
     try:
         ne = XboxTeleop()
+        rospy.spin()
     except rospy.ROSInterruptException: pass

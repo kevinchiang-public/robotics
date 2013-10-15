@@ -7,22 +7,25 @@ from sensor_msgs.msg import Joy
 from hovercraft.msg import Thruster
 from lab2.msg import Switcher, MovementRaw, Movement
 
-
 class Arbitrator():
     def __init__(self):
         self.debug = float(rospy.get_param('~debug', '0'))
+
+        #Initialize lift to false so no thrusters fire when started
         self.movement = Movement()
-        self.liftOn = False
+        self.movement.lift = False
+
         self.state = 'Manual'
         rospy.init_node('Arbitrator')
         rospy.Subscriber('/joyArbitrator', Switcher, self.joyCallback)
         rospy.Subscriber('/angleIntegratorOut', Movement, self.manualJoyControl)
-        #rospy.Subscriber('/triangleOut', Movement?, triangleCallback)
+        rospy.Subscriber('/triangleOut', Movement, self.triangleCallback)
         #rospy.Subscriber('/reactiveOut', Movement?, reactiveCallback)
 
     def joyCallback(self, switch):
-	print self.debug
-	self.liftOn = switch.lift
+        if self.debug == 1:
+            print('Mode: %s' % self.state)
+
         if (switch.state == 0):
             self.state = 'Manual'
         elif (switch.state == 1):
@@ -30,22 +33,10 @@ class Arbitrator():
         elif (switch.state == 2):
             self.state = 'Reactive'
 
+        #Send lift state downstream (to kill thrusters if off)
+        self.movement.lift = switch.lift
         publisher = rospy.Publisher('/arbitratorOut', Movement)
-        if not self.liftOn:
-	    tempMove=Movement()
-	    tempMove.theta=0
-	    tempMove.x=0
-	    tempMove.y=0
-	    if self.debug == 1: 
-	        print('In arbitrator: X:%3.2f  Y:%3.2f  Theta:%3.2f  State:%10s' %
-		     (tempMove.x, tempMove.y, tempMove.theta, self.state))
-            publisher.publish(tempMove)
-        elif self.liftOn:
-	    if self.debug == 1:
-	        print('In arbitrator: X:%3.2f  Y:%3.2f  Theta:%3.2f  State:%10s' %
-		     (tempMove.x, tempMove.y, tempMove.theta, self.state))
-	  
-            publisher.publish(self.movement)
+        publisher.publish(self.movement)
 
     def manualJoyControl(self, move):
         if self.state is 'Manual':

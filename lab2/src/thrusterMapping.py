@@ -11,21 +11,14 @@ class ThrusterMapping():
     def __init__(self):
         self.thrust = Thruster()
         self.debug = float(rospy.get_param('~debug', '0'))
-	print "Thruster Mapping Initialized"
+        self.liftPower = float(rospy.get_param('~liftPower', '.3'))
+        print "Thruster Mapping Initialized"
         rospy.Subscriber("/thrusterMapping",Movement,self.fireThrusters)
-        #No longer used::rospy.Subscriber("/arbitratorThruster",Thruster,self.arbitratorCallback)
-	rospy.spin()
-	'''
-    def arbitratorCallback(self,thrust):
-        self.thrust = thrust
-	'''
+
     def fireThrusters(self, move):
         theta = move.theta
         x = move.x
         y = move.y
-
-        #initate lift
-        self.thrust.lift=.3
 
         #Translation
         coef=0.5
@@ -35,6 +28,7 @@ class ThrusterMapping():
         tr1y=0
         tr2y=0
         tr3y=0
+
         if -x>0:
             tr2x=1/0.866*(-x)*coef
             tr1x=0.5/0.866*(-x)*coef
@@ -46,10 +40,10 @@ class ThrusterMapping():
             tr3y=1*y*coef
         if y<0:
             tr1y=1*(-y)*coef
+
         self.thrust.thruster1=tr1x+tr1y
         self.thrust.thruster2=tr2x+tr2y
         self.thrust.thruster3=tr3x+tr3y
-
 
         if theta >0:
             #Turn on 4
@@ -65,6 +59,17 @@ class ThrusterMapping():
             print ("Thruster 1:%6.2f Thruster 2:%6.2f Thruster 3:%6.2f\nTheta:%6.2f  Thruster 4:%6.2f  Thruster 5:%6.2f Lift:%6.2f\n" %
                    (self.thrust.thruster1, self.thrust.thruster2, self.thrust.thruster3, theta, self.thrust.thruster4, self.thrust.thruster5, self.thrust.lift))
 
+        #Kill the thrusters if no lift is present
+        if move.lift == False:
+            self.thrust.thruster1 = 0
+            self.thrust.thruster2 = 0
+            self.thrust.thruster3 = 0
+            self.thrust.thruster4 = 0
+            self.thrust.thruster5 = 0
+            self.thrust.lift = 0
+        else:
+            self.thrust.lift = self.liftPower
+
         pub = rospy.Publisher('/hovercraft/Thruster', Thruster)
         pub.publish(self.thrust)
 
@@ -73,4 +78,5 @@ if __name__ == '__main__':
     rospy.init_node('ThrusterMapping')
     try:
         ne = ThrusterMapping()
+        rospy.spin()
     except rospy.ROSInterruptException: pass
