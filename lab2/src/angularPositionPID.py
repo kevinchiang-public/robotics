@@ -48,7 +48,7 @@ class AngularPositionPID():
         #Deadband
         if math.fabs(targetAngle - gyro.angle) < 3:
             r = 0
-        print('P: ' + str(self.P) + '  D:' + str(self.D) + '  debug: ' + str(self.debug))
+        #print('P: ' + str(self.P) + '  D:' + str(self.D) + '  debug: ' + str(self.debug))
         self.debugPrint("PosPID: TargetAngle:{:6.2f}  GyroAngle:{:6.2f}  "
                         "Diff: {:6.2f}".format(targetAngle,
                                                 gyro.angle, self.previousError))
