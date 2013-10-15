@@ -45,6 +45,10 @@ class ThrusterMapping():
         self.thrust.thruster2=tr2x+tr2y
         self.thrust.thruster3=tr3x+tr3y
 
+<<<<<<< HEAD
+=======
+	print('Theta in thruster: ' + str(theta))
+>>>>>>> master
         if theta >0:
             #Turn on 4
             self.thrust.thruster5 = 0

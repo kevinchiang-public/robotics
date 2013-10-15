@@ -59,7 +59,11 @@ class XboxTeleop():
 
             #Cycle left (JOYSTICK, TRIANGLE, REACTIVE)
             self.switchState = 2 if self.switchState - 1 < 0 else self.switchState - 1
+<<<<<<< HEAD
             debugPrint(self, "State is: " +  str(self.switchState))
+=======
+            self.debugPrint("State is: " +  str(self.switchState))
+>>>>>>> master
         elif leftButton == 0 and self.leftButtonDepressed:
             self.leftButtonDepressed = False
 
@@ -69,14 +73,23 @@ class XboxTeleop():
             self.debugPrint("Right Button Pressed")
             #Cycle right (Joystick ,triangle, reactive)
             self.switchState = 0 if self.switchState + 1 > 2 else self.switchState + 1
+            self.debugPrint("State is: " +  str(self.switchState))
         elif rightButton == 0 and self.rightButtonDepressed:
             self.rightButtonDepressed = False
 
         #Translational Control Passthrough
+<<<<<<< HEAD
         self.movement.xR = joyData.axes[3]
         self.movement.yR = joyData.axes[4]
         self.movement.xL = joyData.axes[0]
         self.movement.yL = joyData.axes[1]
+=======
+	self.movement.xR = joyData.axes[3]
+	self.movement.yR = joyData.axes[4]
+	self.movement.xL = joyData.axes[0]
+	self.movement.yL = joyData.axes[1]
+	self.switcher.state=self.switchState
+>>>>>>> master
 
     def timerCallback(self, event):
         angleIntegratorPub = rospy.Publisher('/joyOut',MovementRaw)
