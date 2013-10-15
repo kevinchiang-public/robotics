@@ -32,7 +32,7 @@ class AngularVelocityPID():
 
     def gyroCallback(self, gyro):
         targetRate = self.movePass.theta
-        print('P: ' + str(self.P) + '  D:' + str(self.D) + '  debug: ' + str(self.debug))
+        #print('P: ' + str(self.P) + '  D:' + str(self.D) + '  debug: ' + str(self.debug))
         #Proportional and Derivative computations
         r = self.P*(targetRate - gyro.rate)
         r = r + self.D*((targetRate - gyro.rate)-self.previousError)

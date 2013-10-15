@@ -16,14 +16,14 @@
 		   <param name="deadzone" value="0.12" />
 		</node>
 		<node name="joystickControls" pkg="lab2" type="joystick.py" output="screen">
-			<param name="debug" type="string" value="1" />
+			<param name="debug" type="string" value="0" />
 		</node>
 		<node name="angleIntegrator" pkg="lab2" type="angleIntegrator.py" output="screen">
-			<param name="debug" type="string" value="1" />
+			<param name="debug" type="string" value="0" />
 		</node>
 	</group>
 	<node name="Arbitrator" pkg="lab2" type="arbitrator.py" output="screen" >
-		<param name="debug" type="string" value="1" />
+		<param name="debug" type="string" value="0" />
 	</node>
 	
 	<group>

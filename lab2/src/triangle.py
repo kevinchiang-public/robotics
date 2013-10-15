@@ -14,7 +14,7 @@ first=True     #for targetAngle
 counter=0     #publish times counter 
 targetAngle=0
 state = 0
-initial=True
+initial=True  #triangle loop flag
 
 def listener():
 	rospy.init_node('triangle')
@@ -48,12 +48,12 @@ def gyroCallback(gyro):
 	if statemachine == 1:
 		print("statemachine 1")
 		counter=counter+1
-		if counter<=80:    #the number need to be decided from experiment, may be a large number, to get triangle link length
+		if counter<=40:    #the number need to be decided from experiment, may be a large number, to get triangle link length
 			if first == True:
 				targetAngle=gyro.angle
 				first=False
 			move.theta=targetAngle
-			move.x=-0.3
+			move.x=-0.8
 			move.y=0
 			#pub.publish(move)
 		else:
@@ -62,10 +62,20 @@ def gyroCallback(gyro):
 			move.theta=targetAngle
 			move.x=0
 			move.y=0
+			statemachine=12
+
+	#intermediate state
+	if statemachine == 12:
+		counter=counter+1
+		move.theta=targetAngle
+		move.x=0
+		move.y=0
+		if counter>10:
+			counter=0
 			statemachine=2
 		
 	#rotate anticlockwise for 120 degree
-	if statemachine ==2:
+	if statemachine == 2:
 		print("statemachine 2")
 		if first:
 			targetAngle = gyro.angle
@@ -89,12 +99,12 @@ def gyroCallback(gyro):
 	if statemachine == 3:
 		print("statemachine 3")
 		counter=counter+1
-		if counter<=80:    #number same case
+		if counter<=40:    #number same case
 			#if first == True:
 				#targetAngle=gyro.angle
 				#first=False
 			move.theta=targetAngle
-			move.x=-0.3
+			move.x=-0.8
 			move.y=0
 			#pub.publish(move)
 		else:
@@ -103,6 +113,16 @@ def gyroCallback(gyro):
 			move.theta=targetAngle
 			move.x=0
 			move.y=0
+			statemachine=34
+
+	#intermediate state
+	if statemachine == 34:
+		counter=counter+1
+		move.theta=targetAngle
+		move.x=0
+		move.y=0
+		if counter>10:
+			counter=0
 			statemachine=4
 
 	#second rotate anticlockwise for 120 degree 
@@ -121,7 +141,7 @@ def gyroCallback(gyro):
 			if counter>10:   #number same case
 				counter=0
 				first=True
-				move.theta=gyro.angle
+				move.theta=targetAngle
 				move.x=0
 				move.y=0
 				statemachine=5
@@ -130,22 +150,32 @@ def gyroCallback(gyro):
 	if statemachine == 5:
 		print("statemachine 5")
 		counter=counter+1
-		if counter<=80:        #number same case
+		if counter<=40:        #number same case
 			#if first == True:
 				#targetAngle=gyro.angle
 				#first=False
 			move.theta=targetAngle
-			move.x=-0.3
+			move.x=-0.8
 			move.y=0
 			#pub.publish(move)
 		else:
 			counter=0
 			#first=True
-			statemachine=0
+			statemachine=50
 			initial=True
 			move.theta=targetAngle
 			move.x=0
 			move.y=0
+
+	#intermediate state
+	if statemachine == 50:
+		counter=counter+1
+		move.theta=targetAngle
+		move.x=0
+		move.y=0
+		if counter>10:
+			counter=0
+			statemachine=0
 
 	pub.publish(move)
 
