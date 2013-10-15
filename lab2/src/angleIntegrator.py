@@ -31,16 +31,16 @@ class AngleIntegrator():
         bButton = move.bButton
 
         #X/B button toggle logic
-        if bButton == 1 and not bButtonDepressed:
-                bButtonDepressed = True
-                self.buttonTargetAngle += 90
-        elif xButton == 1 and not xDepressed:
-                xButtonDepressed = True
-                self.buttonTargetAngle += -90
-        if bButton == 0 and bDepressed:
-                bDepressed = False
-        if xButton == 0 and xDepressed:
-                xDepressed = False
+        if bButton == 1 and not self.bButtonDepressed:
+            self.bButtonDepressed = True
+            self.buttonTargetAngle += 90
+        elif xButton == 1 and not self.xButtonDepressed:
+            self.xButtonDepressed = True
+            self.buttonTargetAngle += -90
+        if bButton == 0 and self.bButtonDepressed:
+            self.bButtonDepressed = False
+        if xButton == 0 and self.xButtonDepressed:
+            self.xButtonDepressed = False
 
 
         #Get the arctangent of xAxis/yAxis to get the angle in radians.
