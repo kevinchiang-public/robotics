@@ -8,7 +8,6 @@ from lab2.msg import MovementRaw
 from lab2.msg import Switcher
 import math
 
-
 class XboxTeleop():
     def __init__(self):
         self.debug = float(rospy.get_param('~debug', '0'))
