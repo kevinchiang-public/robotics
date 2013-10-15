@@ -14,13 +14,12 @@ class Arbitrator():
         #Initialize lift to false so no thrusters fire when started
         self.movement = Movement()
         self.movement.lift = False
-
         self.state = 'Manual'
 
         rospy.Subscriber('/joyArbitrator', Switcher, self.joyCallback)
         rospy.Subscriber('/angleIntegratorOut', Movement, self.manualJoyControl)
         rospy.Subscriber('/triangleOut', Movement, self.triangleCallback)
-        #rospy.Subscriber('/reactiveOut', Movement?, reactiveCallback)
+        rospy.Subscriber('/reactiveOut', Movement, self.reactiveCallback)
 
     def joyCallback(self, switch):
         if self.debug == 1:
@@ -43,23 +42,32 @@ class Arbitrator():
             print('In arbitrator: X:%3.2f  Y:%3.2f  Theta:%3.2f  State:%10s' %
                   (self.movement.x, self.movement.y, self.movement.theta, self.state))
 
+    #Need to track lift state in these functions manually
+    #since it's set in the switcher message (essentially overriding)
+    #whatever was in the packet sent from the 'controller' nodes
+
+    #The 'mag'(magnitude) is set to 1 in the non-joystick
+    #controller nodes so the rotational rate is unmodified
+    #downstream.
     def manualJoyControl(self, move):
         if self.state is 'Manual':
-	    liftState = self.movement.lift
+            liftState = self.movement.lift
             self.movement = move
-	    self.movement.lift = liftState
+            self.movement.lift = liftState
 
     def triangleCallback(self, move):
         if self.state is 'Triangle':
-	    liftState = self.movement.lift
+            liftState = self.movement.lift
             self.movement = move
-	    self.movement.lift = liftState
+            self.movement.mag = 1
+            self.movement.lift = liftState
 
     def reactiveCallback(self, move):
         if self.state is 'Reactive':
-	    liftState = self.movement.lift
+            liftState = self.movement.lift
             self.movement = move
-	    self.movement.lift = liftState
+            self.movement.mag = 1
+            self.movement.lift = liftState
 
 if __name__ == '__main__':
     rospy.init_node('Arbitrator')
