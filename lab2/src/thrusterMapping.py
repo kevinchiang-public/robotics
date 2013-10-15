@@ -12,7 +12,6 @@ class ThrusterMapping():
         self.thrust = Thruster()
         self.debug = float(rospy.get_param('~debug', '0'))
         self.liftPower = float(rospy.get_param('~liftPower', '.3'))
-        print "Thruster Mapping Initialized"
         rospy.Subscriber("/thrusterMapping",Movement,self.fireThrusters)
 
     def fireThrusters(self, move):
@@ -45,10 +44,6 @@ class ThrusterMapping():
         self.thrust.thruster2=tr2x+tr2y
         self.thrust.thruster3=tr3x+tr3y
 
-<<<<<<< HEAD
-=======
-	print('Theta in thruster: ' + str(theta))
->>>>>>> master
         if theta >0:
             #Turn on 4
             self.thrust.thruster5 = 0

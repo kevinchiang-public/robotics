@@ -18,13 +18,8 @@ class AngularVelocityPID():
 
         #Initialize lift to false to make sure no thrusters fire on start
         self.movePass = Movement()
-<<<<<<< HEAD
         self.movePass.lift = False
 
-        rospy.init_node('AngularVelocityPID')
-=======
-
->>>>>>> master
         rospy.Subscriber('/hovercraft/Gyro', Gyro, self.gyroCallback)
         rospy.Subscriber('/angularPositionOut', Movement, self.positionPIDCallback)
 
@@ -37,7 +32,7 @@ class AngularVelocityPID():
 
     def gyroCallback(self, gyro):
         targetRate = self.movePass.theta
-	print('P: ' + str(self.P) + '  D:' + str(self.D) + '  debug: ' + str(self.debug))
+        print('P: ' + str(self.P) + '  D:' + str(self.D) + '  debug: ' + str(self.debug))
         #Proportional and Derivative computations
         r = self.P*(targetRate - gyro.rate)
         r = r + self.D*((targetRate - gyro.rate)-self.previousError)
@@ -50,14 +45,9 @@ class AngularVelocityPID():
         pub = rospy.Publisher('/thrusterMapping',Movement)
         move = Movement()
         move.theta = r
-<<<<<<< HEAD
-        move.x = movePass.x
-        move.y = movePass.y
-        move.lift = movePass.lift
-=======
         move.x = self.movePass.x
         move.y = self.movePass.y
->>>>>>> master
+        move.lift = self.movePass.lift
         pub.publish(move)
 
 if __name__ == '__main__':
