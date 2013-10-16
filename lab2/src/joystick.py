@@ -8,7 +8,6 @@ from lab2.msg import MovementRaw
 from lab2.msg import Switcher
 import math
 
-
 class XboxTeleop():
     def __init__(self):
         self.debug = float(rospy.get_param('~debug', '0'))
@@ -78,6 +77,12 @@ class XboxTeleop():
         self.movement.yR = joyData.axes[4]
         self.movement.xL = joyData.axes[0]
         self.movement.yL = joyData.axes[1]
+        self.movement.bumperL = joyData.axes[2]
+        self.movement.bumperR = joyData.axes[5]
+
+        #Note: Flipped on purpose
+        self.movement.xButton = joyData.buttons[1]
+        self.movement.bButton = joyData.buttons[2]
         self.switcher.state=self.switchState
 
     def timerCallback(self, event):
