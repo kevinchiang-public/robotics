@@ -48,12 +48,12 @@ def gyroCallback(gyro):
 	if statemachine == 1:
 		print("statemachine 1")
 		counter=counter+1
-		if counter<=40:    #the number need to be decided from experiment, may be a large number, to get triangle link length
+		if counter<=80:    #the number need to be decided from experiment, may be a large number, to get triangle link length
 			if first == True:
 				targetAngle=gyro.angle
 				first=False
 			move.theta=targetAngle
-			move.x=-0.8
+			move.x=-0.5
 			move.y=0
 			#pub.publish(move)
 		else:
@@ -68,7 +68,7 @@ def gyroCallback(gyro):
 	if statemachine == 12:
 		counter=counter+1
 		move.theta=targetAngle
-		move.x=0
+		move.x=0.2
 		move.y=0
 		if counter>10:
 			counter=0
@@ -85,7 +85,7 @@ def gyroCallback(gyro):
 		move.x=0
 		move.y=0
 		#pub.publish(move)
-		if math.fabs(targetAngle-gyro.angle)<=3:
+		if math.fabs(targetAngle-gyro.angle)<=10:
 			counter=counter+1
 			if counter>10:    #the number need to be decided from experiment, may be a large number, to make sure the angle has been achived
 				counter=0
@@ -99,17 +99,17 @@ def gyroCallback(gyro):
 	if statemachine == 3:
 		print("statemachine 3")
 		counter=counter+1
-		if counter<=40:    #number same case
-			#if first == True:
-				#targetAngle=gyro.angle
-				#first=False
+		if counter<=80:    #number same case
+			if first == True:
+				targetAngle=gyro.angle
+				first=False
 			move.theta=targetAngle
-			move.x=-0.8
+			move.x=-0.5
 			move.y=0
 			#pub.publish(move)
 		else:
 			counter=0
-			#first=True
+			first=True
 			move.theta=targetAngle
 			move.x=0
 			move.y=0
@@ -119,7 +119,7 @@ def gyroCallback(gyro):
 	if statemachine == 34:
 		counter=counter+1
 		move.theta=targetAngle
-		move.x=0
+		move.x=0.2
 		move.y=0
 		if counter>10:
 			counter=0
@@ -136,7 +136,7 @@ def gyroCallback(gyro):
 		move.x=0
 		move.y=0
 		#pub.publish(move)
-		if math.fabs(targetAngle-gyro.angle)<=3:
+		if math.fabs(targetAngle-gyro.angle)<=10:
 			counter=counter+1
 			if counter>10:   #number same case
 				counter=0
@@ -150,32 +150,43 @@ def gyroCallback(gyro):
 	if statemachine == 5:
 		print("statemachine 5")
 		counter=counter+1
-		if counter<=40:        #number same case
-			#if first == True:
-				#targetAngle=gyro.angle
-				#first=False
+		if counter<=80:        #number same case
+			if first == True:
+				targetAngle=gyro.angle
+				first=False
 			move.theta=targetAngle
-			move.x=-0.8
+			move.x=-0.5
 			move.y=0
 			#pub.publish(move)
 		else:
 			counter=0
-			#first=True
-			statemachine=50
-			initial=True
+			first=True
+			statemachine=56
 			move.theta=targetAngle
 			move.x=0
 			move.y=0
 
 	#intermediate state
-	if statemachine == 50:
+	if statemachine == 56:
+		print("statemachine 56")
 		counter=counter+1
 		move.theta=targetAngle
-		move.x=0
+		move.x=0.2
 		move.y=0
 		if counter>10:
 			counter=0
+			statemachine=60
+
+	if statemachine == 60:
+		print("statemachine 60")
+		counter=counter+1
+		move.theta=gyro.angle
+		move.x=0
+		move.y=0
+		if counter>1000:
+			counter=0
 			statemachine=0
+			initial=True
 
 	pub.publish(move)
 
