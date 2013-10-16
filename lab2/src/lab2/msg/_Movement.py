@@ -7,7 +7,7 @@ import struct
 import std_msgs.msg
 
 class Movement(genpy.Message):
-  _md5sum = "cd152c90d37a0c74b1c573deee0d4d51"
+  _md5sum = "618a114b4f88ac6cffcd9330174b4e42"
   _type = "lab2/Movement"
   _has_header = True #flag to mark the presence of a Header object
   _full_text = """Header header
@@ -16,6 +16,12 @@ float32 x	#Translational x vector component
 float32 y	#Translational y vector component
 float32 mag     #The magnitude of the left joystick w.r.t. x and y component
 bool    lift	#Whether the lift is on or off
+string  modType	#One of 'Add', 'Set', or 'Bound'.
+                     #'Add': Adds theta to the current angle to set the target angle
+                     #'Set': Sets theta as the target angle
+                     #'Bound' : Expects theta to be in range [0,360).  Sets target
+                     #orients the hovercraft with respect to its initial position
+                     #(for use with the joystick angle position)
 
 ================================================================================
 MSG: std_msgs/Header
@@ -36,8 +42,8 @@ time stamp
 string frame_id
 
 """
-  __slots__ = ['header','theta','x','y','mag','lift']
-  _slot_types = ['std_msgs/Header','float32','float32','float32','float32','bool']
+  __slots__ = ['header','theta','x','y','mag','lift','modType']
+  _slot_types = ['std_msgs/Header','float32','float32','float32','float32','bool','string']
 
   def __init__(self, *args, **kwds):
     """
@@ -47,7 +53,7 @@ string frame_id
     changes.  You cannot mix in-order arguments and keyword arguments.
 
     The available fields are:
-       header,theta,x,y,mag,lift
+       header,theta,x,y,mag,lift,modType
 
     :param args: complete set of field values, in .msg order
     :param kwds: use keyword arguments corresponding to message field names
@@ -68,6 +74,8 @@ string frame_id
         self.mag = 0.
       if self.lift is None:
         self.lift = False
+      if self.modType is None:
+        self.modType = ''
     else:
       self.header = std_msgs.msg.Header()
       self.theta = 0.
@@ -75,6 +83,7 @@ string frame_id
       self.y = 0.
       self.mag = 0.
       self.lift = False
+      self.modType = ''
 
   def _get_types(self):
     """
@@ -98,6 +107,12 @@ string frame_id
       buff.write(struct.pack('<I%ss'%length, length, _x))
       _x = self
       buff.write(_struct_4fB.pack(_x.theta, _x.x, _x.y, _x.mag, _x.lift))
+      _x = self.modType
+      length = len(_x)
+      if python3 or type(_x) == unicode:
+        _x = _x.encode('utf-8')
+        length = len(_x)
+      buff.write(struct.pack('<I%ss'%length, length, _x))
     except struct.error as se: self._check_types(se)
     except TypeError as te: self._check_types(te)
 
@@ -128,6 +143,15 @@ string frame_id
       end += 17
       (_x.theta, _x.x, _x.y, _x.mag, _x.lift,) = _struct_4fB.unpack(str[start:end])
       self.lift = bool(self.lift)
+      start = end
+      end += 4
+      (length,) = _struct_I.unpack(str[start:end])
+      start = end
+      end += length
+      if python3:
+        self.modType = str[start:end].decode('utf-8')
+      else:
+        self.modType = str[start:end]
       return self
     except struct.error as e:
       raise genpy.DeserializationError(e) #most likely buffer underfill
@@ -150,6 +174,12 @@ string frame_id
       buff.write(struct.pack('<I%ss'%length, length, _x))
       _x = self
       buff.write(_struct_4fB.pack(_x.theta, _x.x, _x.y, _x.mag, _x.lift))
+      _x = self.modType
+      length = len(_x)
+      if python3 or type(_x) == unicode:
+        _x = _x.encode('utf-8')
+        length = len(_x)
+      buff.write(struct.pack('<I%ss'%length, length, _x))
     except struct.error as se: self._check_types(se)
     except TypeError as te: self._check_types(te)
 
@@ -181,6 +211,15 @@ string frame_id
       end += 17
       (_x.theta, _x.x, _x.y, _x.mag, _x.lift,) = _struct_4fB.unpack(str[start:end])
       self.lift = bool(self.lift)
+      start = end
+      end += 4
+      (length,) = _struct_I.unpack(str[start:end])
+      start = end
+      end += length
+      if python3:
+        self.modType = str[start:end].decode('utf-8')
+      else:
+        self.modType = str[start:end]
       return self
     except struct.error as e:
       raise genpy.DeserializationError(e) #most likely buffer underfill

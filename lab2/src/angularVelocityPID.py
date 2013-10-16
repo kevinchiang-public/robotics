@@ -6,7 +6,7 @@ roslib.load_manifest('lab2')
 roslib.load_manifest('hovercraft')
 from hovercraft.msg import Gyro
 from lab2.msg import Movement
-
+from copy import deepcopy as deep
 class AngularVelocityPID():
     def __init__(self):
         #Setup params from launch file
@@ -28,7 +28,7 @@ class AngularVelocityPID():
             print(stringToPrint)
 
     def positionPIDCallback(self, move):
-        self.movePass = move
+        self.movePass = deep(move)
 
     def gyroCallback(self, gyro):
         targetRate = self.movePass.theta
@@ -39,8 +39,8 @@ class AngularVelocityPID():
         self.previousError = targetRate - gyro.rate
 
         self.debugPrint('VelPID: TargetRate:{:5.3f}  Gyro Rate:{:5.3f}  '
-                        'RateDiff:{:5.3f}'.format(targetRate, gyro.rate,
-                                                  self.previousError))
+                        'RateDiff:{:5.3f}'.format(targetRate, gyro.rate,self.previousError))
+	'''
         #Only reset r if the hovercraft wants to go faster in the offending direction
         if gyro.rate < -355 and r < 0:
             debugPrint("Gyro Limiter Engaged -")
@@ -48,7 +48,7 @@ class AngularVelocityPID():
         elif gyro.rate > 620 and r > 0:
             debugPrint("Gyro Limiter Engaged +")
             r = 0
-
+	'''
         #Ship message off to thrusterMapping
         pub = rospy.Publisher('/thrusterMapping',Movement)
         move = Movement()

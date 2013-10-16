@@ -6,6 +6,7 @@ roslib.load_manifest('hovercraft')
 from lab2.msg import Movement
 from hovercraft.msg import Thruster
 import math
+from copy import deepcopy as deep
 
 class ThrusterMapping():
     def __init__(self):
@@ -15,9 +16,9 @@ class ThrusterMapping():
         rospy.Subscriber("/thrusterMapping",Movement,self.fireThrusters)
 
     def fireThrusters(self, move):
-        theta = move.theta
-        x = move.x
-        y = move.y
+        theta = deep(move.theta)
+        x = deep(move.x)
+        y = deep(move.y)
 
         #Translation
         coef=0.5
@@ -70,6 +71,10 @@ class ThrusterMapping():
             self.thrust.lift = self.liftPower
 
         pub = rospy.Publisher('/hovercraft/Thruster', Thruster)
+
+	#if self.thrust.thruster1 > 0 or self.thrust.thruster2 > 0 or self.thrust.thruster3 > 0 or self.thrust.thruster4 > 0 or self.thrust.thruster5 > 0:	
+	#	print self.thrust
+
         pub.publish(self.thrust)
 
 #Entry point for ROS

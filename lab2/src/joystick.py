@@ -7,7 +7,7 @@ from sensor_msgs.msg import Joy
 from lab2.msg import MovementRaw
 from lab2.msg import Switcher
 import math
-
+from copy import deepcopy as deep
 class XboxTeleop():
     def __init__(self):
         self.debug = float(rospy.get_param('~debug', '0'))
@@ -28,7 +28,8 @@ class XboxTeleop():
         rospy.Timer(rospy.Duration(.1), self.timerCallback)
         self.debugPrint('Joystick Spinning')
 
-    def joystickCallback(self, joyData):
+    def joystickCallback(self, preJoyData):
+	joyData = deep(preJoyData)
         #Switcher reminder: (Variables to help with naming conventions)
         leftButton = joyData.buttons[4]
         rightButton= joyData.buttons[5]

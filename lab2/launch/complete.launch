@@ -12,7 +12,7 @@
 	<group>
 		<node respawn="true" pkg="joy"
 			type="joy_node" name="xbox_joy" >
-		   <param name="dev" type="string" value="/dev/input/js1" />
+		   <param name="dev" type="string" value="/dev/input/js0" />
 		   <param name="deadzone" value="0.12" />
 		</node>
 		<node name="joystickControls" pkg="lab2" type="joystick.py" output="screen">
@@ -30,6 +30,7 @@
 		<node name="AngularPositionPID" pkg="lab2" type="angularPositionPID.py" output="screen" >
 			<param name="P" type="string" value="1"/>
 			<param name="D" type="string" value="0"/>
+			<param name="debug" type="string" value="1" />
 		</node>
 		<node name="AngularVelocityPID" pkg="lab2" type="angularVelocityPID.py" output="screen" >
 			<param name="targetRate" type="string" value="10"/>
@@ -39,6 +40,7 @@
 	</group>
 	<node name="thrusterMapping" pkg="lab2" type="thrusterMapping.py" output="screen" >
 		<param name="debug" type="string" value="0" />
+		<param name="liftPower" type="string" value="0.4" />
 	</node>
 
 	<node name="triangle" pkg="lab2" type="triangle.py" output="screen" >

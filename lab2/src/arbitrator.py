@@ -6,7 +6,7 @@ roslib.load_manifest('lab2')
 from sensor_msgs.msg import Joy
 from hovercraft.msg import Thruster
 from lab2.msg import Switcher, MovementRaw, Movement
-
+from copy import deepcopy as deep
 class Arbitrator():
     def __init__(self):
         self.debug = float(rospy.get_param('~debug', '0'))
@@ -36,6 +36,9 @@ class Arbitrator():
         #Send lift state downstream (to kill thrusters if off)
         self.movement.lift = switch.lift
         publisher = rospy.Publisher('/arbitratorOut', Movement)
+
+	#print "Arbitrator:",self.movement.lift
+
         publisher.publish(self.movement)
 
         if self.debug == 1:
@@ -52,20 +55,20 @@ class Arbitrator():
     def manualJoyControl(self, move):
         if self.state is 'Manual':
             liftState = self.movement.lift
-            self.movement = move
+            self.movement = deep(move)
             self.movement.lift = liftState
 
     def triangleCallback(self, move):
         if self.state is 'Triangle':
             liftState = self.movement.lift
-            self.movement = move
+            self.movement = deep(move)
             self.movement.mag = 1
             self.movement.lift = liftState
 
     def reactiveCallback(self, move):
         if self.state is 'Reactive':
             liftState = self.movement.lift
-            self.movement = move
+            self.movement = deep(move)
             self.movement.mag = 1
             self.movement.lift = liftState
 

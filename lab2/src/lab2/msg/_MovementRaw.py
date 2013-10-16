@@ -7,14 +7,18 @@ import struct
 import std_msgs.msg
 
 class MovementRaw(genpy.Message):
-  _md5sum = "27a93259047909f5601f97f6ef7ffdc1"
+  _md5sum = "b361f62b14c05eacc4779080e1ae1bd4"
   _type = "lab2/MovementRaw"
   _has_header = True #flag to mark the presence of a Header object
   _full_text = """Header header
 float32 xL	#Rotational x vector component
-float32 yL  	#Rotational y vector component
+float32 yL      #Rotational y vector component
 float32 xR	#Translational x vector component
 float32 yR	#Translational y vector component
+float32 bumperL #Left analog bumper/trigger
+float32 bumperR #Right analog bumper/trigger
+int32 xButton	#X button state from the joystick
+int32 bButton   #Y button state from the joystick
 
 ================================================================================
 MSG: std_msgs/Header
@@ -35,8 +39,8 @@ time stamp
 string frame_id
 
 """
-  __slots__ = ['header','xL','yL','xR','yR']
-  _slot_types = ['std_msgs/Header','float32','float32','float32','float32']
+  __slots__ = ['header','xL','yL','xR','yR','bumperL','bumperR','xButton','bButton']
+  _slot_types = ['std_msgs/Header','float32','float32','float32','float32','float32','float32','int32','int32']
 
   def __init__(self, *args, **kwds):
     """
@@ -46,7 +50,7 @@ string frame_id
     changes.  You cannot mix in-order arguments and keyword arguments.
 
     The available fields are:
-       header,xL,yL,xR,yR
+       header,xL,yL,xR,yR,bumperL,bumperR,xButton,bButton
 
     :param args: complete set of field values, in .msg order
     :param kwds: use keyword arguments corresponding to message field names
@@ -65,12 +69,24 @@ string frame_id
         self.xR = 0.
       if self.yR is None:
         self.yR = 0.
+      if self.bumperL is None:
+        self.bumperL = 0.
+      if self.bumperR is None:
+        self.bumperR = 0.
+      if self.xButton is None:
+        self.xButton = 0
+      if self.bButton is None:
+        self.bButton = 0
     else:
       self.header = std_msgs.msg.Header()
       self.xL = 0.
       self.yL = 0.
       self.xR = 0.
       self.yR = 0.
+      self.bumperL = 0.
+      self.bumperR = 0.
+      self.xButton = 0
+      self.bButton = 0
 
   def _get_types(self):
     """
@@ -93,7 +109,7 @@ string frame_id
         length = len(_x)
       buff.write(struct.pack('<I%ss'%length, length, _x))
       _x = self
-      buff.write(_struct_4f.pack(_x.xL, _x.yL, _x.xR, _x.yR))
+      buff.write(_struct_6f2i.pack(_x.xL, _x.yL, _x.xR, _x.yR, _x.bumperL, _x.bumperR, _x.xButton, _x.bButton))
     except struct.error as se: self._check_types(se)
     except TypeError as te: self._check_types(te)
 
@@ -121,8 +137,8 @@ string frame_id
         self.header.frame_id = str[start:end]
       _x = self
       start = end
-      end += 16
-      (_x.xL, _x.yL, _x.xR, _x.yR,) = _struct_4f.unpack(str[start:end])
+      end += 32
+      (_x.xL, _x.yL, _x.xR, _x.yR, _x.bumperL, _x.bumperR, _x.xButton, _x.bButton,) = _struct_6f2i.unpack(str[start:end])
       return self
     except struct.error as e:
       raise genpy.DeserializationError(e) #most likely buffer underfill
@@ -144,7 +160,7 @@ string frame_id
         length = len(_x)
       buff.write(struct.pack('<I%ss'%length, length, _x))
       _x = self
-      buff.write(_struct_4f.pack(_x.xL, _x.yL, _x.xR, _x.yR))
+      buff.write(_struct_6f2i.pack(_x.xL, _x.yL, _x.xR, _x.yR, _x.bumperL, _x.bumperR, _x.xButton, _x.bButton))
     except struct.error as se: self._check_types(se)
     except TypeError as te: self._check_types(te)
 
@@ -173,12 +189,12 @@ string frame_id
         self.header.frame_id = str[start:end]
       _x = self
       start = end
-      end += 16
-      (_x.xL, _x.yL, _x.xR, _x.yR,) = _struct_4f.unpack(str[start:end])
+      end += 32
+      (_x.xL, _x.yL, _x.xR, _x.yR, _x.bumperL, _x.bumperR, _x.xButton, _x.bButton,) = _struct_6f2i.unpack(str[start:end])
       return self
     except struct.error as e:
       raise genpy.DeserializationError(e) #most likely buffer underfill
 
 _struct_I = genpy.struct_I
-_struct_4f = struct.Struct("<4f")
 _struct_3I = struct.Struct("<3I")
+_struct_6f2i = struct.Struct("<6f2i")

@@ -5,7 +5,7 @@ roslib.load_manifest('lab2')
 from sensor_msgs.msg import Joy
 from lab2.msg import MovementRaw, Movement
 import math
-
+from copy import deepcopy as deep
 class AngleIntegrator():
     def __init__(self):
         self.debug = float(rospy.get_param('~debug', '0'))
@@ -14,42 +14,21 @@ class AngleIntegrator():
         self.xButtonDepressed = False
         self.bButtonDepressed = False
 
+	self.buttonTargetAngle=0
+
         #Used to determine whether to use input from joy or +- 90 degrees from x/b
         #Note: x/b adds to rotation starting at 0.  Doesn't add to current angle.
         self.useJoystick = False
 
         rospy.Subscriber('/joyOut', MovementRaw, self.interpretJoystick)
 
-    def interpretJoystick(self,move):
+    def interpretJoystick(self,preMove):
+	move = deep(preMove)
         publisher = rospy.Publisher('/angleIntegratorOut',Movement)
         xAxisL = move.xL
         yAxisL = move.yL
         xAxisR = move.xR
         yAxisR = move.yR
-        leftBumperMag = move.bumperL
-        rightBumperMag = move.bumperR
-        xButton = move.xButton
-        bButton = move.bButton
-
-        #Note: Joystick overrides the bumpers which overrides buttons
-        #X/B button toggle logic
-        if bButton == 1 and not self.bButtonDepressed:
-            self.bButtonDepressed = True
-            self.buttonTargetAngle = self.buttonTargetAngle + 90
-        elif xButton == 1 and not self.xButtonDepressed:
-            self.xButtonDepressed = True
-            self.buttonTargetAngle = self.buttonTargetAngle - 90
-        if bButton == 0 and self.bButtonDepressed:
-            self.bButtonDepressed = False
-        if xButton == 0 and self.xButtonDepressed:
-            self.xButtonDepressed = False
-
-        #Bumper logic (rotational spin using shoulders)
-        #Right overrides left
-        if rightBumperMag != 1:
-            bumperMag = (1 - rightBumperMag)
-        elif leftBumperMag != 1:
-            bumperMag = (1 - leftBumperMag)
 
         #Get the arctangent of xAxis/yAxis to get the angle in radians.
         #Convert it to degrees and make it so that it goes from 0-360 starting
@@ -69,26 +48,19 @@ class AngleIntegrator():
         moveOut = Movement()
         if magnitude >= magnitudeThreshold:
             moveOut.theta = rotationalAngle
-            moveOut.modType = 'Bound'
-        elif rightBumperMag != 1 or leftBumperMag != 1:
-            moveOut.theta = bumperMag
-            moveOut.modType = 'Add'
-            moveOut.magnitude = 1
-        else:
-            magnitude = 1   #Joystick shouldn't have an effect on the angular position
-            moveOut.theta = self.buttonTargetAngle
-            moveOut.modType = 'Add'
+        moveOut.modType = 'Bound'
 
         moveOut.x = xAxisR
         moveOut.y = yAxisR
         moveOut.mag = magnitude
+
         publisher.publish(moveOut)
 
         #Prints all information related to the integrator if need be
         if (self.debug == 1):
             print("xL: %6.2f  yL: %6.2f  Angle: %6.2f  Magnitude:%6.2f  "
-                  "xR: %6.2f  yR: %6.2f" % (xAxisL,yAxisL,rotationalAngle,
-                                            magnitude,xAxisR,yAxisR))
+                  "xR: %6.2f  yR: %6.2f Theta: %6.2f" % (xAxisL,yAxisL,rotationalAngle,
+                                            magnitude,xAxisR,yAxisR,moveOut.theta))
 
 if __name__ == '__main__':
     rospy.init_node('AngleIntegrator')
