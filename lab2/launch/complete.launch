@@ -1,6 +1,6 @@
 <launch>
 <!-- complete.launch -->
-<!-- actually it's missing triangle and reactive control -->
+<!-- actually it's missing mapping-->
 	<group>
 		<node name="RxTx" pkg="rxtx" type="RxTx" output="screen">
 		  <param name="SerialPort" value="/dev/ttyUSB0" />
@@ -22,6 +22,16 @@
 			<param name="debug" type="string" value="0" />
 		</node>
 	</group>
+	<group>
+		<node name="RangeIntegrator" pkg="lab2" type="rangeFinderIntegrator.py" output="screen">
+            <param name="debug" type="string" value="0"/>
+		</node>
+		<node name="reactiveControl" pkg="lab2" type="reactiveControl.py"  output="screen" >
+            <param name="debug" type="string" value="0"/>
+            <param name="P" type="string" value="1"/>
+            <param name="D" type="string" value="0"/>
+        </node>
+    </group> 
 	<node name="Arbitrator" pkg="lab2" type="arbitrator.py" output="screen" >
 		<param name="debug" type="string" value="0" />
 	</node>
@@ -30,7 +40,7 @@
 		<node name="AngularPositionPID" pkg="lab2" type="angularPositionPID.py" output="screen" >
 			<param name="P" type="string" value="1"/>
 			<param name="D" type="string" value="0"/>
-			<param name="debug" type="string" value="1" />
+			<param name="debug" type="string" value="0" />
 		</node>
 		<node name="AngularVelocityPID" pkg="lab2" type="angularVelocityPID.py" output="screen" >
 			<param name="targetRate" type="string" value="10"/>
@@ -39,7 +49,7 @@
 		</node>
 	</group>
 	<node name="thrusterMapping" pkg="lab2" type="thrusterMapping.py" output="screen" >
-		<param name="debug" type="string" value="0" />
+		<param name="debug" type="string" value="1" />
 		<param name="liftPower" type="string" value="0.4" />
 	</node>
 

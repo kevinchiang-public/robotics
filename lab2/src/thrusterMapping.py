@@ -20,8 +20,9 @@ class ThrusterMapping():
         x = deep(move.x)
         y = deep(move.y)
 
+        print y
         #Translation
-        coef=0.5
+        coef=0.75
         tr1x=0
         tr2x=0
         tr3x=0
@@ -56,8 +57,8 @@ class ThrusterMapping():
             self.thrust.thruster5 = math.fabs(theta)
             self.thrust.thruster5 = self.thrust.thruster5 if self.thrust.thruster5 < .5 else .5
         if (self.debug == 1):
-            print ("Thruster 1:%6.2f Thruster 2:%6.2f Thruster 3:%6.2f\nTheta:%6.2f  Thruster 4:%6.2f  Thruster 5:%6.2f Lift:%6.2f\n" %
-                   (self.thrust.thruster1, self.thrust.thruster2, self.thrust.thruster3, theta, self.thrust.thruster4, self.thrust.thruster5, self.thrust.lift))
+            print ("Thruster 1:%6.2f Thruster 2:%6.2f Thruster 3:%6.2f\nTheta:%6.2f  Thruster 4:%6.2f  Thruster 5:%6.2f Lift:%6.2f\nX: %6.2f Y: %6.2f" %
+                   (self.thrust.thruster1, self.thrust.thruster2, self.thrust.thruster3, theta, self.thrust.thruster4, self.thrust.thruster5, self.thrust.lift,x, y))
 
         #Kill the thrusters if no lift is present
         if move.lift == False:
