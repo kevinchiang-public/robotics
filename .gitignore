@@ -50,3 +50,6 @@ msg_gen/
 # PyCharm Files #
 #################
 *.idea/*
+
+# Launch File #
+complete.launch

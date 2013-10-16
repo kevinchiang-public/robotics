@@ -46,14 +46,14 @@ class AngleIntegrator():
         if xButton == 0 and self.xButtonDepressed:
             self.xButtonDepressed = False
 
-        '''
         #Bumper logic (rotational spin using shoulders)
         #Right overrides left
+        bumperMag =0 
         if rightBumperMag != 1:
             bumperMag = (1 - rightBumperMag)
         elif leftBumperMag != 1:
             bumperMag = (1 - leftBumperMag)
-        '''
+        
         #Get the arctangent of xAxis/yAxis to get the angle in radians.
         #Convert it to degrees and make it so that it goes from 0-360 starting
         #at the positive y axis (to match with the front of the hovercraft).
@@ -70,21 +70,20 @@ class AngleIntegrator():
         #Ships off the message to the arbitrator
         #Joystick overrides button target commands
         moveOut = Movement()
-
+        moveOut.modType = 'Bound'
+        
         if magnitude >= magnitudeThreshold:
             moveOut.theta = rotationalAngle
             moveOut.modType= 'Bound'
-            '''
         elif rightBumperMag != 1 or leftBumperMag != 1:
             moveOut.theta = bumperMag
             moveOut.modType = 'Add'
             magnitude = 1
-            '''
         elif self.buttonTargetAngle != 0:
             magnitude = 1
             moveOut.theta = self.buttonTargetAngle
             moveOut.modType = 'Add'
-
+        
 
         moveOut.x = xAxisR
         moveOut.y = yAxisR
@@ -95,8 +94,8 @@ class AngleIntegrator():
         #Prints all information related to the integrator if need be
         if (self.debug == 1):
             print("xL: %6.2f  yL: %6.2f  Angle: %6.2f  Magnitude:%6.2f  "
-                  "xR: %6.2f  yR: %6.2f Theta: %6.2f" % (xAxisL,yAxisL,rotationalAngle,
-                                            magnitude,xAxisR,yAxisR,moveOut.theta))
+                  "xR: %6.2f  yR: %6.2f Theta: %6.2f Button Target: %6.2f" % (xAxisL,yAxisL,rotationalAngle,
+                                            magnitude,xAxisR,yAxisR,moveOut.theta, self.buttonTargetAngle))
 
 if __name__ == '__main__':
     rospy.init_node('AngleIntegrator')

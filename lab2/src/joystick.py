@@ -29,7 +29,7 @@ class XboxTeleop():
         self.debugPrint('Joystick Spinning')
 
     def joystickCallback(self, preJoyData):
-	joyData = deep(preJoyData)
+        joyData = deep(preJoyData)
         #Switcher reminder: (Variables to help with naming conventions)
         leftButton = joyData.buttons[4]
         rightButton= joyData.buttons[5]
@@ -58,7 +58,7 @@ class XboxTeleop():
             self.debugPrint("Left Button Pressed")
 
             #Cycle left (JOYSTICK, TRIANGLE, REACTIVE)
-            self.switchState = 2 if self.switchState - 1 < 0 else self.switchState - 1
+            self.switchState = 3 if self.switchState - 1 < 0 else self.switchState - 1
             self.debugPrint("State is: " +  str(self.switchState))
         elif leftButton == 0 and self.leftButtonDepressed:
             self.leftButtonDepressed = False
@@ -68,7 +68,7 @@ class XboxTeleop():
             self.rightButtonDepressed = True
             self.debugPrint("Right Button Pressed")
             #Cycle right (Joystick ,triangle, reactive)
-            self.switchState = 0 if self.switchState + 1 > 2 else self.switchState + 1
+            self.switchState = 0 if self.switchState + 1 > 3 else self.switchState + 1
             self.debugPrint("State is: " +  str(self.switchState))
         elif rightButton == 0 and self.rightButtonDepressed:
             self.rightButtonDepressed = False
