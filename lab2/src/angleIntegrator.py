@@ -14,7 +14,7 @@ class AngleIntegrator():
         self.xButtonDepressed = False
         self.bButtonDepressed = False
 
-	self.buttonTargetAngle=0
+        self.buttonTargetAngle=0
 
         #Used to determine whether to use input from joy or +- 90 degrees from x/b
         #Note: x/b adds to rotation starting at 0.  Doesn't add to current angle.
@@ -23,13 +23,37 @@ class AngleIntegrator():
         rospy.Subscriber('/joyOut', MovementRaw, self.interpretJoystick)
 
     def interpretJoystick(self,preMove):
-	move = deep(preMove)
+        move = deep(preMove)
         publisher = rospy.Publisher('/angleIntegratorOut',Movement)
         xAxisL = move.xL
         yAxisL = move.yL
         xAxisR = move.xR
         yAxisR = move.yR
+        xButton = move.xButton
+        bButton = move.bButton
+        leftBumperMag = move.bumperL
+        rightBumperMag= move.bumperR
 
+        #X/B button toggle logic
+        if bButton == 1 and not self.bButtonDepressed:
+            self.bButtonDepressed = True
+            self.buttonTargetAngle += 90
+        elif xButton == 1 and not self.xButtonDepressed:
+            self.xButtonDepressed = True
+            self.buttonTargetAngle += -90
+        if bButton == 0 and self.bButtonDepressed:
+            self.bButtonDepressed = False
+        if xButton == 0 and self.xButtonDepressed:
+            self.xButtonDepressed = False
+
+        '''
+        #Bumper logic (rotational spin using shoulders)
+        #Right overrides left
+        if rightBumperMag != 1:
+            bumperMag = (1 - rightBumperMag)
+        elif leftBumperMag != 1:
+            bumperMag = (1 - leftBumperMag)
+        '''
         #Get the arctangent of xAxis/yAxis to get the angle in radians.
         #Convert it to degrees and make it so that it goes from 0-360 starting
         #at the positive y axis (to match with the front of the hovercraft).
@@ -46,9 +70,21 @@ class AngleIntegrator():
         #Ships off the message to the arbitrator
         #Joystick overrides button target commands
         moveOut = Movement()
+
         if magnitude >= magnitudeThreshold:
             moveOut.theta = rotationalAngle
-        moveOut.modType = 'Bound'
+            moveOut.modType= 'Bound'
+            '''
+        elif rightBumperMag != 1 or leftBumperMag != 1:
+            moveOut.theta = bumperMag
+            moveOut.modType = 'Add'
+            magnitude = 1
+            '''
+        elif self.buttonTargetAngle != 0:
+            magnitude = 1
+            moveOut.theta = self.buttonTargetAngle
+            moveOut.modType = 'Add'
+
 
         moveOut.x = xAxisR
         moveOut.y = yAxisR

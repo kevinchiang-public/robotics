@@ -10,6 +10,7 @@ from copy import deepcopy as deep
 
 class ThrusterMapping():
     def __init__(self):
+        print "Thrusters Ready"
         self.thrust = Thruster()
         self.debug = float(rospy.get_param('~debug', '0'))
         self.liftPower = float(rospy.get_param('~liftPower', '.3'))
@@ -20,7 +21,6 @@ class ThrusterMapping():
         x = deep(move.x)
         y = deep(move.y)
 
-        print y
         #Translation
         coef=0.75
         tr1x=0

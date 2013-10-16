@@ -9,7 +9,6 @@ import math
 
 class RangeFinderIntegrator():
     def __init__(self):
-        print "RangeFinderIntegrator initialized"
         self.debug = float(rospy.get_param('~debug', '1'))
         rospy.Subscriber('/hoverboard/ADCRaw', ADCRaw, self.integrateRawValues) #Probably wrong
 

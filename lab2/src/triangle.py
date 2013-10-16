@@ -16,6 +16,11 @@ targetAngle=0
 state = 0
 initial=True  #triangle loop flag
 
+def printDebug(string):
+	debug = float(rospy.get_param('~debug','0'))
+	if debug == 1:
+		print string
+
 def listener():
 	rospy.init_node('triangle')
 	rospy.Subscriber('/joyArbitrator',Switcher, callback)
@@ -29,7 +34,7 @@ def callback(switch):
 	
 	state = switch.state
 	if state == 1 and initial == True:
-		print ("triangle start")
+		printDebug ("triangle start")
 		statemachine=1
 		initial=False
 	#else:
@@ -46,7 +51,7 @@ def gyroCallback(gyro):
 
 	#go right	
 	if statemachine == 1:
-		print("statemachine 1")
+		printDebug("statemachine 1")
 		counter=counter+1
 		if counter<=80:    #the number need to be decided from experiment, may be a large number, to get triangle link length
 			if first == True:
@@ -76,7 +81,7 @@ def gyroCallback(gyro):
 		
 	#rotate anticlockwise for 120 degree
 	if statemachine == 2:
-		print("statemachine 2")
+		printDebug("statemachine 2")
 		if first:
 			targetAngle = gyro.angle
 			first = False
@@ -97,7 +102,7 @@ def gyroCallback(gyro):
 		
 	#second edge
 	if statemachine == 3:
-		print("statemachine 3")
+		printDebug("statemachine 3")
 		counter=counter+1
 		if counter<=80:    #number same case
 			if first == True:
@@ -127,7 +132,7 @@ def gyroCallback(gyro):
 
 	#second rotate anticlockwise for 120 degree 
 	if statemachine ==4:
-		print("statemachine 4")
+		printDebug("statemachine 4")
 		if first:
 			targetAngle = gyro.angle
 			first = False
@@ -148,7 +153,7 @@ def gyroCallback(gyro):
 
 	#third edge
 	if statemachine == 5:
-		print("statemachine 5")
+		printDebug("statemachine 5")
 		counter=counter+1
 		if counter<=80:        #number same case
 			if first == True:
@@ -168,7 +173,7 @@ def gyroCallback(gyro):
 
 	#intermediate state
 	if statemachine == 56:
-		print("statemachine 56")
+		printDebug("statemachine 56")
 		counter=counter+1
 		move.theta=targetAngle
 		move.x=0.2
@@ -178,7 +183,7 @@ def gyroCallback(gyro):
 			statemachine=60
 
 	if statemachine == 60:
-		print("statemachine 60")
+		printDebug("statemachine 60")
 		counter=counter+1
 		move.theta=gyro.angle
 		move.x=0
