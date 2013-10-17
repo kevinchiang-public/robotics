@@ -32,9 +32,16 @@
             <param name="D" type="string" value="0"/>
         </node>
     </group> 
+    <group>
+        <node name="Mapping" pkg="lab2" type="mapping.py" output="screen">
+            <param name="debug" type="string" value="1"/>
+            <param name="rotationalUnit" type="string" value="10"/>
+
+    </group>
 	<node name="triangle" pkg="lab2" type="triangle.py" output="screen" >
 		<param name="debug" type="string" value="0"/>
 	</node>
+    <node name="Switch" pkg="lab2" type="switch.py" output="screen" />
 	<node name="Arbitrator" pkg="lab2" type="arbitrator.py" output="screen" >
 		<param name="debug" type="string" value="0" />
 	</node>
@@ -56,9 +63,6 @@
 		<param name="debug" type="string" value="0" />
 		<param name="liftPower" type="string" value="0.4" />
 	</node>
-    <!--node name="spinner" pkg="lab2" type="spinner.py" output="screen" >
-        <param name="debug" type="string" value="0" />
-    </node-->
 
 </launch>
 
