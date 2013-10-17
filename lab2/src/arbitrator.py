@@ -20,7 +20,8 @@ class Arbitrator():
         rospy.Subscriber('/angleIntegratorOut', Movement, self.manualJoyControl)
         rospy.Subscriber('/triangleOut', Movement, self.triangleCallback)
         rospy.Subscriber('/reactiveOut', Movement, self.reactiveCallback)
-        rospy.Subscriber('/SpinOut', Movement, self.spinCallback)
+        rospy.Subscriber('/mappingOut', Movement, self.mappingCallback)
+        rospy.Subscriber('/tangentOut', Movement, self.tangentBugCallback)
 
     def joyCallback(self, switch):
         if self.debug == 1:
@@ -35,11 +36,14 @@ class Arbitrator():
             self.state = 'Reactive'
         elif (switch.state == 3):
             self.state = 'Mapper'
+        elif (switch.state == 4):
+            self.state = 'TangentBug'
+
         #Send lift state downstream (to kill thrusters if off)
         self.movement.lift = switch.lift
         publisher = rospy.Publisher('/arbitratorOut', Movement)
 
-	#print "Arbitrator:",self.movement.lift
+        #print "Arbitrator:",self.movement.lift
 
         publisher.publish(self.movement)
 
@@ -76,14 +80,23 @@ class Arbitrator():
             self.movement = deep(move)
             self.movement.mag = 1
             self.movement.lift = liftState
-    
-    def spinCallback(self, move):
+
+    def mappingCallback(self, move):
         if self.state is 'Mapper':
             liftState = self.movement.lift
             self.movement = Movement()
             self.movement = deep(move)
             self.movement.mag = 1
             self.movement.lift = liftState
+
+    def tangentBugCallback(self, move):
+        if self.state is 'TangentBug':
+            liftState = self.movement.lift
+            self.movement = Movement()
+            self.movement = deep(move)
+            self.movement.mag = 1
+            self.movement.lift = liftState
+
 if __name__ == '__main__':
     rospy.init_node('Arbitrator')
     try:
