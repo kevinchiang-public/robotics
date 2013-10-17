@@ -13,6 +13,7 @@ class Spinner():
         rospy.Subscriber('/hovercraft/Gyro', Gyro, self.gyroCallback)
         self.initialAngle = 0
         self.First = True
+
     def gyroCallback(self,gyro):
         if self.First:
             self.initialAngle = gyro.angle
@@ -25,6 +26,7 @@ class Spinner():
             move.y = 0
             move.theta = -10
             publisher = rospy.Publisher('/spinOut', Movement)
+
     def printDebug(self, string):
         if self.debug==1:
             print string

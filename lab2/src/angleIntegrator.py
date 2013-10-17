@@ -75,14 +75,14 @@ class AngleIntegrator():
         if magnitude >= magnitudeThreshold:
             moveOut.theta = rotationalAngle
             moveOut.modType= 'Bound'
-        elif rightBumperMag != 1 or leftBumperMag != 1:
-            moveOut.theta = bumperMag
-            moveOut.modType = 'Add'
-            magnitude = 1
         if math.fabs(self.buttonTargetAngle) > 0:
             magnitude = 1
             moveOut.theta = self.buttonTargetAngle
             moveOut.modType = 'Add'
+        if rightBumperMag != 1 or leftBumperMag != 1:
+            moveOut.theta = bumperMag
+            moveOut.modType = 'Add'
+            magnitude = 1
         
 
         moveOut.x = xAxisR
