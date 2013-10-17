@@ -16,7 +16,7 @@ class Arbitrator():
         self.movement.lift = False
         self.state = 'Manual'
 
-        rospy.Subscriber('/joyArbitrator', Switcher, self.joyCallback)
+        rospy.Subscriber('/switchArbitrator', Switcher, self.joyCallback)
         rospy.Subscriber('/angleIntegratorOut', Movement, self.manualJoyControl)
         rospy.Subscriber('/triangleOut', Movement, self.triangleCallback)
         rospy.Subscriber('/reactiveOut', Movement, self.reactiveCallback)

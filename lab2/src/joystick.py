@@ -88,9 +88,9 @@ class XboxTeleop():
 
     def timerCallback(self, event):
         angleIntegratorPub = rospy.Publisher('/joyOut',MovementRaw)
-        arbitratorPub = rospy.Publisher('/joyArbitrator',Switcher)
+        switchPub = rospy.Publisher('/joySwitch',Switcher)
         angleIntegratorPub.publish(self.movement)
-        arbitratorPub.publish(self.switcher)
+        switchPub.publish(self.switcher)
 
     def debugPrint(self, stringToPrint):
         if (self.debug == 1):
