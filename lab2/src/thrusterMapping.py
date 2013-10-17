@@ -14,7 +14,7 @@ class ThrusterMapping():
         self.thrust = Thruster()
         self.debug = float(rospy.get_param('~debug', '0'))
         self.liftPower = float(rospy.get_param('~liftPower', '.3'))
-        rospy.Subscriber("/thrusterMapping",Movement,self.fireThrusters)
+        rospy.Subscriber("/angularVelocityOut",Movement,self.fireThrusters)
 
     def fireThrusters(self, move):
         theta = deep(move.theta)

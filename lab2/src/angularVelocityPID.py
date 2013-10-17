@@ -50,7 +50,7 @@ class AngularVelocityPID():
             move.theta = 0
 
         #Ship message off to thrusterMapping
-        pub = rospy.Publisher('/thrusterMapping',Movement)
+        pub = rospy.Publisher('/angularVelocityOut',Movement)
         move.x = self.movePass.x
         move.y = self.movePass.y
         move.lift = self.movePass.lift

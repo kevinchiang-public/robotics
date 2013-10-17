@@ -16,7 +16,7 @@
 		   <param name="deadzone" value="0.12" />
 		</node>
 		<node name="joystickControls" pkg="lab2" type="joystick.py" output="screen">
-			<param name="debug" type="string" value="0" />
+			<param name="debug" type="string" value="1" />
 		</node>
 		<node name="angleIntegrator" pkg="lab2" type="angleIntegrator.py" output="screen">
 			<param name="debug" type="string" value="0" />
@@ -36,6 +36,9 @@
         <node name="Mapping" pkg="lab2" type="mapping.py" output="screen">
             <param name="debug" type="string" value="1"/>
             <param name="rotationalUnit" type="string" value="100"/>
+        </node>
+        <node name="Tangent" pkg="lab2" type="tangent.py" output="screen">
+            <param name="debug" type="string" value="1"/>
         </node>
     </group>
 	<node name="triangle" pkg="lab2" type="triangle.py" output="screen" >
