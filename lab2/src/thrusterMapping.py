@@ -50,12 +50,12 @@ class ThrusterMapping():
             #Turn on 4
             self.thrust.thruster5 = 0
             self.thrust.thruster4 = math.fabs(theta)/100.0
-            self.thrust.thruster4 = self.thrust.thruster4 if self.thrust.thruster4 < .5 else .5
+            self.thrust.thruster4 = self.thrust.thruster4 if self.thrust.thruster4 < .7 else .7
         elif theta<0:
             #Turn on 5
             self.thrust.thruster4 = 0
             self.thrust.thruster5 = math.fabs(theta)/100.0
-            self.thrust.thruster5 = self.thrust.thruster5 if self.thrust.thruster5 < .5 else .5
+            self.thrust.thruster5 = self.thrust.thruster5 if self.thrust.thruster5 < .7 else .7
         if (self.debug == 1):
             print ("Thruster 1:%6.2f Thruster 2:%6.2f Thruster 3:%6.2f\nTheta:%6.2f  Thruster 4:%6.2f  Thruster 5:%6.2f Lift:%6.2f\nX: %6.2f Y: %6.2f" %
                    (self.thrust.thruster1, self.thrust.thruster2, self.thrust.thruster3, theta, self.thrust.thruster4, self.thrust.thruster5, self.thrust.lift,x, y))
@@ -73,8 +73,8 @@ class ThrusterMapping():
 
         pub = rospy.Publisher('/hovercraft/Thruster', Thruster)
 
-	#if self.thrust.thruster1 > 0 or self.thrust.thruster2 > 0 or self.thrust.thruster3 > 0 or self.thrust.thruster4 > 0 or self.thrust.thruster5 > 0:	
-	#	print self.thrust
+        #if self.thrust.thruster1 > 0 or self.thrust.thruster2 > 0 or self.thrust.thruster3 > 0 or self.thrust.thruster4 > 0 or self.thrust.thruster5 > 0:
+        #	print self.thrust
 
         pub.publish(self.thrust)
 

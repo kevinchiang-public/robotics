@@ -71,8 +71,8 @@ class AngularPositionPID():
         if math.fabs(targetAngle - currentAngle) < 3:
             r = 0
         self.debugPrint("PosPID: Theta:{:6.2f} TargetAngle:{:6.2f}  GyroAngle:{:6.2f}  "
-        "Diff: {:6.2f} ModType: {:10s}".format(self.movement.theta, targetAngle,
-                                                currentAngle, self.previousError,self.movement.modType))
+        "Diff: {:6.2f} ModType: {:10s} GyroRate: {:6.2f}".format(self.movement.theta, targetAngle,
+                                                                 currentAngle, self.previousError,self.movement.modType,gyro.rate ))
 
         #Ship message off to VelocityPID
         move = Movement()

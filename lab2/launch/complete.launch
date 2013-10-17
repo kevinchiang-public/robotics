@@ -55,9 +55,9 @@
 		<param name="debug" type="string" value="0" />
 		<param name="liftPower" type="string" value="0.4" />
 	</node>
-    <node name="spinner" pkg="lab2" type="spinner.py" output="screen" >
+    <!--node name="spinner" pkg="lab2" type="spinner.py" output="screen" >
         <param name="debug" type="string" value="0" />
-    </node>
+    </node-->
 
 </launch>
 
