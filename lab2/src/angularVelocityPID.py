@@ -40,15 +40,15 @@ class AngularVelocityPID():
 
         self.debugPrint('VelPID: TargetRate:{:5.3f}  Gyro Rate:{:5.3f}  '
                         'RateDiff:{:5.3f}'.format(targetRate, gyro.rate,self.previousError))
-	'''
         #Only reset r if the hovercraft wants to go faster in the offending direction
+        '''
         if gyro.rate < -355 and r < 0:
             debugPrint("Gyro Limiter Engaged -")
             r = 0
         elif gyro.rate > 620 and r > 0:
             debugPrint("Gyro Limiter Engaged +")
             r = 0
-	'''
+        '''
         #Ship message off to thrusterMapping
         pub = rospy.Publisher('/thrusterMapping',Movement)
         move = Movement()
