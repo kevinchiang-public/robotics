@@ -44,7 +44,7 @@ class ReactiveControl():
         self.move.theta = 0
         self.move.y = -r
         self.move.x = 0
-
+        self.move.modType = 'Add'
         publisher.publish(self.move)
 
         #Prints all information related to the ReactiveControl if need be

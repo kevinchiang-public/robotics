@@ -31,19 +31,18 @@ class Switch():
         joyState = self.joySwitcher.state
         publisher = rospy.Publisher('/switchArbitrator', Switcher)
         switchOut = Switcher()
-        switchOut.lift = joySwitcher.lift
+        switchOut.lift = self.joySwitcher.lift
 
         if joyState == 0 or joyState == 1 or joyState == 2:
             switchOut.state = self.joySwitcher.state
 
         elif joyState == 3:
             switchOut.state = self.mappingSwitcher.state
-
-        elif state == 4:
+        elif joyState == 4:
             switchOut.state = self.tangentSwitcher.state
 
         publisher.publish(switchOut) 
-        self.printDebug(str(switchOut.state))
+        #self.printDebug("JoyState: %6.2f, MappingState: %6.2f"%(joyState,self.mappingSwitcher.state))
 
     def printDebug(self,string):
         if self.debug ==1:

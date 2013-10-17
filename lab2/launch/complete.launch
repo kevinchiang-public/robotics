@@ -28,20 +28,22 @@
 		</node>
 		<node name="reactiveControl" pkg="lab2" type="reactiveControl.py"  output="screen" >
             <param name="debug" type="string" value="0"/>
-            <param name="P" type="string" value="1"/>
+            <param name="P" type="string" value="0.5"/>
             <param name="D" type="string" value="0"/>
         </node>
     </group> 
     <group>
         <node name="Mapping" pkg="lab2" type="mapping.py" output="screen">
             <param name="debug" type="string" value="1"/>
-            <param name="rotationalUnit" type="string" value="10"/>
-
+            <param name="rotationalUnit" type="string" value="100"/>
+        </node>
     </group>
 	<node name="triangle" pkg="lab2" type="triangle.py" output="screen" >
 		<param name="debug" type="string" value="0"/>
 	</node>
-    <node name="Switch" pkg="lab2" type="switch.py" output="screen" />
+    <node name="Switch" pkg="lab2" type="switch.py" output="screen" >
+        <param name="debug" type="string" value="1"/>
+    </node>    
 	<node name="Arbitrator" pkg="lab2" type="arbitrator.py" output="screen" >
 		<param name="debug" type="string" value="0" />
 	</node>
@@ -56,12 +58,12 @@
 			<param name="targetRate" type="string" value="10"/>
 			<param name="P" type="string" value=".5"/>
 			<param name="D" type="string" value="0.3"/>
-			<param name="debug" type="string" value="1" />
+			<param name="debug" type="string" value="0" />
 		</node>
 	</group>
 	<node name="thrusterMapping" pkg="lab2" type="thrusterMapping.py" output="screen" >
 		<param name="debug" type="string" value="0" />
-		<param name="liftPower" type="string" value="0.4" />
+		<param name="liftPower" type="string" value="0.3" />
 	</node>
 
 </launch>
