@@ -6,21 +6,23 @@ roslib.load_manifest('hovercraft')
 
 from hovercraft.msg import Gyro
 from lab2.msg import Movement
+from lab2.msg import SpinnerRang
 
 class Spinner():
     def __init__(self):
         self.debug = float(rospy.get_param('~debug','0'))
         rospy.Subscriber('/hovercraft/Gyro', Gyro, self.gyroCallback)
         rospy.Subscriber('/rangeInfo',Range, self.rangeCallback)
+        self.currentAngle = 0
         self.initialAngle = 0
+        self.spin = False
+        self.spinnerRangeMsg = SpinnerRange()
         self.First = True
-        self.IR = []
 
     def gyroCallback(self,gyro):
         if self.First:
             self.initialAngle = gyro.angle
             self.First = False
-        targetAngle = self.initialAngle + 360
         self.printDebug('Initial Angle: %6.2f TargetAngle: %6.2f Gyro Angle: %6.2f'%(self.initialAngle, targetAngle, gyro.angle))
         if gyro.angle > targetAngle:
             move = Movement()

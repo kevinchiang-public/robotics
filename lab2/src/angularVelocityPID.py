@@ -38,26 +38,26 @@ class AngularVelocityPID():
         r = r + self.D*((targetRate - gyro.rate)-self.previousError)
         self.previousError = targetRate - gyro.rate
 
-        self.debugPrint('VelPID: TargetRate:{:5.3f}  Gyro Rate:{:5.3f}  '
-                        'RateDiff:{:5.3f}'.format(targetRate, gyro.rate,self.previousError))
         #Only reset r if the hovercraft wants to go faster in the offending direction
 
-        if gyro.rate < -355 and r < 0:
-            self.debugPrint("Gyro Limiter Engaged -\n\n\n\n\n\n\n")
-            r = 0
-        elif gyro.rate > 620 and r > 0:
-            self.debugPrint("Gyro Limiter Engaged +\n\n\n\n\n\n\n")
-            r = 0
+        move = Movement()
+        move.theta = r
+        if gyro.rate < -280 and r <= 0:
+            self.debugPrint("Gyro Limiter Engaged -\n")
+            move.theta = 0
+        elif gyro.rate > 600 and r >= 0:
+            self.debugPrint("Gyro Limiter Engaged +\n")
+            move.theta = 0
 
         #Ship message off to thrusterMapping
         pub = rospy.Publisher('/thrusterMapping',Movement)
-        move = Movement()
-        move.theta = r
         move.x = self.movePass.x
         move.y = self.movePass.y
         move.lift = self.movePass.lift
         pub.publish(move)
 
+        self.debugPrint('VelPID: TargetRate:{:5.3f}  Gyro Rate:{:5.3f}  '
+                        'RateDiff:{:5.3f}  r:{:5.3f}'.format(targetRate, gyro.rate,self.previousError,r))
 if __name__ == '__main__':
     rospy.init_node('AngularVelocityPID')
     try:
