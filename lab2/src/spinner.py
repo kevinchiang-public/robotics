@@ -23,9 +23,8 @@ class Spinner():
             move = Movement()
             move.x = 0
             move.y = 0
-            move.theta = -1
+            move.theta = -10
             publisher = rospy.Publisher('/spinOut', Movement)
-
     def printDebug(self, string):
         if self.debug==1:
             print string

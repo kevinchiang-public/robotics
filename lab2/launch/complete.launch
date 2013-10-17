@@ -41,7 +41,7 @@
 	
 	<group>
 		<node name="AngularPositionPID" pkg="lab2" type="angularPositionPID.py" output="screen" >
-			<param name="P" type="string" value="1"/>
+			<param name="P" type="string" value="0.8"/>
 			<param name="D" type="string" value="0"/>
 			<param name="debug" type="string" value="0" />
 		</node>

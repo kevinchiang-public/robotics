@@ -79,7 +79,7 @@ class AngleIntegrator():
             moveOut.theta = bumperMag
             moveOut.modType = 'Add'
             magnitude = 1
-        elif self.buttonTargetAngle != 0:
+        if math.fabs(self.buttonTargetAngle) > 0:
             magnitude = 1
             moveOut.theta = self.buttonTargetAngle
             moveOut.modType = 'Add'
