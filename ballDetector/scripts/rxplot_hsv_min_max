@@ -1,0 +1,5 @@
+#!/bin/bash
+
+rxplot -p 20 /hsv/center/high/h/data,/hsv/center/mean/h/data,/hsv/center/low/h/data &
+rxplot -p 20 /hsv/center/high/s/data,/hsv/center/mean/s/data,/hsv/center/low/s/data &
+rxplot -p 20 /hsv/center/high/v/data,/hsv/center/mean/v/data,/hsv/center/low/v/data &

@@ -1,0 +1,18 @@
+<package>
+  <description brief="landmarkSelfSim">
+
+     landmarkSelfSim
+
+  </description>
+  <author>Carrick Detweiler</author>
+  <license>BSD</license>
+  <review status="unreviewed" notes=""/>
+  <url>http://ros.org/wiki/landmarkSelfSim</url>
+  <depend package="usb_cam"/>
+  <depend package="roscpp"/>
+  <depend package="cv_bridge"/>
+  <depend package="opencv2"/>
+
+</package>
+
+
