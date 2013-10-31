@@ -74,7 +74,7 @@ LandmarkDetector::LandmarkDetector()
 GrayImage cvToGrayImage(cv::Mat img){
   //Use opencv to conver to gray
   cv::Mat grayImg;
-  cv::cvtColor(img,grayImg,CV_RGB2GRAY);  
+  cv::cvtColor(img,grayImg,CV_RGB2GRAY);
   //Create a gray mcimg of the correct size
   //fprintf(stderr,"cols: %d, rows: %d\n",grayImg.cols,grayImg.rows);
   GrayImage retImg = newGrayImage(grayImg.cols,grayImg.rows);
@@ -84,7 +84,7 @@ GrayImage cvToGrayImage(cv::Mat img){
       imRef(retImg,j,i) = grayImg.at<uchar>(i,j);
     }
   }
-        
+
   return retImg;
 }
 
@@ -101,8 +101,8 @@ void LandmarkDetector::imageCb(const sensor_msgs::ImageConstPtr& msg){
   //Get a the image just as a Mat
   cv::Mat colorImg = cv_ptr->image;//.clone();
 
-  GrayImage im1;
-  landmarks lamarr;
+  GrayImage im1, rim1;
+  landmarks lamarr, lamarrRev;
   double factor = FACTOR_DEFAULT;
   int spacing = SPACING_DEFAULT;
   int window = WINDOW_DEFAULT;
@@ -117,18 +117,53 @@ void LandmarkDetector::imageCb(const sensor_msgs::ImageConstPtr& msg){
 
   //Get the mcimg formated image
   im1 = cvToGrayImage(colorImg);
-  lamarr = landmarkParams(im1, NULL, //"out.match.ppm", 
+  rim1 = cvToGrayImage(colorImg);
+  for (int i = 0; i < rim1->height; i++)
+      for (int j = 0; j < i; j++)
+      {
+          uchar temp = rim1->data[i][j];
+          rim1->data[i][j] = rim1->data[j][i];
+          rim1->data[j][i] = temp;
+      }
+
+
+  lamarr = landmarkParams(im1, NULL, //"out.match.ppm",
                           verbose, drawX,
                           window, peakw, threshold,
                           factor, spacing, skip, ycoord);
-  //Free the image
+  lamarrRev = landmarkParams(rim1, NULL, //"out.match.ppm",
+                             verbose, drawX,
+                             window, peakw, threshold,
+                             factor, spacing, skip, ycoord);
+
+//Free the image
   imFree(im1);
+  imFree(rim1);
 
   //Create a smaller image that we will mark up
   #define SCALE_FACTOR 1.0
   cv::Mat smlImg = cv::Mat();
   cv::resize(colorImg,smlImg,cv::Size(),SCALE_FACTOR,SCALE_FACTOR,
              cv::INTER_NEAREST);
+
+  //Copy the reverse landmarks found into lamarr
+  for (int i = 0; i < lamarrRev.count; i++)
+  {
+      if (lamarr.count < 99)
+      {
+          //Swap x and y positions so it displays correctly on debug
+          int xtopTemp = lamarrRev.lm[i].xtop;
+          lamarrRev.lm[i].xtop = lamarrRev.lm[i].xbottom;
+          lamarrRev.lm[i].xbottom = xtopTemp;
+
+          int ytopTemp = lamarrRev.lm[i].ytop;
+          lamarrRev.lm[i].ytop = lamarrRev.lm[i].ybottom;
+          lamarrRev.lm[i].ybottom = ytopTemp;
+
+          lamarr.lm[lamarr.count] = lamarrRev.lm[i];
+          lamarr.count++;
+      }
+  }
 
   for (int i=0; i<lamarr.count; i++) {
     landm lam = lamarr.lm[i];
@@ -144,7 +179,7 @@ void LandmarkDetector::imageCb(const sensor_msgs::ImageConstPtr& msg){
     landmarkLoc.ybottom = lam.ybottom;
     landmarkLoc.code = lam.code;
     //Compute the distance
-    landmarkLoc.height = sqrt((lam.xtop-lam.xbottom)*(lam.xtop-lam.xbottom) 
+    landmarkLoc.height = sqrt((lam.xtop-lam.xbottom)*(lam.xtop-lam.xbottom)
                               +(lam.ytop-lam.ybottom)*(lam.ytop-lam.ybottom) );
     //Publish it
     landmark_pub_.publish(landmarkLoc);
