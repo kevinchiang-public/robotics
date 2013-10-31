@@ -100,7 +100,6 @@ void LandmarkDetector::imageCb(const sensor_msgs::ImageConstPtr& msg){
 
     //Get a the image just as a Mat
     cv::Mat colorImg = cv_ptr->image;//.clone();
-    cv::Mat colorImgRev = colorImg.t();
     GrayImage im1, rim1;
     landmarks lamarr, lamarrRev;
     double factor = FACTOR_DEFAULT;
@@ -117,7 +116,11 @@ void LandmarkDetector::imageCb(const sensor_msgs::ImageConstPtr& msg){
 
     //Get the mcimg formated image
     im1 = cvToGrayImage(colorImg);
-    rim1 = cvToGrayImage(colorImgRev);
+    rim1 = cvToGrayImage(colorImg);
+    for (int i = 0; i < im1->height; i++)
+      for (int j = 0; j < im1->width; j++)
+           rim1->data[im1->height - i - 1][im1->width - j - 1] = im1->data[i][j];
+
     lamarr = landmarkParams(im1, NULL, //"out.match.ppm",
                             verbose, drawX,
                             window, peakw, threshold,
@@ -141,15 +144,6 @@ void LandmarkDetector::imageCb(const sensor_msgs::ImageConstPtr& msg){
     {
         if (lamarr.count < 99)
         {
-            //Swap x and y positions so it displays correctly on debug
-            int xtopTemp = lamarrRev.lm[i].xtop;
-            lamarrRev.lm[i].xtop = lamarrRev.lm[i].xbottom;
-            lamarrRev.lm[i].xbottom = xtopTemp;
-
-            int ytopTemp = lamarrRev.lm[i].ytop;
-            lamarrRev.lm[i].ytop = lamarrRev.lm[i].ybottom;
-            lamarrRev.lm[i].ybottom = ytopTemp;
-
             lamarr.lm[lamarr.count] = lamarrRev.lm[i];
             lamarr.count++;
         }
@@ -205,6 +199,11 @@ void LandmarkDetector::imageCb(const sensor_msgs::ImageConstPtr& msg){
     cv_ptr->image = smlImg;
     cv_ptr->encoding = enc::BGR8;
     outImg_pub_.publish(cv_ptr->toImageMsg());
+    //cv::resize(colorImgRev,smlImg,cv::Size(),SCALE_FACTOR,SCALE_FACTOR,
+    //           cv::INTER_NEAREST);
+   // cv_ptr->image = smlImg;
+   // outImg_pub_.publish(cv_ptr->toImageMsg());   
+
 }
 
 
