@@ -1,0 +1,21 @@
+<package>
+  <description brief="lab3">
+
+     lab3
+
+  </description>
+  <author>Dopey</author>
+  <license>BSD</license>
+  <review status="unreviewed" notes=""/>
+  <url>http://ros.org/wiki/lab3</url>
+  <depend package="ballDetector"/>
+  <depend package="cereal_port"/>
+  <depend package="hoverboard"/>
+  <depend package="hovercraft"/>
+  <depend package="landmarkSelfSim"/>
+  <depend package="rxtx"/>
+  <depend package="usb_cam"/>
+
+</package>
+
+
