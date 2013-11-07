@@ -10,27 +10,28 @@ import math
 class CameraIntegrator():
     def __init__(self):
         self.debug = float(rospy.get_param('~debug', '1'))
-	self.targetDistance=40 #distance from camera to the front most point of hovercraft is 15 cm, the mimal camera 	distance is 36 cm
         self.previousError=0
         self.P = float(rospy.get_param('~P','1'))
         self.D = float(rospy.get_param('~D','0'))
+        #distance from camera to the front most point of hovercraft is 15 cm, the mimal camera   distance is 36 cm
+        self.targetDistance = float(rospy.get_param('~Distance', '40'))
         self.move = Movement()
         rospy.Subscriber('/landmarkLocation', landmarkLocation, self.integrateRawValues) #Probably wrong
-	
+
     def integrateRawValues(self, landmarkLoc):
         #Grab data from camera
         centerX=(landmarkLoc.xtop+landmarkLoc.xbottom)/2
         centerY=(landmarkLoc.ytop+landmarkLoc.ybottom)/2
-	height=landmarkLoc.height
-	code=landmarkLoc.code
+        height=landmarkLoc.height
+        code=landmarkLoc.code
 
         #Calculate actual distance using interpolated polynomial
-	distance=self.calcDistance(height)
+        distance=self.calcDistance(height)
 
-	#PI control for y axis only
-	currentDistance=distance
-	targetDistance=self.targetDistance
-	r = self.P*(targetDistance-currentDistance)
+        #PI control for y axis only
+        currentDistance=distance
+        targetDistance=self.targetDistance
+        r = self.P*(targetDistance-currentDistance)
         r = r + self.D*((targetDistance - currentDistance) - self.previousError)
 
         self.previousError = targetDistance - currentDistance

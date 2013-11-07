@@ -15,58 +15,59 @@
       <param name="dev" type="string" value="/dev/input/js0" />
       <param name="deadzone" value="0.12" />
     </node>
-    <node name="joystickControls" pkg="lab2" type="joystick.py" output="screen">
+    <node name="joystickControls" pkg="lab3" type="joystick.py" output="screen">
       <param name="debug" type="string" value="1" />
     </node>
-    <node name="angleIntegrator" pkg="lab2" type="angleIntegrator.py" output="screen">
+    <node name="angleIntegrator" pkg="lab3" type="angleIntegrator.py" output="screen">
       <param name="debug" type="string" value="0" />
     </node>
   </group>
   <group>
-    <node name="RangeIntegrator" pkg="lab2" type="rangeFinderIntegrator.py" output="screen">
+    <node name="RangeIntegrator" pkg="lab3" type="rangeFinderIntegrator.py" output="screen">
       <param name="debug" type="string" value="0"/>
     </node>
-    <node name="reactiveControl" pkg="lab2" type="reactiveControl.py"  output="screen" >
+    <node name="reactiveControl" pkg="lab3" type="reactiveControl.py"  output="screen" >
       <param name="debug" type="string" value="0"/>
       <param name="P" type="string" value="0.5"/>
       <param name="D" type="string" value="0"/>
     </node>
   </group>
-  <node name="triangle" pkg="lab2" type="triangle.py" output="screen" >
+  <node name="triangle" pkg="lab3" type="triangle.py" output="screen" >
     <param name="debug" type="string" value="0"/>
   </node>
-  <node name="Switch" pkg="lab2" type="switch.py" output="screen" >
+  <node name="Switch" pkg="lab3" type="switch.py" output="screen" >
     <param name="debug" type="string" value="1"/>
   </node>
-  <node name="Arbitrator" pkg="lab2" type="arbitrator.py" output="screen" >
+  <node name="Arbitrator" pkg="lab3" type="arbitrator.py" output="screen" >
     <param name="debug" type="string" value="0" />
   </node>
   <!--
-      <node name="BallDozer" pkg="lab2" type="BallDozer.py" output="screen">
+      <node name="BallDozer" pkg="lab3" type="BallDozer.py" output="screen">
       <param name="debug" type="string" value="0" />
       </node>
   -->
-  <node name="Visual Servo" pkg="lab2" type="vServo.py" output="screen">
+  <node name="VisualServo" pkg="lab3" type="vServo.py" output="screen">
     <param name="debug" type="string" value="0"/>
     <param name="P" type="string" value="0"/>
     <param name="D" type="string" value="0"/>
     <param name="Distance" type="string" value="0"/>
     <param name="LandmarkNumber" type="string" value="0"/>
   </node>
+  <node name="LandmarkDetection" pkg="?" type="?" output="screen"/>
   <group>
-    <node name="AngularPositionPID" pkg="lab2" type="angularPositionPID.py" output="screen" >
+    <node name="AngularPositionPID" pkg="lab3" type="angularPositionPID.py" output="screen" >
       <param name="P" type="string" value="1"/>
       <param name="D" type="string" value="0.2"/>
       <param name="debug" type="string" value="0" />
     </node>
-    <node name="AngularVelocityPID" pkg="lab2" type="angularVelocityPID.py" output="screen" >
+    <node name="AngularVelocityPID" pkg="lab3" type="angularVelocityPID.py" output="screen" >
       <param name="targetRate" type="string" value="10"/>
       <param name="P" type="string" value=".5"/>
       <param name="D" type="string" value="0.3"/>
       <param name="debug" type="string" value="0" />
     </node>
   </group>
-  <node name="thrusterMapping" pkg="lab2" type="thrusterMapping.py" output="screen" >
+  <node name="thrusterMapping" pkg="lab3" type="thrusterMapping.py" output="screen" >
     <param name="debug" type="string" value="0" />
     <param name="liftPower" type="string" value="0.3" />
   </node>

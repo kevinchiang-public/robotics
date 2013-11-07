@@ -21,7 +21,7 @@ class Switch():
 
     def mappingCallback(self,switch):
          self.mappingSwitcher = switch
-        self.switch(self.mappingSwitcher)
+         self.switch(self.mappingSwitcher)
 
     def tangentCallback(self,switch):
         self.tangentSwitcher = switch
