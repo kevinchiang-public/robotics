@@ -52,21 +52,22 @@
     <param name="D" type="string" value="0"/>
     <param name="Distance" type="string" value="0"/>
     <param name="LandmarkNumber" type="string" value="0"/>
-    <group>
-      <node name="AngularPositionPID" pkg="lab2" type="angularPositionPID.py" output="screen" >
-        <param name="P" type="string" value="1"/>
-        <param name="D" type="string" value="0.2"/>
-        <param name="debug" type="string" value="0" />
-      </node>
-      <node name="AngularVelocityPID" pkg="lab2" type="angularVelocityPID.py" output="screen" >
-        <param name="targetRate" type="string" value="10"/>
-        <param name="P" type="string" value=".5"/>
-        <param name="D" type="string" value="0.3"/>
-        <param name="debug" type="string" value="0" />
-      </node>
-    </group>
-    <node name="thrusterMapping" pkg="lab2" type="thrusterMapping.py" output="screen" >
+  </node>
+  <group>
+    <node name="AngularPositionPID" pkg="lab2" type="angularPositionPID.py" output="screen" >
+      <param name="P" type="string" value="1"/>
+      <param name="D" type="string" value="0.2"/>
       <param name="debug" type="string" value="0" />
-      <param name="liftPower" type="string" value="0.3" />
     </node>
-  </launch>
+    <node name="AngularVelocityPID" pkg="lab2" type="angularVelocityPID.py" output="screen" >
+      <param name="targetRate" type="string" value="10"/>
+      <param name="P" type="string" value=".5"/>
+      <param name="D" type="string" value="0.3"/>
+      <param name="debug" type="string" value="0" />
+    </node>
+  </group>
+  <node name="thrusterMapping" pkg="lab2" type="thrusterMapping.py" output="screen" >
+    <param name="debug" type="string" value="0" />
+    <param name="liftPower" type="string" value="0.3" />
+  </node>
+</launch>
