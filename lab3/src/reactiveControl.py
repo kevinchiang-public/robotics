@@ -15,7 +15,6 @@ class ReactiveControl():
         self.D = float(rospy.get_param('~D','0'))
         self.move = Movement()
 
-
     def reactToRange(self,rangeInfo):
         left = rangeInfo.leftDistanceCM
         right= rangeInfo.rightDistanceCM
