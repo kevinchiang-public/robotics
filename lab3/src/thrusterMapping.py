@@ -1,9 +1,9 @@
 #!/usr/bin/env python
 import rospy
 import roslib
-roslib.load_manifest('lab2')
+roslib.load_manifest('lab3')
 roslib.load_manifest('hovercraft')
-from lab2.msg import Movement
+from lab3.msg import Movement
 from hovercraft.msg import Thruster
 import math
 from copy import deepcopy as deep

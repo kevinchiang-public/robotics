@@ -2,10 +2,10 @@
 import rospy
 import roslib
 import math
-roslib.load_manifest('lab2')
+roslib.load_manifest('lab3')
 roslib.load_manifest('hovercraft')
 from hovercraft.msg import Gyro
-from lab2.msg import Movement
+from lab3.msg import Movement
 from copy import deepcopy as deep
 class AngularVelocityPID():
     def __init__(self):

@@ -2,9 +2,9 @@
 import rospy
 import roslib
 roslib.load_manifest('landmarkSelfSim')
-roslib.load_manifest('lab2')
+roslib.load_manifest('lab3')
 from landmarkSelfSim.msg import landmarkLocation
-from lab2.msg import Movement
+from lab3.msg import Movement
 import math
 
 class CameraIntegrator():
@@ -18,7 +18,6 @@ class CameraIntegrator():
         self.height = 0
         self.code = -2
 
-        #distance from camera to the front most point of hovercraft is 15 cm, the mimal camera   distance is 36 cm
         self.targetDistance = float(rospy.get_param('~Distance', '40'))
 
         #The landmark to find.  If set to -1, it will follow any landmark visible
@@ -26,7 +25,7 @@ class CameraIntegrator():
         self.targetLandmark = float(rospy.get_param('~LandmarkNumber', '-1'))
         self.move = Movement()
         rospy.Timer(rospy.Duration(.1), self.moveHovercraft)
-        rospy.Subscriber('/landmarkLocation', landmarkLocation, self.integrateRawValues)
+        rospy.Subscriber('/landmarkArbitratorOut', landmarkLocation, self.integrateRawValues)
 
     #Set on a timer to continue moving the hovercraft
     #in the last set direction in case the landmark is lost
@@ -51,7 +50,7 @@ class CameraIntegrator():
         #If we get a bad height reading, just publish the previous move message
         publisher = rospy.Publisher('/visualServoOut', Movement)
         if (height != 0 and (code == targetLandmark or targetLandmark == -1):
-            self.move.theta = self.getTargetAngle(0) #Change this later (when we figure out how to do it)
+            self.move.theta = self.getTargetAngle()
             self.move.y = -r
             self.move.x = 0
             self.move.modType = 'Add'

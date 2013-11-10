@@ -2,9 +2,9 @@
 import rospy
 import roslib
 roslib.load_manifest('hovercraft')
-roslib.load_manifest('lab2')
+roslib.load_manifest('lab3')
 from hoverboard.msg import ADCRaw
-from lab2.msg import Range
+from lab3.msg import Range
 import math
 
 class RangeFinderIntegrator():

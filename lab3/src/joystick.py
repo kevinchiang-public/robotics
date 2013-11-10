@@ -2,10 +2,10 @@
 import rospy
 import roslib
 roslib.load_manifest('hovercraft')
-roslib.load_manifest('lab2')
+roslib.load_manifest('lab3')
 from sensor_msgs.msg import Joy
-from lab2.msg import MovementRaw
-from lab2.msg import Switcher
+from lab3.msg import MovementRaw
+from lab3.msg import Switcher
 import math
 from copy import deepcopy as deep
 class XboxTeleop():

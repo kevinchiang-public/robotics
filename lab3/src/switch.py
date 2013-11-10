@@ -1,8 +1,8 @@
 #!/usr/bin/env python
 import rospy
 import roslib
-roslib.load_manifest('lab2')
-from lab2.msg import Switcher
+roslib.load_manifest('lab3')
+from lab3.msg import Switcher
 
 class Switch():
     def __init__(self):

@@ -1,11 +1,11 @@
 #!/usr/bin/env python
 import rospy
 import roslib
-roslib.load_manifest('lab2')
+roslib.load_manifest('lab3')
 
 from sensor_msgs.msg import Joy
 from hovercraft.msg import Thruster
-from lab2.msg import Switcher, MovementRaw, Movement
+from lab3.msg import Switcher, MovementRaw, Movement
 from copy import deepcopy as deep
 class Arbitrator():
     def __init__(self):
