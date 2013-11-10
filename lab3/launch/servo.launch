@@ -4,6 +4,6 @@
     <param name="P" type="string" value="1.0"/>
     <param name="D" type="string" value="0"/>
     <param name="Distance" type="string" value="40"/>
-    <param name="LandmarkNumber" type="string" value="0"/>
+    <param name="LandmarkNumber" type="string" value="-1"/>
   </node>
 </launch>

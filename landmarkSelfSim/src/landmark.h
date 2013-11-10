@@ -8,6 +8,7 @@ typedef struct {
   int xbottom;
   int ybottom;
   int code;
+  int reversed;
 } landm;
 
 typedef struct {

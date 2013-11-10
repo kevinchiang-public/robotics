@@ -11,31 +11,32 @@ class CameraIntegrator():
     def __init__(self):
         self.debug = float(rospy.get_param('~debug', '1'))
         self.previousYError=0
-        self.P = float(rospy.get_param('~P','1'))
-        self.D = float(rospy.get_param('~D','0'))
-        self.centerX = 0
-        self.centerY = 0
+        self.previousXError=0
+        self.PY = float(rospy.get_param('~Py','1'))
+        self.DY = float(rospy.get_param('~Dy','0'))
+        self.PX = float(rospy.get_param('~Px','1'))
+        self.DX = float(rospy.get_param('~Dx','0'))
         self.height = 0
         self.code = -2
 
-        self.targetDistance = float(rospy.get_param('~Distance', '40'))
+        self.YtargetDistance = float(rospy.get_param('~Distance', '40'))
+        self.XtargetDistance = 0.0
 
         #The landmark to find.  If set to -1, it will follow any landmark visible
         #Two landmarks visible at once with -1 will result in undefined behavior
         self.targetLandmark = float(rospy.get_param('~LandmarkNumber', '-1'))
         self.move = Movement()
         rospy.Timer(rospy.Duration(.1), self.moveHovercraft)
-        rospy.Subscriber('/landmarkArbitratorOut', landmarkLocation, self.integrateRawValues)
+        rospy.Subscriber('landmarkLocation', landmarkLocation, self.integrateRawValues)
 
     #Set on a timer to continue moving the hovercraft
     #in the last set direction in case the landmark is lost
-    def moveHovercraft(self):
+    def moveHovercraft(self, event):
+        publisher = rospy.Publisher('/visualServoOut', Movement)
         publisher.publish(self.move)
 
     def integrateRawValues(self, landmarkLoc):
         #Grab data from camera
-        centerX=(landmarkLoc.xtop+landmarkLoc.xbottom)/2.0
-        centerY=(landmarkLoc.ytop+landmarkLoc.ybottom)/2.0
         height=landmarkLoc.height
         code=landmarkLoc.code
 
@@ -45,21 +46,19 @@ class CameraIntegrator():
             distance=self.calcDistance(height)
 
         #Get the target translational thrust in Y direction
-        yR = yPID(distance)
-
+        yR = self.yPID(distance)
         #If we get a bad height reading, just publish the previous move message
-        publisher = rospy.Publisher('/visualServoOut', Movement)
-        if (height != 0 and (code == targetLandmark or targetLandmark == -1):
-            self.move.theta = self.getTargetAngle()
-            self.move.y = -r
+        if (height != 0 and (code == self.targetLandmark or self.targetLandmark == -1)):
+            self.move.theta = self.getTargetAngle(landmarkLoc.centerDistance) #If rotation is backwards, make negative
+            self.move.y = -yR
             self.move.x = 0
             self.move.modType = 'Add'
 
     def yPID(self, currentDistance):
         #PD control for y axis only
-        targetDistance=self.targetDistance
-        r = self.P*(targetDistance-currentDistance)
-        r = r + self.D*((targetDistance - currentDistance) - self.previousYError)
+        targetDistance=self.YtargetDistance
+        r = self.PY*(targetDistance-currentDistance)
+        r = r + self.DY*((targetDistance - currentDistance) - self.previousYError)
         self.previousYError = targetDistance - currentDistance
 
         #Deadband
@@ -67,8 +66,8 @@ class CameraIntegrator():
             r = 0
 
         self.debugPrint("yR: %6.2f Target Distance: %6.2f    Current Distance: %6.2f "
-                        "Previous Error: %6.2f Height: %6.2f"%
-                        (-r, targetDistance,currentDistance,self.previousError, height))
+                        "Previous Error: %6.2f "%
+                        (-r, targetDistance,currentDistance,self.previousYError))
 
         #Arbitrary division to get r into appropriate thruster range
         #(determined via some trial-and-error experimentation)
@@ -80,9 +79,27 @@ class CameraIntegrator():
         return r
 
     #Determines the target angle of the hovercraft based on
-    #the center of the landmark w.r.t. the entire camera image
-    def getTargetAngle(self, center): #TODO: IMPLEMENT
-            return 0.0
+    #the difference in distance between the center of the
+    #landmark and the hardcoded 320 width camera image
+    def getTargetAngle(self, centerDifference):
+        #PD control for theta
+        targetDistance=self.XtargetDistance
+        r = self.PX*(targetDistance-centerDifference)
+        r = r + self.DX*((targetDistance - centerDifference) - self.previousXError)
+        self.previousXError = targetDistance - centerDifference
+
+        #Deadband
+        if math.fabs(targetDistance - centerDifference) < 5:
+            r = 0
+
+        #Arbitrary division to get r into appropriate thruster range
+        #(determined via some trial-and-error experimentation)
+        r = r/50.0
+        if r > 1:
+            r = 1
+        elif r < -1:
+            r = -1
+        return r
 
     def calcDistance(self, rawValue):
         returnVal = 7334.9 * math.pow(rawValue, -0.996)

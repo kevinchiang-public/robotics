@@ -140,13 +140,14 @@ void LandmarkDetector::imageCb(const sensor_msgs::ImageConstPtr& msg){
 	cv::Mat smlImg = cv::Mat();
 	cv::resize(colorImg,smlImg,cv::Size(),SCALE_FACTOR,SCALE_FACTOR,
 			   cv::INTER_NEAREST);
-
+	for (int i = 0; i < lamarr.count; i++)
+		lamarr.lm[i].reversed = 0;
 	//Copy the reverse landmarks found into lamarr
 	for (int i = 0; i < lamarrRev.count; i++)
 	{
 		if (lamarr.count < 99)
 		{
-
+			lamarrRev.lm[i].reversed = 1;
 			lamarr.lm[lamarr.count] = lamarrRev.lm[i];
 
 			int temp = lamarr.lm[lamarr.count].xbottom;
@@ -163,7 +164,9 @@ void LandmarkDetector::imageCb(const sensor_msgs::ImageConstPtr& msg){
 
 	for (int i=0; i<lamarr.count; i++) {
 		landm lam = lamarr.lm[i];
-		ROS_INFO("Landmark at %3d,%3d to %d,%d - code = %d\n",
+
+
+		ROS_INFO("Landmark at %3d,%3d to %d,%d - code = %d",
 				 lam.xtop, lam.ytop, lam.xbottom, lam.ybottom, lam.code);
 		//ROS_INFO("rim1 width: %3d, height: %3d",rim1->width, rim1->height);
 		landmarkSelfSim::landmarkLocation landmarkLoc;
@@ -177,6 +180,17 @@ void LandmarkDetector::imageCb(const sensor_msgs::ImageConstPtr& msg){
 		//Compute the distance
 		landmarkLoc.height = sqrt((lam.xtop-lam.xbottom)*(lam.xtop-lam.xbottom)
 								  +(lam.ytop-lam.ybottom)*(lam.ytop-lam.ybottom) );
+
+
+		//Testing for center of the landmark
+		float revMult = -4.0;
+		if (lamarr.lm[i].reversed == 1)
+			revMult = 4.0;
+		float xMid = fmax(lam.xtop,lam.xbottom)+revMult*(((float)landmarkLoc.height*1.386)/9.875);
+		float yMid = ((float)lam.ytop+(float)lam.ybottom)/2.0;
+		ROS_INFO("Center of Landmark at (%4f, %4f)\n",xMid,yMid);
+		//Used to determine rotation in visual servo
+		landmarkLoc.centerDistance = 160 - xMid;
 		//Publish it
 		landmark_pub_.publish(landmarkLoc);
 
@@ -203,6 +217,9 @@ void LandmarkDetector::imageCb(const sensor_msgs::ImageConstPtr& msg){
 		ss << lam.code;
 		cv::putText(smlImg,ss.str(),
 					cv::Point(lam.xbottom*SCALE_FACTOR-PLUS_SIZE*5,lam.ybottom*SCALE_FACTOR-PLUS_SIZE),
+					cv::FONT_HERSHEY_SIMPLEX,SCALE_FACTOR,PLUS_COLOR);
+		cv::putText(smlImg,"+",
+					cv::Point(xMid*SCALE_FACTOR,yMid*SCALE_FACTOR),
 					cv::FONT_HERSHEY_SIMPLEX,SCALE_FACTOR,PLUS_COLOR);
 	}
 

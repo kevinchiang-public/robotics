@@ -5,7 +5,7 @@ int32 xtop
 int32 ytop
 int32 xbottom
 int32 ybottom
-
+float64 centerDistance
 # Height of the landmark as computed as the distance between the top
 # and bottom points.
 float64 height

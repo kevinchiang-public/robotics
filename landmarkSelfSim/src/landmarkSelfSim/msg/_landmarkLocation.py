@@ -7,7 +7,7 @@ import struct
 import std_msgs.msg
 
 class landmarkLocation(genpy.Message):
-  _md5sum = "5fff4f104cc29dd1741797346a6aa89e"
+  _md5sum = "9919203a804b01c504c068baed4b726d"
   _type = "landmarkSelfSim/landmarkLocation"
   _has_header = True #flag to mark the presence of a Header object
   _full_text = """Header header
@@ -17,7 +17,7 @@ int32 xtop
 int32 ytop
 int32 xbottom
 int32 ybottom
-
+float64 centerDistance
 # Height of the landmark as computed as the distance between the top
 # and bottom points.
 float64 height
@@ -46,8 +46,8 @@ time stamp
 string frame_id
 
 """
-  __slots__ = ['header','xtop','ytop','xbottom','ybottom','height','code']
-  _slot_types = ['std_msgs/Header','int32','int32','int32','int32','float64','int32']
+  __slots__ = ['header','xtop','ytop','xbottom','ybottom','centerDistance','height','code']
+  _slot_types = ['std_msgs/Header','int32','int32','int32','int32','float64','float64','int32']
 
   def __init__(self, *args, **kwds):
     """
@@ -57,7 +57,7 @@ string frame_id
     changes.  You cannot mix in-order arguments and keyword arguments.
 
     The available fields are:
-       header,xtop,ytop,xbottom,ybottom,height,code
+       header,xtop,ytop,xbottom,ybottom,centerDistance,height,code
 
     :param args: complete set of field values, in .msg order
     :param kwds: use keyword arguments corresponding to message field names
@@ -76,6 +76,8 @@ string frame_id
         self.xbottom = 0
       if self.ybottom is None:
         self.ybottom = 0
+      if self.centerDistance is None:
+        self.centerDistance = 0.
       if self.height is None:
         self.height = 0.
       if self.code is None:
@@ -86,6 +88,7 @@ string frame_id
       self.ytop = 0
       self.xbottom = 0
       self.ybottom = 0
+      self.centerDistance = 0.
       self.height = 0.
       self.code = 0
 
@@ -110,7 +113,7 @@ string frame_id
         length = len(_x)
       buff.write(struct.pack('<I%ss'%length, length, _x))
       _x = self
-      buff.write(_struct_4idi.pack(_x.xtop, _x.ytop, _x.xbottom, _x.ybottom, _x.height, _x.code))
+      buff.write(_struct_4i2di.pack(_x.xtop, _x.ytop, _x.xbottom, _x.ybottom, _x.centerDistance, _x.height, _x.code))
     except struct.error as se: self._check_types(se)
     except TypeError as te: self._check_types(te)
 
@@ -138,8 +141,8 @@ string frame_id
         self.header.frame_id = str[start:end]
       _x = self
       start = end
-      end += 28
-      (_x.xtop, _x.ytop, _x.xbottom, _x.ybottom, _x.height, _x.code,) = _struct_4idi.unpack(str[start:end])
+      end += 36
+      (_x.xtop, _x.ytop, _x.xbottom, _x.ybottom, _x.centerDistance, _x.height, _x.code,) = _struct_4i2di.unpack(str[start:end])
       return self
     except struct.error as e:
       raise genpy.DeserializationError(e) #most likely buffer underfill
@@ -161,7 +164,7 @@ string frame_id
         length = len(_x)
       buff.write(struct.pack('<I%ss'%length, length, _x))
       _x = self
-      buff.write(_struct_4idi.pack(_x.xtop, _x.ytop, _x.xbottom, _x.ybottom, _x.height, _x.code))
+      buff.write(_struct_4i2di.pack(_x.xtop, _x.ytop, _x.xbottom, _x.ybottom, _x.centerDistance, _x.height, _x.code))
     except struct.error as se: self._check_types(se)
     except TypeError as te: self._check_types(te)
 
@@ -190,12 +193,12 @@ string frame_id
         self.header.frame_id = str[start:end]
       _x = self
       start = end
-      end += 28
-      (_x.xtop, _x.ytop, _x.xbottom, _x.ybottom, _x.height, _x.code,) = _struct_4idi.unpack(str[start:end])
+      end += 36
+      (_x.xtop, _x.ytop, _x.xbottom, _x.ybottom, _x.centerDistance, _x.height, _x.code,) = _struct_4i2di.unpack(str[start:end])
       return self
     except struct.error as e:
       raise genpy.DeserializationError(e) #most likely buffer underfill
 
 _struct_I = genpy.struct_I
 _struct_3I = struct.Struct("<3I")
-_struct_4idi = struct.Struct("<4idi")
+_struct_4i2di = struct.Struct("<4i2di")
