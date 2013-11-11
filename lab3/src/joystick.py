@@ -55,10 +55,8 @@ class XboxTeleop():
         #Left Button Logic
         if leftButton == 1 and not self.leftButtonDepressed:
             self.leftButtonDepressed = True
-            self.debugPrint("Left Button Pressed")
-
             #Cycle left (JOYSTICK, TRIANGLE, REACTIVE, MAPPING, TANGENTBUG)
-            self.switchState = 6 if self.switchState - 1 < 0 else self.switchState - 1
+            self.switchState = 7 if self.switchState - 1 < 0 else self.switchState - 1
             self.printState()
         elif leftButton == 0 and self.leftButtonDepressed:
             self.leftButtonDepressed = False
@@ -66,10 +64,9 @@ class XboxTeleop():
         #Right Button Logic
         if rightButton == 1 and not self.rightButtonDepressed:
             self.rightButtonDepressed = True
-            self.debugPrint("Right Button Pressed")
             #Cycle right (Joystick ,triangle, reactive)
-            self.switchState = 0 if self.switchState + 1 > 6 else self.switchState + 1
-            self.debugPrint("State is: " +  str(self.switchState))
+            self.switchState = 0 if self.switchState + 1 > 7 else self.switchState + 1
+            self.printState()
         elif rightButton == 0 and self.rightButtonDepressed:
             self.rightButtonDepressed = False
 
@@ -102,6 +99,8 @@ class XboxTeleop():
             stateString = "Visual Servo"
         elif self.switchState == 6:
             stateString = "Ball Dozer (disabled)"
+        elif self.switchState == 7:
+            stateString = "Publish images to both nodes (can be used for project)"
         self.debugPrint("State is: " +  stateString)
 
     def timerCallback(self, event):

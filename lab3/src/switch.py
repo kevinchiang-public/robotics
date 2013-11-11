@@ -3,6 +3,7 @@ import rospy
 import roslib
 roslib.load_manifest('lab3')
 from lab3.msg import Switcher
+from lab3.msg import DetectionSwitcher
 
 class Switch():
     def __init__(self):
@@ -11,25 +12,19 @@ class Switch():
         rospy.Subscriber('/mappingSwitch',Switcher,self.mappingCallback)
 
         self.joySwitcher = Switcher()
-        self.mappingSwitcher = Switcher()
-        self.tangentSwitcher = Switcher()
-        self.visualServoSwitcher = Switcher()
+        self.mappingSwitcher = Switcher() #Unused for now
+        self.tangentSwitcher = Switcher()  #Unused for now
+        self.visArbOut = DetectionSwitcher()
 
     def joyCallback(self,switch):
         self.joySwitcher = switch
         self.switch(self.joySwitcher)
+        self.visArbOut.state = -1
 
     def mappingCallback(self,switch):
          self.mappingSwitcher = switch
          self.switch(self.mappingSwitcher)
-
-    def tangentCallback(self,switch):
-        self.tangentSwitcher = switch
-        self.switch(self.tangentSwitcher)
-
-    def visualServoCallback(self, switch):
-        self.visualServoSwitcher = switch
-        self.switch(self.visualServoSwitcher)
+         self.visArbOut.state = -1
 
     def switch(self, switch):
         joyState = self.joySwitcher.state
@@ -37,7 +32,16 @@ class Switch():
         switchOut = Switcher()
         switchOut.lift = self.joySwitcher.lift
 
-        if joyState == 0 or joyState == 1 or joyState == 2 or joyState == 5 or joyState == 6:
+        if joyState == 0 or joyState == 1 or joyState == 2 or joyState == 5 or joyState == 6 or joyState == 7:
+            #Do we need the camera?  If so, where should images get published to?
+            if joyState == 5:  #Only publish to landmark detector node
+                self.visArbOut.state = 1
+            elif joyState == 6: #Only publish to ball detector node
+                self.visArbOut.state = 2
+            elif joyState == 7: #Currently not used. Publishes images to ball and landmark nodes
+                self.visArbOut.state = 3
+            else:
+                self.visArbOut.state = -1
             switchOut.state = self.joySwitcher.state
         elif joyState == 3:
             switchOut.state = self.mappingSwitcher.state
@@ -45,7 +49,8 @@ class Switch():
             switchOut.state = self.tangentSwitcher.state
 
         publisher.publish(switchOut)
-        #self.printDebug("JoyState: %6.2f, MappingState: %6.2f"%(joyState,self.mappingSwitcher.state))
+        visArbPublisher = rospy.Publisher('/switcher/visArbitrator', DetectionSwitcher)
+        visArbPublisher.publish(self.visArbOut)
 
     def printDebug(self,string):
         if self.debug ==1:

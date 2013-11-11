@@ -19,7 +19,7 @@ class CameraIntegrator():
         self.height = 0
         self.code = -2
 
-        self.YtargetDistance = float(rospy.get_param('~Distance', '40'))
+        self.YtargetDistance = float(rospy.get_param('~Distance', '80'))
         self.XtargetDistance = 0.0
 
         #The landmark to find.  If set to -1, it will follow any landmark visible
@@ -29,13 +29,17 @@ class CameraIntegrator():
         rospy.Timer(rospy.Duration(.1), self.moveHovercraft)
         rospy.Subscriber('landmarkLocation', landmarkLocation, self.integrateRawValues)
 
+        self.ticksSinceLandmarkSeen = 0
     #Set on a timer to continue moving the hovercraft
     #in the last set direction in case the landmark is lost
     def moveHovercraft(self, event):
-        publisher = rospy.Publisher('/visualServoOut', Movement)
-        publisher.publish(self.move)
+        if (self.ticksSinceLandmarkSeen < 25):
+            publisher = rospy.Publisher('/visualServoOut', Movement)
+            publisher.publish(self.move)
+        self.ticksSinceLandmarkSeen += 1
 
     def integrateRawValues(self, landmarkLoc):
+        self.ticksSinceLandmarkSeen = 0
         #Grab data from camera
         height=landmarkLoc.height
         code=landmarkLoc.code
@@ -49,7 +53,7 @@ class CameraIntegrator():
         yR = self.yPID(distance)
         #If we get a bad height reading, just publish the previous move message
         if (height != 0 and (code == self.targetLandmark or self.targetLandmark == -1)):
-            self.move.theta = self.getTargetAngle(landmarkLoc.centerDistance) #If rotation is backwards, make negative
+            self.move.theta = -(self.getTargetAngle(landmarkLoc.centerDistance)) #If rotation is backwards, make negative
             self.move.y = -yR
             self.move.x = 0
             self.move.modType = 'Add'
@@ -89,7 +93,7 @@ class CameraIntegrator():
         self.previousXError = targetDistance - centerDifference
 
         #Deadband
-        if math.fabs(targetDistance - centerDifference) < 5:
+        if math.fabs(targetDistance - centerDifference) < 15:
             r = 0
 
         #Arbitrary division to get r into appropriate thruster range

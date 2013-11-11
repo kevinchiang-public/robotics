@@ -1,0 +1,20 @@
+<launch>
+  <node name="VisionArbitrator" pkg="lab3" type="visionArbitrator.py" output="screen">
+    <remap from="image" to="/usb_cam/image_raw"/>
+  </node>
+
+  <node name="VisualServo" pkg="lab3" type="vServo.py" output="screen">
+    <param name="debug" type="string" value="1"/>
+    <param name="P" type="string" value="1.0"/>
+    <param name="D" type="string" value="0"/>
+    <param name="Distance" type="string" value="80"/>
+    <param name="LandmarkNumber" type="string" value="-1"/>
+  </node>
+
+  <!--
+      <node name="BallDozer" pkg="lab3" type="BallDozer.py" output="screen">
+      <param name="debug" type="string" value="0" />
+      </node>
+  -->
+
+</launch>

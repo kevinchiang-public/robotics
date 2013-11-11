@@ -9,7 +9,7 @@
   </node>
 
   <node name="landmarkDetector" pkg="landmarkSelfSim" type="landmarkDetector" output="screen">
-    <remap from="image" to="/usb_cam/image_raw"/>
+    <remap from="image" to="/visArbitrator/toLand"/>
   </node>
 
   <rosparam param="thresh/">
@@ -17,7 +17,7 @@
     low: {h: 131, s: 44, v: 66}
   </rosparam>
   <node name="ballDetector" pkg="ballDetector" type="ballDetector" output="screen">
-    <remap from="image" to="/usb_cam/image_raw"/>
+    <remap from="image" to="/visArbitrator/toBall"/>
   </node>
   <!--node name="ballDetectorConfig" pkg="ballDetector" type="configGUI.py"></node-->
 </launch>

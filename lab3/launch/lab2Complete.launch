@@ -41,11 +41,6 @@
   <node name="Arbitrator" pkg="lab3" type="arbitrator.py" output="screen" >
     <param name="debug" type="string" value="0" />
   </node>
-  <!--
-      <node name="BallDozer" pkg="lab3" type="BallDozer.py" output="screen">
-      <param name="debug" type="string" value="0" />
-      </node>
-  -->
   <group>
     <node name="AngularPositionPID" pkg="lab3" type="angularPositionPID.py" output="screen" >
       <param name="P" type="string" value="1"/>
@@ -61,6 +56,6 @@
   </group>
   <node name="thrusterMapping" pkg="lab3" type="thrusterMapping.py" output="screen" >
     <param name="debug" type="string" value="0" />
-    <param name="liftPower" type="string" value="0.3" />
+    <param name="liftPower" type="string" value="0.4" />
   </node>
 </launch>

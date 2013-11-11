@@ -1,9 +1,0 @@
-<launch>
-  <node name="VisualServo" pkg="lab3" type="vServo.py" output="screen">
-    <param name="debug" type="string" value="1"/>
-    <param name="P" type="string" value="1.0"/>
-    <param name="D" type="string" value="0"/>
-    <param name="Distance" type="string" value="40"/>
-    <param name="LandmarkNumber" type="string" value="-1"/>
-  </node>
-</launch>
