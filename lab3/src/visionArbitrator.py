@@ -22,18 +22,18 @@ class VisionArbitrator():
         rospy.Subscriber('/switcher/visArbitrator', DetectionSwitcher, self.switcherCallback)
 
     def cameraCallback(self, image):
-        if self.publishTarget is 'ballDetector':
+        if self.publishTarget == 'ballDetector':
             self.ballPublisher.publish(image)
-        elif self.publishTarget is 'landDetector':
+        elif self.publishTarget == 'landDetector':
             self.landPublisher.publish(image)
-        elif self.publishTarget is 'both':
+        elif self.publishTarget == 'both':
             self.landPublisher.publish(image)
             self.ballPublisher.publish(image)
     def switcherCallback(self, switcher):
-        if switcher.state == 0:
-            self.publishTarget = 'ballDetector'
-        elif switcher.state == 1:
+        if switcher.state == 1:
             self.publishTarget = 'landDetector'
+        elif switcher.state == 2:
+            self.publishTarget = 'ballDetector'
         elif switcher.state == 3:
             self.publishTarget = 'both'
 

@@ -20,6 +20,7 @@
 
 #include <ros/ros.h>
 #include <landmarkSelfSim/landmarkLocation.h>
+#include <landmarkSelfSim/landmarkVisible.h>
 #include <image_transport/image_transport.h>
 #include <cv_bridge/cv_bridge.h>
 #include <sensor_msgs/image_encodings.h>
@@ -53,6 +54,7 @@ private:
   image_transport::Publisher outImg_pub_;
 
   ros::Publisher landmark_pub_;
+  ros::Publisher landmark_vis_pub_;
 
 };
 
@@ -65,6 +67,7 @@ LandmarkDetector::LandmarkDetector()
         outImg_pub_ = it.advertise("landmark/outImg",1);
         //Landmark position publisher
         landmark_pub_ = nh.advertise<landmarkSelfSim::landmarkLocation>("landmarkLocation",1);
+        landmark_vis_pub_=nh.advertise<landmarkSelfSim::landmarkVisible>("landmarkVisible",1);
   }
 
 /**
@@ -162,10 +165,17 @@ void LandmarkDetector::imageCb(const sensor_msgs::ImageConstPtr& msg){
                 }
         }
 
+        //Publish a boolean for whether or not a landmark is visible
+        landmarkSelfSim::landmarkVisible landmarkVis;
+        if (lamarr.count != 0){
+                landmarkVis.visible = 1;
+        }
+        else{
+                landmarkVis.visible = 0;
+        }
+        landmark_vis_pub_.publish(landmarkVis);
         for (int i=0; i<lamarr.count; i++) {
                 landm lam = lamarr.lm[i];
-
-
                 ROS_INFO("Landmark at %3d,%3d to %d,%d - code = %d",
                                  lam.xtop, lam.ytop, lam.xbottom, lam.ybottom, lam.code);
                 //ROS_INFO("rim1 width: %3d, height: %3d",rim1->width, rim1->height);
@@ -180,7 +190,6 @@ void LandmarkDetector::imageCb(const sensor_msgs::ImageConstPtr& msg){
                 //Compute the distance
                 landmarkLoc.height = sqrt((lam.xtop-lam.xbottom)*(lam.xtop-lam.xbottom)
                                                                   +(lam.ytop-lam.ybottom)*(lam.ytop-lam.ybottom) );
-
                 //Testing for center of the landmark
                 float revMult = -4.0;
                 if (lamarr.lm[i].reversed == 1)
@@ -192,18 +201,7 @@ void LandmarkDetector::imageCb(const sensor_msgs::ImageConstPtr& msg){
                 landmarkLoc.centerDistance = 160 - xMid;
 
                 //Gets the angle of the triangle formed by the landmark assuming 320x240 image
-                /*float sign = -1;
-                if (lam.xtop > lam.xbottom)
-                        sign = 1;
-                float theta=atan( (lam.xtop-lam.xbottom)/(float)(lam.ytop-lam.ybottom));
-                theta = theta * sign;
-                float midXPrime = (lam.xbottom + lam.xtop) / 2.0;
-                float midYPrime = (lam.ybottom + lam.ytop) / 2.0;
-                float L = sqrt(pow(lam.xtop - lam.xbottom, 2) + pow(lam.ytop - lam.ybottom, 2));
-                float xMid = midXPrime + 0.55  * L  * cos(theta);
-                float yMid = midYPrime + 0.55 * L * sin(theta);
-                //sqrt(pow(9.125 * 9.125 + 7.125 * 7.125), 2) * .5;
-                */
+
                 ROS_INFO("Center of Landmark at (%4f, %4f)\n",xMid,yMid);
                 //Publish it
                 landmark_pub_.publish(landmarkLoc);

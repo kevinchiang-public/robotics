@@ -56,6 +56,6 @@
   </group>
   <node name="thrusterMapping" pkg="lab3" type="thrusterMapping.py" output="screen" >
     <param name="debug" type="string" value="0" />
-    <param name="liftPower" type="string" value="0.4" />
+    <param name="liftPower" type="string" value="0.6" />
   </node>
 </launch>

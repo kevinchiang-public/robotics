@@ -98,9 +98,9 @@ class XboxTeleop():
         elif self.switchState == 5:
             stateString = "Visual Servo"
         elif self.switchState == 6:
-            stateString = "Ball Dozer (disabled)"
+            stateString = "Ball Dozer"
         elif self.switchState == 7:
-            stateString = "Publish images to both nodes (can be used for project)"
+            stateString = "Publish images to both nodes (Used for project & Testing)"
         self.debugPrint("State is: " +  stateString)
 
     def timerCallback(self, event):
