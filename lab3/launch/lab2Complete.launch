@@ -17,6 +17,7 @@
     </node>
     <node name="joystickControls" pkg="lab3" type="joystick.py" output="screen">
       <param name="debug" type="string" value="1" />
+      <param name="initialState" type="string" value="6" />
     </node>
     <node name="angleIntegrator" pkg="lab3" type="angleIntegrator.py" output="screen">
       <param name="debug" type="string" value="0" />

@@ -130,7 +130,7 @@ class BallDozer():
         #Update movement to spin
         move = Movement()
         move.modType = 'Add'
-        move.theta = -30
+        move.theta = -10
         move.x = 0
         move.y = 0
         return move

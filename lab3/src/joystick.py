@@ -11,7 +11,7 @@ from copy import deepcopy as deep
 class XboxTeleop():
     def __init__(self):
         self.debug = float(rospy.get_param('~debug', '0'))
-        self.switchState = 0
+        self.switchState = float(rospy.get_param('~initialState','0'))
         self.movement = MovementRaw()
         self.switcher = Switcher()
 

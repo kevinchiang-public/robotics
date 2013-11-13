@@ -56,12 +56,13 @@ class AngularPositionPID():
         targetAngle = self.movement.theta
         #Determine how the target angle should be affected given theta
         #(see Movement.msg for details)
-        if self.movement.modType is 'Add':
+        if self.movement.modType == 'Add':
             targetAngle = currentAngle + self.movement.theta
         elif self.movement.modType is 'Set':
             targetAngle = self.movement.theta
         elif self.movement.modType is 'Bound': #NOTE: CHECK THIS LOGIC
             targetAngle = self.movement.theta
+	print ("%s: %f, Current: %f\tTarget: %f"%(self.movement.modType, self.movement.theta, currentAngle, targetAngle))
         #Proportional and Derivative computations
         r = self.P*(targetAngle - currentAngle)
         r = r + self.D*((targetAngle - currentAngle)-self.previousError)
