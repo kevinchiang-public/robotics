@@ -246,6 +246,7 @@ void BallDetector::debugCallBack(const ballDetector::ballDebug::ConstPtr& debug)
 void BallDetector::updateHighThreshold(const geometry_msgs::Vector3::ConstPtr& thresh){
         int h = thresh->x+1, s = thresh->y+1, v = thresh->z+1;
         ROS_INFO("Updated ball high HSV threshold to h,s,v: %d,%d,%d",h,s,v);
+	printf("Updated ball high HSV threshold to h,s,v: %d,%d,%d",h,s,v);
         highThresh = cv::Scalar(h,s,v,0);
         nh.setParam("thresh/low/h",h);
         nh.setParam("thresh/low/s",s);
@@ -587,11 +588,12 @@ void BallDetector::imageCb(const sensor_msgs::ImageConstPtr& msg){
                 ballDetector::ballVisible ballVis;
                 ballVis.visible = 1;
                 ball_vis_publisher_.publish(ballVis);
-
+		ROS_INFO("Ball Found");
         }else{
                 ballDetector::ballVisible ballVis;
                 ballVis.visible = 0;
                 ball_vis_publisher_.publish(ballVis);
+       		ROS_INFO("Ball not found");
         }
 
 

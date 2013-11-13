@@ -13,8 +13,8 @@
   </node>
 
   <rosparam param="thresh/">
-    high: {h: 185, s: 191, v: 253}
-    low: {h: 131, s: 44, v: 66}
+    low: {h: 0, s: 161, v: 76}
+    high: {h: 18, s: 255, v: 255}
   </rosparam>
   <node name="ballDetector" pkg="ballDetector" type="ballDetector" output="screen">
     <remap from="image" to="/visArbitrator/toBall"/>

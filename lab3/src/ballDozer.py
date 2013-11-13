@@ -39,6 +39,11 @@ class BallDozer():
         rospy.Subscriber('ballVisible', ballVisible, self.checkForBallVisibility)
         rospy.Subscriber('landmarkLocation', landmarkLocation, self.getDistanceToLandmark)
         rospy.Subscriber('landmarkVisible', landmarkVisible, self.checkForLandmark)  #Checks for landmark
+        rospy.Subscriber('/thresh/high',Vector3,self.threshCheck)
+	rospy.Subscriber('/thresh/low',Vector3,self.threshCheck)
+
+    def threshCheck(self, vector):
+	print vector
 
     def checkForBallVisibility(self, ballVis):
         if (ballVis.visible == 1):
@@ -137,6 +142,7 @@ class BallDozer():
 
     def getHSVLowThreshold(self, colorString):
         hsvColor = Vector3()
+	print (colorString == 'red'),(colorString=='blue'),(colorString=='yellow')
         if colorString == 'red':
             hsvColor.x = 109 #H value
             hsvColor.y = 81 #S value
@@ -226,6 +232,7 @@ class BallDozer():
         if ballNumber == 1 and not self.ballColor1Set:
             lowPublisherUpdate.publish(self.getHSVLowThreshold(self.color1))
             highPublisherUpdate.publish(self.getHSVHighThreshold(self.color1))
+            print "threshold set to", self.color1
             self.ballColor1Set = True
         if ballNumber == 2 and not self.ballColor2Set:
             lowPublisherUpdate.publish(self.getHSVLowThreshold(self.color2))
