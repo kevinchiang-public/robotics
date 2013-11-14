@@ -30,6 +30,7 @@ class VisionArbitrator():
             self.landPublisher.publish(image)
             self.ballPublisher.publish(image)
     def switcherCallback(self, switcher):
+        #print switcher.state
         if switcher.state == 1:
             self.publishTarget = 'landDetector'
         elif switcher.state == 2:

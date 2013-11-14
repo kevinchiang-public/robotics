@@ -15,10 +15,10 @@
 
   <node name="BallDozer" pkg="lab3" type="ballDozer.py" output="screen">
     <param name="debug" type="string" value="1" />
-    <param name="color1" type="string" value="yellow"/>
+    <param name="color1" type="string" value="blue"/>
     <param name="color2" type="string" value="red"/>
-    <param name="landmark1" type="string" value="1"/>
-    <param name="landmark2" type="string" value="2"/>
+    <param name="landmark1" type="string" value="19"/>
+    <param name="landmark2" type="string" value="19"/>
  </node>
 
 

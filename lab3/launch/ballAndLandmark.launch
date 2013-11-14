@@ -12,12 +12,12 @@
     <remap from="image" to="/visArbitrator/toLand"/>
   </node>
 
-  <rosparam param="thresh/">
+  <!--rosparam param="thresh/">
     low: {h: 0, s: 161, v: 76}
     high: {h: 18, s: 255, v: 255}
-  </rosparam>
+  </rosparam-->
   <node name="ballDetector" pkg="ballDetector" type="ballDetector" output="screen">
     <remap from="image" to="/visArbitrator/toBall"/>
   </node>
-  <!--node name="ballDetectorConfig" pkg="ballDetector" type="configGUI.py"></node-->
+
 </launch>
