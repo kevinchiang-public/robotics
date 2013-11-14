@@ -44,7 +44,7 @@ class BallDozer():
         self.isLandmarkInView = False #Uses camera to see if landmark is visible in the scene
         self.distanceToLandmark = 300
         self.currentVisibleLMCode = -2
-        self.switchedToSecond = False
+        self.switchedToSecond = 0
 
         rospy.Timer(rospy.Duration(.1), self.stateBasedMove) #Updates movement based on current state
         rospy.Subscriber('/rangeInfo', Range, self.checkForBallCaptured) #Checks for ball in prong via IR sensors
@@ -117,8 +117,8 @@ class BallDozer():
         #Make sure the visible landmark is the one we need, or out of range to identify
         #If it;s out of range, move closer to investigate (i.e., assume it's correct and
         #backtrack a state if it's not)
+        self.debugPrint(str(self.isLandmarkInView) + " " + str(self.currentVisibleLMCode) + " " + str(landmarkNum))
         if not self.isLandmarkInView or (self.currentVisibleLMCode != landmarkNum and self.currentVisibleLMCode != -1):
-            self.debugPrint(str(self.isLandmarkInView) + " " + str(self.currentVisibleLMCode) + " " + str(landmarkNum))
             return self.spin()
         else:
             self.state += 1
@@ -245,7 +245,7 @@ class BallDozer():
             move = self.kickBallOut()
             self.detectionSwitch.state = 2
             #reset variables
-            if not self.switchedToSecond:
+            if self.switchedToSecond < 20:
 		    self.isBallCaptured = False #Uses the IR range finders to see if the ball is in the prong
 		    self.isBallInView = False #Uses the camera to see if a ball is visible in the scene
 		    self.isLandmarkInView = False #Uses camera to see if landmark is visible in the scene
@@ -254,15 +254,15 @@ class BallDozer():
                     self.currentVisibleLMCode = -2
         elif self.state == 4:
             #reset variables
-            if not self.switchedToSecond:
+            if not self.switchedToSecond < 20:
 		    self.isBallCaptured = False #Uses the IR range finders to see if the ball is in the prong
 		    self.isBallInView = False #Uses the camera to see if a ball is visible in the scene
 		    self.isLandmarkInView = False #Uses camera to see if landmark is visible in the scene
                     self.targetReached = False
-                    self.switchedToSecond = True
+                    self.switchedToSecond += 1
         	    self.distanceToLandmark = 300
                     self.currentVisibleLMCode = -2
-
+                    
             #Onward, ho!  To the second stage of our state machine
             self.setBallColor(2)
             self.currentLandmark = self.landmarkForColor2
@@ -278,6 +278,7 @@ class BallDozer():
             move = self.lookForLandmark(self.landmarkForColor2)
         elif self.state == 7:
             move = self.moveTowardsLandmark(self.landmarkForColor2)
+            self.state += 1
         else:
             self.state = 0
             self.debugPrint("Resetting state to 0!")
@@ -300,7 +301,9 @@ class BallDozer():
         elif self.state == 6:
             return "Ball 2 collected.  Looking for landmark 2"
         elif self.state == 7:
-            return "Ball 2 delivered.  Donezo."
+            return "Moving towards found landmark 2."
+        elif self.state == 8:
+            return "Ball 2 delivered.  Donezo"
         elif self.state == 9:
             return "Kicking ball 1 out of the prongs."
 
