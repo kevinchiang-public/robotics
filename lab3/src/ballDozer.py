@@ -5,7 +5,7 @@ roslib.load_manifest('lab3')
 from landmarkSelfSim.msg import landmarkVisible, landmarkLocation
 from ballDetector.msg import ballVisible, ballLocation
 from geometry_msgs.msg import Vector3
-from lab3.msg import Movement, Range
+from lab3.msg import Movement, Range, DetectionSwitcher
 
 import math
 
@@ -18,13 +18,16 @@ class BallDozer():
         self.ballColor2Set = False
         self.landmarkForColor1 = float(rospy.get_param('~landmark1', '1'))
         self.landmarkForColor2 = float(rospy.get_param('~landmark2', '1'))
-
+	self.detectionPublisher = rospy.Publisher('/switcher/visArbitrator',DetectionSwitcher)
+	self.detectionSwitch = DetectionSwitcher()
         #Used when we don't have any action to publish
         self.haltMove = Movement()
         self.haltMove.theta = 0
         self.haltMove.x = 0
         self.haltMove.y = 0
         self.haltMove.modType = 'Add'
+        self.ballLocation = ballLocation()
+        self.targetReached = False
 
         self.state = 0
         self.prevState = 0 #Used to print debug messages when state changes
@@ -37,10 +40,14 @@ class BallDozer():
         rospy.Timer(rospy.Duration(.1), self.stateBasedMove) #Updates movement based on current state
         rospy.Subscriber('/rangeInfo', Range, self.checkForBallCaptured) #Checks for ball in prong via IR sensors
         rospy.Subscriber('ballVisible', ballVisible, self.checkForBallVisibility)
+        rospy.Subscriber('/ballLocation',ballLocation,self.getBallLocation)
         rospy.Subscriber('landmarkLocation', landmarkLocation, self.getDistanceToLandmark)
         rospy.Subscriber('landmarkVisible', landmarkVisible, self.checkForLandmark)  #Checks for landmark
         rospy.Subscriber('/thresh/high',Vector3,self.threshCheck)
 	rospy.Subscriber('/thresh/low',Vector3,self.threshCheck)
+
+    def getBallLocation(self,ballLocation):
+        self.ballLocation = ballLocation
 
     def threshCheck(self, vector):
 	print vector
@@ -51,7 +58,7 @@ class BallDozer():
         else:
             self.isBallInView = False
 
-    def getDistanceToLandmark(self, landmarkInfo):
+    def getDistanceToLandmark(self, landmarkLoc):
         #Grab data from camera
         height=landmarkLoc.height
         code=landmarkLoc.code
@@ -61,14 +68,20 @@ class BallDozer():
         if height != 0:
             distance = 7334.9 * math.pow(height, -0.996)
         self.distanceToLandmark = distance
+        if self.distanceToLandmark < 70:
+            self.targetReached = True
 
     def searchForBall(self):
+        offset = -20
         if (self.isBallCaptured):
             self.state += 2
             return self.haltMove
         if (not self.isBallInView):
             return self.spin()
-        else:
+        elif self.isBallInView and not (self.ballLocation.x < (20+offset) and self.ballLocation.x > (-20+offset)):
+	    return self.spin()
+        #We want it only to collect the ball when it is in the center of the image
+        elif self.isBallInView and self.ballLocation.x < (20+offset) and self.ballLocation.x > (-20+offset):
             self.state += 1 #Found the ball
             return self.haltMove
 
@@ -88,10 +101,12 @@ class BallDozer():
             return move
 
     def lookForLandmark(self, landmarkNum):
+        '''
         if not self.isBallCaptured:  #Lost the ball from the prong.  Find it.  Reacquire.
             self.state -= 1
             return self.haltMove
-        elif not self.isLandmarkInView:
+        '''
+        if not self.isLandmarkInView:
             return self.spin()
         else:
             self.state += 1
@@ -99,29 +114,35 @@ class BallDozer():
 
     def moveTowardsLandmark(self, landmarkNum):
         #Incorporate landmark Number we're looking for
+        '''
         if not self.isBallCaptured:
             self.state -= 1
             return self.haltMove
-        elif not self.isLandmarkInView:
-            state -= 1
+        '''
+        if not self.isLandmarkInView:
+            self.state -= 1
             return self.haltMove
-        else:
+        elif self.isLandmarkInView and not self.targetReached:
             move = Movement()
             move.y = 1
             move.x = 0
             move.theta = 0
             move.modType = 'Add'
             return move
+        elif self.isLandmarkInView and self.targetReached:
+            self.state += 1
+            return self.haltMove
 
     def checkForBallCaptured(self, rangeInfo):
         lDistCM = rangeInfo.leftDistanceCM
         rDistCM = rangeInfo.rightDistanceCM
-        self.debugPrint("lDistCM: "+str(lDistCM)+ " rDistCM: "+str(rDistCM))
-        if (lDistCM < 12 and lDistCM > 0) or (rDistCM < 12 and rDistCM > 0):
-            self.debugPrint("Captured")
+        #self.debugPrint("lDistCM: "+str(lDistCM)+ " rDistCM: "+str(rDistCM))
+        if (lDistCM < 9 and lDistCM > 0) or (rDistCM < 15 and rDistCM > 0):
+            #self.debugPrint("Captured")
             self.isBallCaptured = True
         else:
-            self.debugPrint("Not Captured")
+            #pass
+            #self.debugPrint("Not Captured")
             self.isBallCaptured = False
 
     def checkForLandmark(self,landmarkVis):
@@ -192,15 +213,27 @@ class BallDozer():
         elif self.state == 1:
             move = self.collectBall()
         elif self.state == 2:
+            #Switch to landmark Detection Mode
+            self.detectionSwitch.header.stamp = rospy.Time.now()
+            self.detectionSwitch.state = 1
+            self.detectionPublisher.publish(self.detectionSwitch)
             move = self.lookForLandmark(1)
         elif self.state == 3:
             move = self.moveTowardsLandmark(1)
         elif self.state == 4:
             self.setBallColor(2)
+            #Switch to ball Detection Mode
+            self.detectionSwitch.header.stamp = rospy.Time.now()
+            self.detectionSwitch.state = 2
+            self.detectionPublisher.publish(self.detectionSwitch)
             move = self.searchForBall()
         elif self.state == 5:
             move = self.collectBall()
         elif self.state == 6:
+            #Switch to landmark Detection Mode
+            self.detectionSwitch.header.stamp = rospy.Time.now()
+            self.detectionSwitch.state = 1
+            self.detectionPublisher.publish(self.detectionSwitch)
             move = self.lookForLandmark(2)
         elif self.state == 7:
             move = self.moveTowardsLandmark(2)

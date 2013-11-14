@@ -588,12 +588,12 @@ void BallDetector::imageCb(const sensor_msgs::ImageConstPtr& msg){
                 ballDetector::ballVisible ballVis;
                 ballVis.visible = 1;
                 ball_vis_publisher_.publish(ballVis);
-		ROS_INFO("Ball Found");
+		//ROS_INFO("Ball Found");
         }else{
                 ballDetector::ballVisible ballVis;
                 ballVis.visible = 0;
                 ball_vis_publisher_.publish(ballVis);
-       		ROS_INFO("Ball not found");
+       		//ROS_INFO("Ball not found");
         }
 
 
