@@ -118,6 +118,7 @@ class BallDozer():
         #If it;s out of range, move closer to investigate (i.e., assume it's correct and
         #backtrack a state if it's not)
         if not self.isLandmarkInView or (self.currentVisibleLMCode != landmarkNum and self.currentVisibleLMCode != -1):
+            self.debugPrint(str(self.isLandmarkInView) + " " + str(self.currentVisibleLMCode) + " " + str(landmarkNum))
             return self.spin()
         else:
             self.state += 1
@@ -242,6 +243,7 @@ class BallDozer():
             move = self.moveTowardsLandmark(self.landmarkForColor1)
         elif self.state == 9:
             move = self.kickBallOut()
+            self.detectionSwitch.state = 2
             #reset variables
             if not self.switchedToSecond:
 		    self.isBallCaptured = False #Uses the IR range finders to see if the ball is in the prong

@@ -71,7 +71,7 @@ class CameraIntegrator():
         if (height != 0 and (code == self.targetLandmark or self.targetLandmark == -1)):
             #centerDistance = landmarkLoc.centerDistance #Attempt to get center distance of entire landmark
             centerDistance = 160 - (landmarkLoc.xbottom)
-            self.move.theta = 0#-(self.getTargetAngle(centerDistance)) #If rotation is backwards, make negative
+            self.move.theta = -(self.getTargetAngle(centerDistance)) #If rotation is backwards, make negative
             self.move.y = -yR
             self.move.x = 0
             self.move.modType = 'Add'
