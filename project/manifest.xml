@@ -1,0 +1,24 @@
+<package>
+  <description brief="project">
+
+     project
+
+  </description>
+  <author>viki</author>
+  <license>BSD</license>
+  <review status="unreviewed" notes=""/>
+  <url>http://ros.org/wiki/project</url>
+  <depend package="hoverboard"/>
+  <depend package="hovercraft"/>
+  <depend package="cereal_port"/>
+  <depend package="rxtx"/>
+  <depend package="usb_cam"/>
+  <depend package="ballDetector"/>
+  <depend package="landmarkSelfSim"/>
+  <depend package="lab1"/>
+  <depend package="lab2"/>
+  <depend package="lab3"/>
+
+</package>
+
+
