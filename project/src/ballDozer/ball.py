@@ -43,11 +43,26 @@ class Ball():
             self.ballCaptured = False
 
     def stateMachine(self):
-        pass
+        publisher = rospy.publisher('ballCollectionMovement', Movement)
+        moveMessage = None
+        if (self.state == 0): #Find a ball of any color
+            moveMessage = detectBall()
+        elif (self.state == 1): #Move towards the ball
+            moveMessage = moveToBall()
+        elif (self.state == 2): #Collect the ball in the mechanism
+            moveMessage = collectBall()
+        else: #Reset to initial state
+            moveMessage = stop()
+            self.ballVisible  = False
+            self.ballCaptured = False
+            self.currentColor = 'yellow'
+            self.targetColor  = None
+            self.state = 0
+        publisher.publish(moveMessage)
 
     #This finds the ball.  We are going to rotate (maybe 30 degrees, according to field of vision of camera), then cycle through colors to see if it detects one.
     def detectBall(self):
-        if hasFoundColor:
+        if hasFoundColor():
             self.state+=1 # NextStep: moveToBall
         else:
             return self.rotate(30)
@@ -59,14 +74,14 @@ class Ball():
         numColors = 5
         for i in xrange(0, numColors):
             self.cycleColor()
-            if self.ballCaptured:
+            if self.ballVisible:
                 self.targetColor = self.currentColor
                 string = ('Detected a %s ball'%(self.targetColor))
-                debugPrint(string)
-                return True 
+                self.debugPrint(string)
+                return True
             else:
                 string = ('%s ball not found, checking next color.'%(self.targetColor.capitalize))
-                debugPrint(string)
+                self.debugPrint(string)
         return False
 
     #Changes and publishes ball color to detect
@@ -91,7 +106,7 @@ class Ball():
         elif self.currentColor == 'orange':
             self.currentColor = 'yellow'
             hsvLow, hsvHigh = detectYellowBall()
-        for i in xrange(0,25):
+        for i in xrange(0,25): #Might need to lower number of iterations
             lowPublisher.publish(hsvLow)
             highPublisher.publish(hsvHigh)
 
@@ -101,7 +116,7 @@ class Ball():
 
     def collectBall(self):
         pass
-    
+
     #Values for various colored balls
     #NOTE: self parameter removed intentionally, should work
     #NOTE: I hope keyword instantiation works
@@ -121,7 +136,7 @@ class Ball():
         low = Vector3(x=129,y=60,z=43)
         high= Vector3(x=167,y=126,z=196)
         return low,high
-    def detectGreenBall():        
+    def detectGreenBall():
         low = Vector3(x=28,y=111,z=73)
         high= Vector3(x=46,y=231,z=205)
         return low,high
