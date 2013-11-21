@@ -117,7 +117,7 @@ class BallDozer():
         #Make sure the visible landmark is the one we need, or out of range to identify
         #If it;s out of range, move closer to investigate (i.e., assume it's correct and
         #backtrack a state if it's not)
-        self.debugPrint(str(self.isLandmarkInView) + " " + str(self.currentVisibleLMCode) + " " + str(landmarkNum))
+        #self.debugPrint(str(self.isLandmarkInView) + " " + str(self.currentVisibleLMCode) + " " + str(landmarkNum))
         if not self.isLandmarkInView or (self.currentVisibleLMCode != landmarkNum and self.currentVisibleLMCode != -1):
             return self.spin()
         else:
@@ -252,6 +252,7 @@ class BallDozer():
                     self.targetReached = False
         	    self.distanceToLandmark = 300
                     self.currentVisibleLMCode = -2
+                    self.landmarkForColor1 = self.landmarkForColor2
         elif self.state == 4:
             #reset variables
             if not self.switchedToSecond < 20:

@@ -18,7 +18,7 @@
     <param name="color1" type="string" value="blue"/>
     <param name="color2" type="string" value="red"/>
     <param name="landmark1" type="string" value="19"/>
-    <param name="landmark2" type="string" value="19"/>
+    <param name="landmark2" type="string" value="15"/>
  </node>
 
 
