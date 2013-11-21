@@ -50,7 +50,7 @@ class Ball():
         if hasFoundColor:
             self.state+=1 # NextStep: moveToBall
         else:
-            self.rotate(30)
+            return self.rotate(30)
 
 
     #Colors Available: red, yellow, blue, purple, green, orange
@@ -95,13 +95,11 @@ class Ball():
             lowPublisher.publish(hsvLow)
             highPublisher.publish(hsvHigh)
 
+    #Moves towards the ball while centering it
     def moveToBall(self):
-        pass
+        return s.move(y=.4,theta=(-float(self.ballLocation.x)/2.0))
 
     def collectBall(self):
-        pass
-
-    def loadBall(self):
         pass
     
     #Values for various colored balls
@@ -134,39 +132,27 @@ class Ball():
 
     #Spins the ball
     def spin(self):
-        move = Movement()
-        move.modType = 'Add'
-        move.theta = -15
-        move.x = 0
-        move.y = 0
-        return move
+        return self.move(theta = -15)
 
     #Stopping the hovercraft
     def stop(self):
-        haltMove = Movement()
-        haltMove.theta = 0
-        haltMove.x = 0
-        haltMove.y = 0
-        haltMove.modType = 'Add'
-        return haltMove
+        return move()
 
     #Rotating the hovercraft (-theta is clockwise)
-    def rotate(self, theta):
-        rotateMove = Movement()
-        rotateMove.theta = theta
-        rotateMove.x = 0
-        rotateMove.y = 0
-        rotateMove.modType = 'Add'
-        return rotateMove
+    def rotate(self, theta1):
+        return move(theta=theta1)
 
-    #Translating the hovercraft (-y is forward)
-    def translate(self, x, y=0):
-        translateMove = Movement()
-        translateMove.theta = 0
-        translateMove.x = x
-        translateMove.y = y
-        translateMove.modType = 'Add'
-        return translateMove
+    #Translating the hovercraft (+y is forward)
+    def translate(self, x1=0, y1=0):
+        return move(x=x1, y=y1)
+
+    def move(self, x=0, y=0, theta=0):
+        move = Movement()
+        move.x = x
+        move.y = y
+        move.theta = theta
+        move.modType = 'Add'
+        return move
 
     def debugPrint(self,string):
         if self.debug == 1:
