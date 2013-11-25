@@ -46,11 +46,11 @@ class Ball():
         publisher = rospy.publisher('ballCollectionMovement', Movement)
         moveMessage = None
         if (self.state == 0): #Find a ball of any color
-            moveMessage = detectBall()
+            moveMessage = self.detectBall()
         elif (self.state == 1): #Move towards the ball
-            moveMessage = moveToBall()
+            moveMessage = self.moveToBall()
         elif (self.state == 2): #Collect the ball in the mechanism
-            moveMessage = collectBall()
+            moveMessage = self.collectBall()
         else: #Reset to initial state
             moveMessage = stop()
             self.ballVisible  = False
