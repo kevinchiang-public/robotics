@@ -2,7 +2,8 @@
 import rospy
 import roslib
 import math
-
+roslib.load_manifest('landmarkSelfSim')
+roslib.load_manifest('lab3')
 from landmarkSelfSim.msg import landmarkVisible, landmarkLocation
 from lab3.msg import Movement
 
@@ -14,10 +15,17 @@ class LandMark():
         self.isLandmarkInView = False
         self.landmarkLocation = None
         self.distanceToLandmark=1000
-        self.landMarkX=None
+        self.targetReached = False
+        self.landMarkX = None
+
+        self.state=0
+
         rospy.Subscriber('landmarkVisible',landmarkVisible, self.checkForLandmark)
         rospy.Subscriber('landmarkLocation', landmarkLocation, self.getDistanceToLandmark)
     
+    def stateMachine(self):
+        pass
+
     #Updates the state w/r/t the landmark Visibility
     def checkForLandmark(self, landmarkVis):
         if landmarkVis.visible == 1:
@@ -38,10 +46,22 @@ class LandMark():
             distance = 7334.8 * math.pow(height, -0.996)
         self.distanceToLandmark = distance
 
-        if self.distanceToLandmark < 75 and self.currentLandmark == landmarkLoc.code
+        if self.distanceToLandmark < 75 and self.currentLandmark == landmarkLoc.code:
+            self.targetReached = True
+        else:
+            self.targetReached = False
+    #This is straight up copied from lab3 ballDozer
+    def lookForLandmark(self, landmarkNum):
+        if not self.isLandmarkInView or (self.currentVisibleLMCode != landmarkNum and self.currentVisibleLMCode != -1):
+            self.debugPrint(str(self.isLandmarkInView) + " " + str(self.currentVisibleLMCode) + " " + str(landmarkNum))
+            return self.move(theta=(-15))
+        else:
+            self.state += 1
+            return self.move()
 
+    #Move to landmark while centering it based on where the landmark location is found on the image
     def moveTowardsLandmark(self):
-        self.move(y=1, theta=(-(float(self.land
+        self.move(y=1, theta=(-(float(self.landmarkX)-180.0)/10.0))
 
     def move(self, x=0, y=0, theta=0):
         move = Movement()

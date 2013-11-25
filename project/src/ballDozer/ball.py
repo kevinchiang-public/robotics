@@ -62,7 +62,7 @@ class Ball():
 
     #This finds the ball.  We are going to rotate (maybe 30 degrees, according to field of vision of camera), then cycle through colors to see if it detects one.
     def detectBall(self):
-        if hasFoundColor():
+        if self.hasFoundColor():
             self.state+=1 # NextStep: moveToBall
         else:
             return self.rotate(30)
@@ -87,7 +87,7 @@ class Ball():
     #Changes and publishes ball color to detect
     def cycleColor(self):
         lowPublisher = rospy.Publisher('thresh/low', Vector3)
-        highPublisher= rospy.Publisher('thresh/high',Vector)
+        highPublisher= rospy.Publisher('thresh/high',Vector3)
         #if self.currentColor == 'red':
         #    self.currentColor = 'yellow'
         #    return detectYellowBall()
@@ -112,6 +112,7 @@ class Ball():
 
     #Moves towards the ball while centering it
     def moveToBall(self):
+        #Need to change the state at some point
         return s.move(y=.4,theta=(-float(self.ballLocation.x)/2.0))
 
     def collectBall(self):
