@@ -23,7 +23,7 @@ class LandMark():
 
         rospy.Subscriber('landmarkVisible',landmarkVisible, self.checkForLandmark)
         rospy.Subscriber('landmarkLocation', landmarkLocation, self.getDistanceToLandmark)
-    
+
     #NOTE: Please check the reset logic.
     def stateMachine(self):
         publisher = rospy.publisher('landmarkDetection',Movement)
@@ -36,12 +36,11 @@ class LandMark():
             moveMessage = self.move()
             self.currentLandmark = -2
             self.currentVisibleLMCode = -2
-            self.isLandmarkInView = Flase
+            self.isLandmarkInView = False
             self.landmarkLocation = None
             self.distanceToLandmark = 1000
             self.targetReached = False
             self.landMarkX = None
-
             self.state = 0
         publisher.publish(moveMessage)
 
@@ -64,7 +63,6 @@ class LandMark():
         if height != 0:
             distance = 7334.8 * math.pow(height, -0.996)
         self.distanceToLandmark = distance
-
         if self.distanceToLandmark < 75 and self.currentLandmark == landmarkLoc.code:
             self.targetReached = True
         else:
@@ -86,6 +84,7 @@ class LandMark():
         else:
             state += 1
             return self.move()
+
     def move(self, x=0, y=0, theta=0):
         move = Movement()
         move.x = x

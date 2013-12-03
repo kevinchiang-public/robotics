@@ -23,6 +23,16 @@ class ThrusterMapping():
 
         #Translation
         coef=0.75
+        if y > .1:
+            self.thrust.thruster2 = y
+            self.thrust.thruster3 = y
+        elif y < -.1:
+            self.thrust.thruster1 = -y
+        else:
+            self.thrust.thruster1 = 0
+            self.thrust.thruster2 = 0
+            self.thrust.thruster3 = 0
+        '''
         tr1x=0
         tr2x=0
         tr3x=0
@@ -45,7 +55,7 @@ class ThrusterMapping():
         self.thrust.thruster1=tr1x+tr1y
         self.thrust.thruster2=tr2x+tr2y
         self.thrust.thruster3=tr3x+tr3y
-
+        '''
         if theta >0:
             #Turn on 4
             self.thrust.thruster5 = 0
@@ -79,7 +89,7 @@ class ThrusterMapping():
         pub = rospy.Publisher('/hovercraft/Thruster', Thruster)
 
         #if self.thrust.thruster1 > 0 or self.thrust.thruster2 > 0 or self.thrust.thruster3 > 0 or self.thrust.thruster4 > 0 or self.thrust.thruster5 > 0:
-        #	print self.thrust
+        #   print self.thrust
 
         pub.publish(self.thrust)
 
