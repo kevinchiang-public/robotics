@@ -4,6 +4,8 @@ import roslib
 import math
 roslib.load_manifest('landmarkSelfSim')
 roslib.load_manifest('lab3')
+roslib.load_manifest('hovercraft')
+from hovercraft.msg import Thruster
 from landmarkSelfSim.msg import landmarkVisible, landmarkLocation
 from lab3.msg import Movement
 
@@ -84,6 +86,17 @@ class LandMark():
         else:
             state += 1
             return self.move()
+
+    def launch(self):
+        launchPub = rospy.Publisher('/thrust/Integrator',Thruster)
+        thrust = Thruster(lift=0,thruster1=0,thruster2=0,thruster3=0,thruster4=0,thruster5=0,thruster6=1)
+        for i in xrange(0,25):
+            launchPub.publish(thrust)
+        self.state+=1
+        #Reset to 0, needed for thrustIntegrator
+        thrust.thruster6=0
+        launchPub.publish(thrust)
+        return move()
 
     def move(self, x=0, y=0, theta=0):
         move = Movement()
