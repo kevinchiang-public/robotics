@@ -2,6 +2,8 @@
 import rospy
 import roslib
 roslib.load_manifest('lab3')
+roslib.load_manifest('hoverboard')
+from hoverboard.msg import PWMRaw
 from lab3.msg import Movement, Range
 from ballDetector.msg import ballVisible, ballLocation
 from geometry_msgs.msg import Vector3
@@ -116,7 +118,19 @@ class Ball():
         return s.move(y=.4,theta=(-float(self.ballLocation.x)/2.0))
 
     def collectBall(self):
-        pass
+        servoPub = rospy.Publisher('/hoverboard/PWMRaw',PWMRaw)
+        rest = PWMRaw(channel=1, pwm=0)
+        one  = PWMRaw(channel=1, pwm=2)
+        two  = PWMRaw(channel=1, PWM=5)
+        servoPub.publish(rest)
+        sleep(5)
+        servoPub.publish(one)
+        sleep(5)
+        servoPub.publish(two)
+        sleep(5)
+        servoPub.publish(rest)
+        self.state+=1
+        return self.stop()
 
     #Values for various colored balls
     #NOTE: self parameter removed intentionally, should work
