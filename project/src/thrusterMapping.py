@@ -25,7 +25,7 @@ class ThrusterMapping():
         coef=0.75
         if y > .1:
             self.thrust.thruster2 = float(y)/1.5
-            self.thrust.thruster3 = float(y)/1.5
+            self.thrust.thruster3 = float(y)/1.6
         elif y < -.1:
             self.thrust.thruster1 = -y
         else:

@@ -24,6 +24,7 @@ class AngleIntegrator():
         rospy.Subscriber('/joyOut', MovementRaw, self.interpretJoystick)
 
     def interpretJoystick(self,preMove):
+        '''
         move = deep(preMove)
         publisher = rospy.Publisher('/angleIntegratorOut',Movement)
         xAxisL = move.xL
@@ -46,6 +47,7 @@ class AngleIntegrator():
             self.bButtonDepressed = False
         if xButton == 0 and self.xButtonDepressed:
             self.xButtonDepressed = False
+        
 
         #Bumper logic (rotational spin using shoulders)
         #Right overrides left
@@ -55,6 +57,7 @@ class AngleIntegrator():
         elif leftBumperMag != 1:
             bumperMag = (1 - leftBumperMag)
 
+        
         #Get the arctangent of xAxis/yAxis to get the angle in radians.
         #Convert it to degrees and make it so that it goes from 0-360 starting
         #at the positive y axis (to match with the front of the hovercraft).
@@ -67,6 +70,11 @@ class AngleIntegrator():
             if (rotationalAngle > 0):
                 rotationalAngle = rotationalAngle - 360
             rotationalAngle = math.fabs(rotationalAngle)
+        
+        magnitudeThreshold = 1
+        magnitude = math.sqrt(xAxisL**2 + yAxisL**2)
+        rotationalAngle = xAxisL*10
+
 
         #Ships off the message to the arbitrator
         #Joystick overrides button target commands
@@ -79,7 +87,7 @@ class AngleIntegrator():
             #Reset button  upon hitting the joystick
             self.buttonTargetAngle = 0
             moveOut.theta = rotationalAngle
-            moveOut.modType = 'Bound'
+            moveOut.modType = 'Add'
 
         #Trigger absolute rotation if trigger/bumper is held down
         #print moveOut.theta
@@ -103,24 +111,51 @@ class AngleIntegrator():
             self.leftBumperAngle = 0
 
         #For 90 degree button rotations
-        '''
+        
         if math.fabs(self.buttonTargetAngle) > 0:
             magnitude = 1
             moveOut.theta = self.buttonTargetAngle
             moveOut.modType = 'Add'
         '''
+        move = deep(preMove)
+        publisher = rospy.Publisher('/angleIntegratorOut',Movement)
+        xAxisL = move.xL
+        yAxisL = move.yL
+        xAxisR = move.xR
+        yAxisR = move.yR
+        xButton = move.xButton
+        bButton = move.bButton
+        leftBumperMag = move.bumperL
+        rightBumperMag= move.bumperR
+
+        moveOut = Movement()
         moveOut.x = xAxisR
         moveOut.y = yAxisR
-        moveOut.mag = magnitude
+        moveOut.mag = math.fabs(xAxisL)
 
+        if moveOut.mag > .5:
+            if xAxisL < -.2:
+                theta = -30
+            elif xAxisL > .2:
+                theta = 30
+            else:
+                theta = 0
+
+            moveOut.theta = theta
+            moveOut.modType = 'Add'
+        else:
+            moveOut.theta = 0 
+            moveOut.modType = 'Add'
+
+        print "Theta:", moveOut.theta, "xAxisL:", xAxisL
         publisher.publish(moveOut)
-
+        '''
         #Prints all information related to the integrator if need be
         if (self.debug == 1):
             print("xL: %6.2f  yL: %6.2f  Angle: %6.2f  Magnitude:%6.2f  "
                   "xR: %6.2f  yR: %6.2f Theta: %6.2f Button Target: %6.2f"
                   "rB: %6.2f  lB: %6.2f rM: %6.2f  lM: %6.2f " % (xAxisL,yAxisL,rotationalAngle,magnitude,xAxisR,yAxisR,moveOut.theta, self.buttonTargetAngle, self.rightBumperAngle, self.leftBumperAngle, rightBumperMag, leftBumperMag))
-
+        '''
 if __name__ == '__main__':
     rospy.init_node('AngleIntegrator')
     try:

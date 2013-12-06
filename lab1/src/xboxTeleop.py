@@ -32,12 +32,12 @@ def printD(string):
 #This is all that you should be changing.
 class config():
         lift = .6 #Absolute value, there is no further modification to lift
-        t1mod= 1
-        t2mod= 1
-        t3mod= 1
-        t4mod= 1
+        t1mod= .9
+        t2mod= .9
+        t3mod= .9
+        t4mod= .9
         t5mod= 1
-        tAmod= .9 # Multiplies all thrusters (except lift) further by this number
+        tAmod= 1 # Multiplies all thrusters (except lift) further by this number
 
 class XboxTeleop():
     thrusterPub = rospy.Publisher('/thrusterProcess',Thruster)
