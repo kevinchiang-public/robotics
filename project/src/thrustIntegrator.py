@@ -19,11 +19,11 @@ class Integrator():
         rospy.Subscriber('/thrust/Integrator/launch',Thruster,self.launchCallback)
         rospy.Subscriber('/thrust/Integrator/move',Thruster,self.moveCallback)
 
-    def launchCallback(launch):
+    def launchCallback(self,launch):
         self.thrust.thruster6 = launch.thruster6
         self.publisher.publish(self.thrust)
 
-    def moveCallback(move):
+    def moveCallback(self,move):
         self.thrust.lift = move.lift
         self.thrust.thruster1 = move.thruster1
         self.thrust.thruster2 = move.thruster2

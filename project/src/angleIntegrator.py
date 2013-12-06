@@ -71,6 +71,7 @@ class AngleIntegrator():
         #Ships off the message to the arbitrator
         #Joystick overrides button target commands
         moveOut = Movement()
+        moveOut.theta =0
         moveOut.modType = 'Bound'
 
         #Joystick Logic
@@ -81,10 +82,12 @@ class AngleIntegrator():
             moveOut.modType = 'Bound'
 
         #Trigger absolute rotation if trigger/bumper is held down
+        #print moveOut.theta
         if rightBumperMag != 1:
-            self.rightBumperAngle = self.rightBumperAngle + (rightBumperMag * 100)
+            #print "Right Trigger"
+            self.rightBumperAngle = rightBumperMag
             self.buttonTargetAngle = 0
-            moveOut.theta = self.rightBumperAngle
+            moveOut.theta = -.1 if self.rightBumperAngle < 0 else 0
             moveOut.modType = 'Add'
             magnitude = 1
         else:
@@ -92,19 +95,20 @@ class AngleIntegrator():
 
         if leftBumperMag != 1:
             self.buttonTargetAngle = 0
-            self.leftBumperAngle = self.leftBumperAngle + (leftBumperMag * 100)
-            moveOut.theta = -1 * self.leftBumperAngle
+            self.leftBumperAngle = leftBumperMag
+            moveOut.theta = .1 if self.leftBumperAngle < 0 else 0
             moveOut.modType = 'Add'
             magnitude = 1
         else:
             self.leftBumperAngle = 0
 
         #For 90 degree button rotations
+        '''
         if math.fabs(self.buttonTargetAngle) > 0:
             magnitude = 1
             moveOut.theta = self.buttonTargetAngle
             moveOut.modType = 'Add'
-
+        '''
         moveOut.x = xAxisR
         moveOut.y = yAxisR
         moveOut.mag = magnitude
