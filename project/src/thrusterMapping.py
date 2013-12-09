@@ -86,7 +86,7 @@ class ThrusterMapping():
         else:
             self.thrust.lift = self.liftPower
 
-        pub = rospy.Publisher('/thrust/Integrator/move', Thruster)
+        pub = rospy.Publisher('/hovercraft/Thruster', Thruster)
 
         #if self.thrust.thruster1 > 0 or self.thrust.thruster2 > 0 or self.thrust.thruster3 > 0 or self.thrust.thruster4 > 0 or self.thrust.thruster5 > 0:
         #   print self.thrust
