@@ -23,7 +23,7 @@ class Arbitrator():
         rospy.Subscriber('/mappingOut', Movement, self.mappingCallback)
         rospy.Subscriber('/tangentOut', Movement, self.tangentBugCallback)
         rospy.Subscriber('/visualServoOut', Movement, self.visualServoCallback)
-        rospy.Subscriber('/ballDozerOut', Movement, self.ballDozerCallback)
+        rospy.Subscriber('/ballCleanerOut', Movement, self.ballCleanerCallback)
 
     def joyCallback(self, switch):
         if self.debug == 1:
@@ -43,7 +43,7 @@ class Arbitrator():
         elif (switch.state == 5):
             self.state = 'VisualServo'
         elif (switch.state == 6):
-            self.state = 'BallDozer'
+            self.state = 'BallCleaner'
 
         #Send lift state downstream (to kill thrusters if off)
         self.movement.lift = switch.lift
@@ -111,8 +111,8 @@ class Arbitrator():
             self.movement.mag = 1
             self.movement.lift = liftState
 
-    def ballDozerCallback(self, move):
-        if self.state is 'BallDozer':
+    def ballCleanerCallback(self, move):
+        if self.state is 'BallCleaner':
             liftState = self.movement.lift
             self.movement = Movement()
             self.movement = deep(move)

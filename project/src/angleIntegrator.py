@@ -47,7 +47,7 @@ class AngleIntegrator():
             self.bButtonDepressed = False
         if xButton == 0 and self.xButtonDepressed:
             self.xButtonDepressed = False
-        
+
 
         #Bumper logic (rotational spin using shoulders)
         #Right overrides left
@@ -57,7 +57,7 @@ class AngleIntegrator():
         elif leftBumperMag != 1:
             bumperMag = (1 - leftBumperMag)
 
-        
+
         #Get the arctangent of xAxis/yAxis to get the angle in radians.
         #Convert it to degrees and make it so that it goes from 0-360 starting
         #at the positive y axis (to match with the front of the hovercraft).
@@ -70,7 +70,7 @@ class AngleIntegrator():
             if (rotationalAngle > 0):
                 rotationalAngle = rotationalAngle - 360
             rotationalAngle = math.fabs(rotationalAngle)
-        
+
         magnitudeThreshold = 1
         magnitude = math.sqrt(xAxisL**2 + yAxisL**2)
         rotationalAngle = xAxisL*10
@@ -111,7 +111,7 @@ class AngleIntegrator():
             self.leftBumperAngle = 0
 
         #For 90 degree button rotations
-        
+
         if math.fabs(self.buttonTargetAngle) > 0:
             magnitude = 1
             moveOut.theta = self.buttonTargetAngle
@@ -144,10 +144,8 @@ class AngleIntegrator():
             moveOut.theta = theta
             moveOut.modType = 'Add'
         else:
-            moveOut.theta = 0 
+            moveOut.theta = 0
             moveOut.modType = 'Add'
-
-        print "Theta:", moveOut.theta, "xAxisL:", xAxisL
         publisher.publish(moveOut)
         '''
         #Prints all information related to the integrator if need be

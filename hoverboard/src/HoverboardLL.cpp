@@ -115,6 +115,7 @@ private:
   ros::Subscriber pwm_sub;
   void pwmCallback(const hoverboard::PWMRaw::ConstPtr& pwm);
   rxtx::rxtxData pwmPacket;
+  rxtx::rxtxData pwmPacket1;
 
 };
 
@@ -173,6 +174,15 @@ HoverboardLL::HoverboardLL(void){
   checksum = calculateCheckSum(pwmPacket.data);
   pwmPacket.data.push_back(checksum);
 
+  //Set pwm channel one (lift thruster) to zero
+  pwmPacket1.header.stamp = ros::Time::now();
+  pwmPacket1.data.push_back(0x55);
+  pwmPacket1.data.push_back(0x80 | 1);
+  //THIS IS A BAD HARD CODED DEFAULT THAT THE BRUSHLESS NEEDS
+  pwmPacket1.data.push_back(20);
+  checksum = calculateCheckSum(pwmPacket1.data);
+  pwmPacket1.data.push_back(checksum);
+
 }
 
   /**
@@ -191,6 +201,10 @@ void HoverboardLL::republish(){
     //N.B. this will just resend the last PWM message (which is only a
     //single channel)
     serial_send_pub.publish(pwmPacket);
+    //HORRIBLE HARD CODING TBD FIX
+    if(cnt < 100){
+      serial_send_pub.publish(pwmPacket1);
+    }
     break;
   case 2:
     serial_send_pub.publish(ledPacket);

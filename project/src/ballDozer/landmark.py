@@ -7,8 +7,10 @@ roslib.load_manifest('lab3')
 roslib.load_manifest('hovercraft')
 from hovercraft.msg import Thruster
 from landmarkSelfSim.msg import landmarkVisible, landmarkLocation
-from lab3.msg import Movement
+from lab3.msg import Movement, DetectionSwitcher
 
+#TODO: Subscribe to a simple message that passes an integer denoting the
+#landmark number to go to.  Needs to be published from ballCleaner.
 class LandMark():
     def __init__(self):
         self.debug = float(rospy.get_param('~debug', '0'))
@@ -44,6 +46,11 @@ class LandMark():
             self.targetReached = False
             self.landMarkX = None
             self.state = 0
+            donePublisher = rospy.publisher('currentBallState',  DetectionSwitcher) #Reuse of existing message type
+            dState = DetectionSwitcher()
+            dState.state = 1
+            donePublisher.publish(dState)
+
         publisher.publish(moveMessage)
 
     #Updates the state w/r/t the landmark Visibility
@@ -55,7 +62,7 @@ class LandMark():
 
     #Landmark Location is copied to local memory
     #Calculating the distance to landmark
-    def getDistanceToLandMark(self, landmarkLoc):
+    def getDistanceToLandmark(self, landmarkLoc):
         self.landmarkLocation = landmarkLoc
         self.currentVisibleLMCode = landmarkLoc.code
         self.landmarkX = (float(landmarkLoc.xtop)+float(landmarkLoc.xbottom))/2.0

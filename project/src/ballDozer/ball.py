@@ -4,15 +4,13 @@ import roslib
 roslib.load_manifest('lab3')
 roslib.load_manifest('hoverboard')
 from hoverboard.msg import PWMRaw
-from lab3.msg import Movement, Range
+from lab3.msg import Movement, Range, DetectionSwitcher
 from ballDetector.msg import ballVisible, ballLocation
 from geometry_msgs.msg import Vector3
 class Ball():
     def __init__(self):
         self.debug = float(rospy.get_param('~debug', '0'))
-
         self.state = 0
-
         self.ballLocation = ballLocation()
 
         self.ballVisible  = False
@@ -24,7 +22,8 @@ class Ball():
         rospy.Subscriber('/ballLocation',ballLocation,self.getBallLocation)
         rospy.Subscriber('ballVisible',ballVisible, self.isBallVisible)
         rospy.Subscriber('/rangeInfo', Range, self.isBallCaptured)
-
+        rospy.Timer(rospy.Duration(.1), self.stateMachine)
+        print("Ball Initialized")
     #Gets the ball Location Data
     def getBallLocation(self,ballLocation):
         self.ballLocation = ballLocation
@@ -39,33 +38,53 @@ class Ball():
     def isBallCaptured(self,rangeInfo):
         lDistCM = rangeInfo.leftDistanceCM
         rDistCM = rangeInfo.rightDistanceCM
-        if (lDistCM < 9 and lDistCM > 0) or (rDistCM < 15 and rDistCM > 0):
+        if (rDistCM < 11 and rDistCM > 0): # (lDistCM < 9 and lDistCM > 0) or
             self.ballCaptured = True
         else:
             self.ballCaptured = False
 
-    def stateMachine(self):
-        publisher = rospy.publisher('ballCollectionMovement', Movement)
+    def stateMachine(self, timerStuff):
+        publisher = rospy.Publisher('ballCollectionMovement', Movement)
         moveMessage = None
+        rest = PWMRaw(channel=5, pwm=0)
+        servoPublisher = rospy.Publisher('/hoverboard/PWMRaw/', PWMRaw)
+        detectionPublisher = rospy.Publisher('/switcher/visArbitrator', DetectionSwitcher)
+        one  = PWMRaw(channel=5, pwm=2)
+        detectionSwitch = DetectionSwitcher()
+        detectionSwitch.state = 2
         if (self.state == 0): #Find a ball of any color
+            detectionSwitch.state = 2
+            detectionPublisher.publish(detectionSwitch)
+            servoPublisher.publish(one)
             moveMessage = self.detectBall()
         elif (self.state == 1): #Move towards the ball
+            servoPublisher.publish(rest)
+            detectionPublisher.publish(detectionSwitch)
             moveMessage = self.moveToBall()
         elif (self.state == 2): #Collect the ball in the mechanism
+            #servoPublisher.publish(rest)
+            detectionPublisher.publish(detectionSwitch)
             moveMessage = self.collectBall()
         else: #Reset to initial state
-            moveMessage = stop()
+            moveMessage = self.stop()
             self.ballVisible  = False
             self.ballCaptured = False
             self.currentColor = 'yellow'
             self.targetColor  = None
             self.state = 0
+            donePublisher = rospy.Publisher('currentBallState',  DetectionSwitcher) #Reuse of existing message type
+            dState = DetectionSwitcher()
+            dState.state = 0
+            donePublisher.publish(dState)
+
         publisher.publish(moveMessage)
 
     #This finds the ball.  We are going to rotate (maybe 30 degrees, according to field of vision of camera), then cycle through colors to see if it detects one.
     def detectBall(self):
         if self.hasFoundColor():
+            #TODO: Need to publish self.targetColor to ballCleaner here
             self.state+=1 # NextStep: moveToBall
+            return self.stop()
         else:
             return self.rotate(30)
 
@@ -78,16 +97,17 @@ class Ball():
             self.cycleColor()
             if self.ballVisible:
                 self.targetColor = self.currentColor
-                string = ('Detected a %s ball'%(self.targetColor))
+                string = ('Detected a %s ball'%(self.currentColor))
                 self.debugPrint(string)
                 return True
             else:
-                string = ('%s ball not found, checking next color.'%(self.targetColor.capitalize))
+                string = ('%s ball not found, checking next color.'%(self.currentColor.capitalize()))
                 self.debugPrint(string)
         return False
 
     #Changes and publishes ball color to detect
     def cycleColor(self):
+        self.debugPrint("Checking Color " + self.currentColor)
         lowPublisher = rospy.Publisher('thresh/low', Vector3)
         highPublisher= rospy.Publisher('thresh/high',Vector3)
         #if self.currentColor == 'red':
@@ -95,22 +115,23 @@ class Ball():
         #    return detectYellowBall()
         if self.currentColor == 'yellow':
             self.currentColor = 'blue'
-            hsvLow, hsvHigh = detectBlueBall()
+            hsvLow, hsvHigh = self.detectBlueBall()
         elif self.currentColor == 'blue':
             self.currentColor = 'purple'
-            hsvLow, hsvHigh = detectPurpleBall()
+            hsvLow, hsvHigh = self.detectPurpleBall()
         elif self.currentColor == 'purple':
             self.currentColor = 'green'
-            hsvLow, hsvHigh =  detectGreenBall()
+            hsvLow, hsvHigh =  self.detectGreenBall()
         elif self.currentColor == 'green':
             self.currentColor = 'orange'
-            hsvLow, hsvHigh =  detectOrangeBall()
+            hsvLow, hsvHigh =  self.detectOrangeBall()
         elif self.currentColor == 'orange':
             self.currentColor = 'yellow'
-            hsvLow, hsvHigh = detectYellowBall()
+            hsvLow, hsvHigh = self.detectYellowBall()
         for i in xrange(0,25): #Might need to lower number of iterations
             lowPublisher.publish(hsvLow)
             highPublisher.publish(hsvHigh)
+        rospy.sleep(5.)
 
     #Moves towards the ball while centering it
     def moveToBall(self):
@@ -119,15 +140,16 @@ class Ball():
 
     def collectBall(self):
         servoPub = rospy.Publisher('/hoverboard/PWMRaw',PWMRaw)
-        rest = PWMRaw(channel=1, pwm=0)
-        one  = PWMRaw(channel=1, pwm=2)
-        two  = PWMRaw(channel=1, PWM=5)
+        rest = PWMRaw(channel=5, pwm=0)
+        one  = PWMRaw(channel=5, pwm=2)
+        two  = PWMRaw(channel=5, PWM=5)
+        #Might have to publish these more than once
         servoPub.publish(rest)
-        sleep(5)
+        rospy.sleep(2)
         servoPub.publish(one)
-        sleep(5)
+        rospy.sleep(2)
         servoPub.publish(two)
-        sleep(5)
+        rospy.sleep(2)
         servoPub.publish(rest)
         self.state+=1
         return self.stop()
@@ -135,27 +157,27 @@ class Ball():
     #Values for various colored balls
     #NOTE: self parameter removed intentionally, should work
     #NOTE: I hope keyword instantiation works
-    def detectRedBall():
+    def detectRedBall(self):
         low = Vector3(x=109,y=81,z=115)
         high= Vector3(x=122,y=186,z=255)
         return low,high
-    def detectYellowBall():
+    def detectYellowBall(self):
         low = Vector3(x=73,y=69,z=136)
         high= Vector3(x=97,y=161,z=255)
         return low,high
-    def detectBlueBall():
+    def detectBlueBall(self):
         low = Vector3(x=0,y=154,z=101)
         high= Vector3(x=17,y=255,z=249)
         return low,high
-    def detectPurpleBall():
+    def detectPurpleBall(self):
         low = Vector3(x=129,y=60,z=43)
         high= Vector3(x=167,y=126,z=196)
         return low,high
-    def detectGreenBall():
+    def detectGreenBall(self):
         low = Vector3(x=28,y=111,z=73)
         high= Vector3(x=46,y=231,z=205)
         return low,high
-    def detectOrangeBall():
+    def detectOrangeBall(self):
         low = Vector3(x=98,y=64,z=167)
         high= Vector3(x=125,y=175,z=255)
         return low,high
@@ -166,15 +188,15 @@ class Ball():
 
     #Stopping the hovercraft
     def stop(self):
-        return move()
+        return self.move()
 
     #Rotating the hovercraft (-theta is clockwise)
     def rotate(self, theta1):
-        return move(theta=theta1)
+        return self.move(theta=theta1)
 
     #Translating the hovercraft (+y is forward)
     def translate(self, x1=0, y1=0):
-        return move(x=x1, y=y1)
+        return self.move(x=x1, y=y1)
 
     def move(self, x=0, y=0, theta=0):
         move = Movement()
