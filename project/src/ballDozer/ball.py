@@ -16,6 +16,7 @@ class Ball():
         self.ballVisible  = False
         self.ballCaptured = False
 
+        self.previousColor= None
         self.currentColor = 'yellow'
         self.targetColor  = None
 
@@ -52,18 +53,19 @@ class Ball():
         one  = PWMRaw(channel=5, pwm=2)
         detectionSwitch = DetectionSwitcher()
         detectionSwitch.state = 2
+        detectionPublisher.publish(detectionSwitch)
         if (self.state == 0): #Find a ball of any color
-            detectionSwitch.state = 2
-            detectionPublisher.publish(detectionSwitch)
+            #detectionSwitch.state = 2
+            #detectionPublisher.publish(detectionSwitch)
             servoPublisher.publish(one)
             moveMessage = self.detectBall()
         elif (self.state == 1): #Move towards the ball
             servoPublisher.publish(rest)
-            detectionPublisher.publish(detectionSwitch)
+            #detectionPublisher.publish(detectionSwitch)
             moveMessage = self.moveToBall()
         elif (self.state == 2): #Collect the ball in the mechanism
             #servoPublisher.publish(rest)
-            detectionPublisher.publish(detectionSwitch)
+            #detectionPublisher.publish(detectionSwitch)
             moveMessage = self.collectBall()
         else: #Reset to initial state
             moveMessage = self.stop()
@@ -101,7 +103,7 @@ class Ball():
                 self.debugPrint(string)
                 return True
             else:
-                string = ('%s ball not found, checking next color.'%(self.currentColor.capitalize()))
+                string = ('%s ball not found, checking next color.'%(self.previousColor.capitalize()))
                 self.debugPrint(string)
         return False
 
@@ -114,18 +116,23 @@ class Ball():
         #    self.currentColor = 'yellow'
         #    return detectYellowBall()
         if self.currentColor == 'yellow':
+            self.previousColor='yellow'
             self.currentColor = 'blue'
             hsvLow, hsvHigh = self.detectBlueBall()
         elif self.currentColor == 'blue':
+            self.previousColor='blue'
             self.currentColor = 'purple'
             hsvLow, hsvHigh = self.detectPurpleBall()
         elif self.currentColor == 'purple':
+            self.previousColor='purple'
             self.currentColor = 'green'
             hsvLow, hsvHigh =  self.detectGreenBall()
         elif self.currentColor == 'green':
+            self.previousColor='green'
             self.currentColor = 'orange'
             hsvLow, hsvHigh =  self.detectOrangeBall()
         elif self.currentColor == 'orange':
+            self.previousColor= 'orange'
             self.currentColor = 'yellow'
             hsvLow, hsvHigh = self.detectYellowBall()
         for i in xrange(0,25): #Might need to lower number of iterations
