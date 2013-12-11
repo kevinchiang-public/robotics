@@ -86,6 +86,7 @@ class Ball():
         if self.hasFoundColor():
             #TODO: Need to publish self.targetColor to ballCleaner here
             self.state+=1 # NextStep: moveToBall
+            self.debugPrint('Moving to Ball')
             return self.stop()
         else:
             return self.rotate(30)
@@ -103,13 +104,12 @@ class Ball():
                 self.debugPrint(string)
                 return True
             else:
-                string = ('%s ball not found, checking next color.'%(self.previousColor.capitalize()))
+                string = ('%s ball not found, checking next color.'%(self.currentColor.capitalize()))
                 self.debugPrint(string)
         return False
 
     #Changes and publishes ball color to detect
     def cycleColor(self):
-        self.debugPrint("Checking Color " + self.currentColor)
         lowPublisher = rospy.Publisher('thresh/low', Vector3)
         highPublisher= rospy.Publisher('thresh/high',Vector3)
         #if self.currentColor == 'red':
@@ -135,21 +135,27 @@ class Ball():
             self.previousColor= 'orange'
             self.currentColor = 'yellow'
             hsvLow, hsvHigh = self.detectYellowBall()
+        self.debugPrint("Checking Color " + self.currentColor)
         for i in xrange(0,25): #Might need to lower number of iterations
             lowPublisher.publish(hsvLow)
             highPublisher.publish(hsvHigh)
-        rospy.sleep(5.)
+        rospy.sleep(2.)
 
     #Moves towards the ball while centering it
     def moveToBall(self):
         #Need to change the state at some point
-        return s.move(y=.4,theta=(-float(self.ballLocation.x)/2.0))
+        if not self.ballCaptured:
+            return self.move(y=.7,theta=(-float(self.ballLocation.x)/2.0))
+        else:
+            self.state+=1
+            self.debugPrint('Loading Ball')
+            return self.stop()
 
     def collectBall(self):
         servoPub = rospy.Publisher('/hoverboard/PWMRaw',PWMRaw)
         rest = PWMRaw(channel=5, pwm=0)
         one  = PWMRaw(channel=5, pwm=2)
-        two  = PWMRaw(channel=5, PWM=5)
+        two  = PWMRaw(channel=5, pwm=7)
         #Might have to publish these more than once
         servoPub.publish(rest)
         rospy.sleep(2)
