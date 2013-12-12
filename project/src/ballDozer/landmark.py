@@ -103,12 +103,12 @@ class LandMark():
 
     def launch(self):
         launchPub = rospy.Publisher('/hoverboard/PWMRaw',PWMRaw)
-        FIRE = PWMRaw(channel=1, self.FirePower)
+        FIRE = PWMRaw(channel=1, pwm=self.FirePower)
         for i in xrange(0,25):
             launchPub.publish(FIRE)
         self.state+=1
         #Stop firing the thruster
-        OHGODSTOPFIRING = PWMRaw(channel=1, 20)
+        OHGODSTOPFIRING = PWMRaw(channel=1, pwm=20)
         launchPub.publish(OHGODSTOPFIRING)
         return move()
 

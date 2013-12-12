@@ -11,6 +11,14 @@ import math
 
 class BallCleaner():
     def __init__(self):
+        #Initialize vision arbitrator
+        publisher = rospy.Publisher('/detectionSwitch', DetectionSwitcher)
+        switcher = DetectionSwitcher()
+        switcher.state = 2
+        for i in xrange(0,25):
+            switcher.header.stamp = rospy.Time.now()
+            publisher.publish(switcher)
+
         self.debug = float(rospy.get_param('~debug', '0'))
         self.blueLandmark = int(rospy.get_param('~blueLandmark', '2'))
         self.greenLandmark = int(rospy.get_param('~greenLandmark', '3'))
@@ -26,13 +34,6 @@ class BallCleaner():
         self.currentLandmark = None
         self.state = 0 #0 for ball collection, 1 for landmark finding/deploying
 
-        #Initialize vision arbitrator
-        publisher = rospy.Publisher('/switcher/visArbitrator', DetectionSwitcher)
-        switcher = DetectionSwitcher()
-        switcher.state = 2
-        for i in xrange(0,25):
-            publisher.publish(switcher)
-
     def updateCurrentBall(self, detectionswitcher):
         if detectionswitcher.state == 1:
             self.currentBall = 'Orange'
@@ -45,7 +46,7 @@ class BallCleaner():
         elif detectionswitcher.state == 5:
             self.currentBall = 'Blue'
         else:
-            print('Error: ball color corresponding to #' + str(detectionswitcher.state) + ' not found'
+            print('Error: ball color corresponding to #' + str(detectionswitcher.state) + ' not found')
         self.currentLandmark = self.mapColorToLandmarkNumber(self.currentBall)
 
     def mapColorToLandmarkNumber(self, color):
@@ -61,15 +62,19 @@ class BallCleaner():
             return self.blueLandmark
 
     def updateState(self, currentState):
-        publisher = rospy.Publisher('/switcher/visArbitrator', DetectionSwitcher)
+        publisher = rospy.Publisher('/detectionSwitch', DetectionSwitcher)
         switcher = DetectionSwitcher()
+        print self.state
         if currentState.state == 0:
             switcher.state = 1
             self.state = 1
         elif currentState.state == 1:
             switcher.state = 2
             self.state = 0
-        publisher.publish(switcher)
+        print self.state
+        for i in xrange(0, 25):
+            switcher.header.stamp  =rospy.Time.now()
+            publisher.publish(switcher)
 
     def setBallMovement(self, move):
         if self.state == 0:

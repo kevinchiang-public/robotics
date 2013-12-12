@@ -18,6 +18,7 @@ class Switch():
         self.visArbOut = DetectionSwitcher()
 
     def detectionCallback(self,detectSwitch):
+        print detectSwitch.state
         self.detectSwitch = detectSwitch
 
     def joyCallback(self,switch):
@@ -43,6 +44,7 @@ class Switch():
                 self.visArbOut.state = 1
             elif joyState == 6: #Only publish to ball detector node
                 self.visArbOut.state = self.detectSwitch.state
+                print self.visArbOut.state
             elif joyState == 7: #Currently not used. Publishes images to ball and landmark nodes
                 self.visArbOut.state = 2
             else:
@@ -52,7 +54,6 @@ class Switch():
             switchOut.state = self.mappingSwitcher.state
         elif joyState == 4:
             switchOut.state = self.tangentSwitcher.state
-
         publisher.publish(switchOut)
         #Controlling the state directly from vision Arbitrator
         visArbPublisher = rospy.Publisher('/switcher/visArbitrator', DetectionSwitcher)

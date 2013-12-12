@@ -51,11 +51,11 @@ class Ball():
         moveMessage = None
         rest = PWMRaw(channel=5, pwm=0)
         servoPublisher = rospy.Publisher('/hoverboard/PWMRaw/', PWMRaw)
-        detectionPublisher = rospy.Publisher('/switcher/visArbitrator', DetectionSwitcher)
         one  = PWMRaw(channel=5, pwm=2)
-        detectionSwitch = DetectionSwitcher()
-        detectionSwitch.state = 2
-        detectionPublisher.publish(detectionSwitch)
+        #detectionPublisher = rospy.Publisher('/detectionSwitch', DetectionSwitcher)
+        #detectionSwitch = DetectionSwitcher()
+        #detectionSwitch.state = 2
+        #detectionPublisher.publish(detectionSwitch)
         if (self.state == 0): #Find a ball of any color
             #detectionSwitch.state = 2
             #detectionPublisher.publish(detectionSwitch)
@@ -107,7 +107,6 @@ class Ball():
     #This finds the ball.  We are going to rotate (maybe 30 degrees, according to field of vision of camera), then cycle through colors to see if it detects one.
     def detectBall(self):
         if self.hasFoundColor():
-            #TODO: Need to publish self.targetColor to ballCleaner here
             self.state+=1 # NextStep: moveToBall
             self.debugPrint('Moving to Ball')
             return self.stop()
@@ -195,8 +194,6 @@ class Ball():
         return self.stop()
 
     #Values for various colored balls
-    #NOTE: self parameter removed intentionally, should work
-    #NOTE: I hope keyword instantiation works
     def detectRedBall(self):
         low = Vector3(x=109,y=81,z=115)
         high= Vector3(x=122,y=186,z=255)
