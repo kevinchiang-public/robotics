@@ -89,7 +89,6 @@ class BallCleaner():
         if self.debug == 1:
             print string
 
-
 if __name__ == '__main__':
     rospy.init_node('BallCleaner')
     try:

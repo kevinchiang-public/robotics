@@ -8,12 +8,13 @@ roslib.load_manifest('hovercraft')
 from hovercraft.msg import Thruster
 from landmarkSelfSim.msg import landmarkVisible, landmarkLocation
 from lab3.msg import Movement, DetectionSwitcher
-
-#TODO: Subscribe to a simple message that passes an integer denoting the
-#landmark number to go to.  Needs to be published from ballCleaner.
+from hoverboard.msg import PWMRaw
 class LandMark():
     def __init__(self):
         self.debug = float(rospy.get_param('~debug', '0'))
+        #Note: Increase above 40 with EXTREME caution
+        self.firePower = float(rospy.get_param('~firePower', '40'))
+
         self.landmark1= -1
         self.currentLandmark = -2
         self.currentVisibleLMCode = -2
@@ -51,6 +52,7 @@ class LandMark():
             self.targetReached = False
             self.landMarkX = None
             self.state = 0
+
             donePublisher = rospy.publisher('currentBallState',  DetectionSwitcher) #Reuse of existing message type
             dState = DetectionSwitcher()
             dState.state = 1
@@ -100,14 +102,14 @@ class LandMark():
             return self.move()
 
     def launch(self):
-        launchPub = rospy.Publisher('/thrust/Integrator',Thruster)
-        thrust = Thruster(lift=0,thruster1=0,thruster2=0,thruster3=0,thruster4=0,thruster5=0,thruster6=1)
+        launchPub = rospy.Publisher('/hoverboard/PWMRaw',PWMRaw)
+        FIRE = PWMRaw(channel=1, self.FirePower)
         for i in xrange(0,25):
-            launchPub.publish(thrust)
+            launchPub.publish(FIRE)
         self.state+=1
-        #Reset to 0, needed for thrustIntegrator
-        thrust.thruster6=0
-        launchPub.publish(thrust)
+        #Stop firing the thruster
+        OHGODSTOPFIRING = PWMRaw(channel=1, 20)
+        launchPub.publish(OHGODSTOPFIRING)
         return move()
 
     def move(self, x=0, y=0, theta=0):

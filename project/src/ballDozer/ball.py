@@ -7,6 +7,8 @@ from hoverboard.msg import PWMRaw
 from lab3.msg import Movement, Range, DetectionSwitcher
 from ballDetector.msg import ballVisible, ballLocation
 from geometry_msgs.msg import Vector3
+
+numPublishTimes = 15
 class Ball():
     def __init__(self):
         self.debug = float(rospy.get_param('~debug', '0'))
@@ -57,10 +59,12 @@ class Ball():
         if (self.state == 0): #Find a ball of any color
             #detectionSwitch.state = 2
             #detectionPublisher.publish(detectionSwitch)
-            servoPublisher.publish(one)
+            for i in xrange(0,numPublishTimes):
+                servoPublisher.publish(one)
             moveMessage = self.detectBall()
         elif (self.state == 1): #Move towards the ball
-            servoPublisher.publish(rest)
+            for i in xrange(0,numPublishTimes):
+                servoPublisher.publish(rest)
             #detectionPublisher.publish(detectionSwitch)
             moveMessage = self.moveToBall()
         elif (self.state == 2): #Collect the ball in the mechanism
@@ -176,13 +180,17 @@ class Ball():
         one  = PWMRaw(channel=5, pwm=2)
         two  = PWMRaw(channel=5, pwm=7)
         #Might have to publish these more than once
-        servoPub.publish(rest)
+        for i in xrange(0,numPublishTimes):
+            servoPub.publish(rest)
         rospy.sleep(2)
-        servoPub.publish(one)
+        for i in xrange(0,numPublishTimes):
+            servoPub.publish(one)
         rospy.sleep(2)
-        servoPub.publish(two)
+        for i in xrange(0,numPublishTimes):
+            servoPub.publish(two)
         rospy.sleep(2)
-        servoPub.publish(rest)
+        for i in xrange(0,numPublishTimes):
+            servoPub.publish(rest)
         self.state+=1
         return self.stop()
 
