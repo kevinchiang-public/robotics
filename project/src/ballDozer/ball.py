@@ -68,6 +68,7 @@ class Ball():
             #detectionPublisher.publish(detectionSwitch)
             moveMessage = self.collectBall()
         else: #Reset to initial state
+            self.publishColorToBallPy()
             moveMessage = self.stop()
             self.ballVisible  = False
             self.ballCaptured = False
@@ -80,6 +81,24 @@ class Ball():
             donePublisher.publish(dState)
 
         publisher.publish(moveMessage)
+
+    def publishColorToBallPy(self):
+        #Publish the collect ball color
+        color = DetectionSwitcher()
+        if self.currentColor == 'orange':
+            color.state = 1
+        elif self.currentColor == 'purple':
+            color.state = 2
+        elif self.currentColor == 'yellow':
+            color.state = 3
+        elif self.currentColor == 'green':
+            color.state = 4
+        elif self.currentColor == 'blue':
+            color.state = 5
+        publisher = rospy.Publisher('foundBallColor', DetectionSwitcher)
+        publisher.publish(color)
+
+
 
     #This finds the ball.  We are going to rotate (maybe 30 degrees, according to field of vision of camera), then cycle through colors to see if it detects one.
     def detectBall(self):

@@ -21,6 +21,9 @@ class BallCleaner():
         rospy.Subscriber('ballCollectionMovement', Movement, self.setBallMovement)
         rospy.Subscriber('landmarkDetection', Movement, self.setLandmarkMovement)
         rospy.Subscriber('currentBallState', DetectionSwitcher, self.updateState)
+        rospy.Subscriber('foundBallColor', DetectionSwitcher, self.updateCurrentBall)
+        self.currentBall = None
+        self.currentLandmark = None
         self.state = 0 #0 for ball collection, 1 for landmark finding/deploying
 
         #Initialize vision arbitrator
@@ -30,8 +33,33 @@ class BallCleaner():
         for i in xrange(0,25):
             publisher.publish(switcher)
 
-#TODO: Subscribe to the message published by ball.py to set the current landmark number
-#given the current color
+    def updateCurrentBall(self, detectionswitcher):
+        if detectionswitcher.state == 1:
+            self.currentBall = 'Orange'
+        elif detectionswitcher.state == 2:
+            self.currentBall = 'Purple'
+        elif detectionswitcher.state == 3:
+            self.currentBall = 'Yellow'
+        elif detectionswitcher.state == 4:
+            self.currentBall = 'Green'
+        elif detectionswitcher.state == 5:
+            self.currentBall = 'Blue'
+        else:
+            print('Error: ball color corresponding to #' + str(detectionswitcher.state) + ' not found'
+        self.currentLandmark = self.mapColorToLandmarkNumber(self.currentBall)
+
+    def mapColorToLandmarkNumber(self, color):
+        if color == 'Orange':
+            return self.orangeLandmark
+        elif color == 'Purple':
+            return self.purpleLandmark
+        elif color == 'Green':
+            return self.greenLandmark
+        elif color == 'Yellow':
+            return self.yellowLandmark
+        elif color == 'Blue':
+            return self.blueLandmark
+
     def updateState(self, currentState):
         publisher = rospy.Publisher('/switcher/visArbitrator', DetectionSwitcher)
         switcher = DetectionSwitcher()
@@ -48,11 +76,14 @@ class BallCleaner():
             publisher = rospy.Publisher('/ballCleanerOut', Movement)
             publisher.publish(move)
 
-#TODO: Publish to landmark the target landmark we're trying to drive to
     def setLandmarkMovement(self, move):
         if self.state == 1:
             publisher = rospy.Publisher('/ballCleanerOut', Movement)
             publisher.publish(move)
+            publisher2 = rospy.Publisher('/landmarkNumberOut', DetectionSwitcher)
+            state = DetectionSwitcher()
+            state.state = self.currentLandmark
+            publisher2.publish(state)
 
     def debugPrint(self,string):
         if self.debug == 1:

@@ -14,7 +14,7 @@ from lab3.msg import Movement, DetectionSwitcher
 class LandMark():
     def __init__(self):
         self.debug = float(rospy.get_param('~debug', '0'))
-        self.landmark1=float(rospy.get_param('~landmark1','-2'))
+        self.landmark1= -1
         self.currentLandmark = -2
         self.currentVisibleLMCode = -2
         self.isLandmarkInView = False
@@ -27,6 +27,11 @@ class LandMark():
 
         rospy.Subscriber('landmarkVisible',landmarkVisible, self.checkForLandmark)
         rospy.Subscriber('landmarkLocation', landmarkLocation, self.getDistanceToLandmark)
+        rospy.Subscriber('/landmarkNumberOut', DetectionSwitcher, self.updateTargetLandmark)
+
+    def updateTargetLandmark(self, state):
+        #The state corresponds to the landmark number
+        self.landmark1 = state.state
 
     #NOTE: Please check the reset logic.
     def stateMachine(self):
