@@ -18,7 +18,6 @@ class Switch():
         self.visArbOut = DetectionSwitcher()
 
     def detectionCallback(self,detectSwitch):
-        print "This should print 25 times"
         self.detectSwitch = detectSwitch
 
     def joyCallback(self,switch):

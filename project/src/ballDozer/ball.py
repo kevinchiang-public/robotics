@@ -113,7 +113,6 @@ class Ball():
         else:
             return self.rotate(30)
 
-
     #Colors Available: red, yellow, blue, purple, green, orange
     #This starts from the current color and cycles through all the colors and checks to see if a ball is found,
     def hasFoundColor(self):

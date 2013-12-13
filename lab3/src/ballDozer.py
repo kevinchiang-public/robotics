@@ -207,7 +207,7 @@ class BallDozer():
 
     def kickBallOut(self):
         #A sleep so we can pick the ball up.  The backwards momentum wasn't fast enough to kick the ball out
-	rospy.sleep(5)
+        rospy.sleep(5)
         #Keep moving backwards until the ball isn't in the hook anymore
         if self.isBallCaptured:
             move = Movement()
@@ -246,24 +246,24 @@ class BallDozer():
             self.detectionSwitch.state = 2
             #reset variables
             if self.switchedToSecond < 20:
-		    self.isBallCaptured = False #Uses the IR range finders to see if the ball is in the prong
-		    self.isBallInView = False #Uses the camera to see if a ball is visible in the scene
-		    self.isLandmarkInView = False #Uses camera to see if landmark is visible in the scene
+                    self.isBallCaptured = False #Uses the IR range finders to see if the ball is in the prong
+                    self.isBallInView = False #Uses the camera to see if a ball is visible in the scene
+                    self.isLandmarkInView = False #Uses camera to see if landmark is visible in the scene
                     self.targetReached = False
-        	    self.distanceToLandmark = 300
+                    self.distanceToLandmark = 300
                     self.currentVisibleLMCode = -2
                     self.landmarkForColor1 = self.landmarkForColor2
         elif self.state == 4:
             #reset variables
             if not self.switchedToSecond < 20:
-		    self.isBallCaptured = False #Uses the IR range finders to see if the ball is in the prong
-		    self.isBallInView = False #Uses the camera to see if a ball is visible in the scene
-		    self.isLandmarkInView = False #Uses camera to see if landmark is visible in the scene
+                    self.isBallCaptured = False #Uses the IR range finders to see if the ball is in the prong
+                    self.isBallInView = False #Uses the camera to see if a ball is visible in the scene
+                    self.isLandmarkInView = False #Uses camera to see if landmark is visible in the scene
                     self.targetReached = False
                     self.switchedToSecond += 1
-        	    self.distanceToLandmark = 300
+                    self.distanceToLandmark = 300
                     self.currentVisibleLMCode = -2
-                    
+
             #Onward, ho!  To the second stage of our state machine
             self.setBallColor(2)
             self.currentLandmark = self.landmarkForColor2
