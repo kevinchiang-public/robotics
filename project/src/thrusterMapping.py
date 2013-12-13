@@ -60,12 +60,12 @@ class ThrusterMapping():
             #Turn on 4
             self.thrust.thruster5 = 0
             self.thrust.thruster4 = math.fabs(theta)/100.0
-            self.thrust.thruster4 = self.thrust.thruster4 if self.thrust.thruster4 < .7 else .7
+            self.thrust.thruster4 = self.thrust.thruster4 if self.thrust.thruster4 < 1 else 1
         elif theta<0:
             #Turn on 5
             self.thrust.thruster4 = 0
             self.thrust.thruster5 = math.fabs(theta)/100.0
-            self.thrust.thruster5 = self.thrust.thruster5 if self.thrust.thruster5 < .7 else .7
+            self.thrust.thruster5 = self.thrust.thruster5 if self.thrust.thruster5 < 1 else 1
         elif theta==0:
             #Turn off thrusters if theta is 0
             self.thrust.thruster4 =0
